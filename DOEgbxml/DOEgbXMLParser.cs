@@ -588,7 +588,7 @@ namespace DOEgbXML
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Exterior_Wall_Area;
-            units = "";
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = GetSurfaceAreaByType(gbXMLdocs, gbXMLnsm, report, units,"ExteriorWall");
             AddToOutPut("Exterior Wall Area Test Results: ", report, true);
 
@@ -596,7 +596,7 @@ namespace DOEgbXML
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Roof_Area;
-            units = "";
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = GetSurfaceAreaByType(gbXMLdocs, gbXMLnsm, report, units, "Roof");
             AddToOutPut("Roof Area Test Results: ", report, true);
 
@@ -604,7 +604,7 @@ namespace DOEgbXML
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.SlabOnGrade_Area;
-            units = "";
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = GetSurfaceAreaByType(gbXMLdocs, gbXMLnsm, report, units, "SlabOnGrade");
             AddToOutPut("Slab on Grade Area Test Results: ", report, true);
 
