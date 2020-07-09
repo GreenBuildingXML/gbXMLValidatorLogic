@@ -161,7 +161,7 @@ namespace DOEgbXML
 
             gbXMLStandardFile = new XmlDocument();
             //gbXMLStandardFile.Load(filepaths[testToRun]);
-
+            //TestFileIsAvailable function will load the file.
             if (!TestFileIsAvailable())
                 return;
 
@@ -589,7 +589,8 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Exterior_Wall_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = GetSurfaceAreaByType(gbXMLdocs, gbXMLnsm, report, units,"ExteriorWall");
+            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1),
+                GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2), report, units,"ExteriorWall");
             AddToOutPut("Exterior Wall Area Test Results: ", report, true);
 
             //test 26 Compare roof area
@@ -597,7 +598,8 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Roof_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = GetSurfaceAreaByType(gbXMLdocs, gbXMLnsm, report, units, "Roof");
+            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1),
+                GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2), report, units, "Roof");
             AddToOutPut("Roof Area Test Results: ", report, true);
 
             //test 27 Compare SlabOnGrade area
@@ -605,11 +607,13 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.SlabOnGrade_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = GetSurfaceAreaByType(gbXMLdocs, gbXMLnsm, report, units, "SlabOnGrade");
+            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1),
+                GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2), report, units, "SlabOnGrade");
             AddToOutPut("Slab on Grade Area Test Results: ", report, true);
 
             //test 28 Compare shading area
-
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
 
             #region opening detailed test
             //openings detailed tests
@@ -6028,75 +6032,6 @@ namespace DOEgbXML
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
             return report;
-        }
-        #endregion
-
-        #region new tests
-
-        /*
-         * This method compares the surface areas between test file and standard file by surface type
-         * For example, it can be used to compare the exterior wall surface area.
-         */
-        public static DOEgbXMLReportingObj GetSurfaceAreaByType(List<XmlDocument> gbXMLDocs, List<XmlNamespaceManager> gbXMLnsm, DOEgbXMLReportingObj report, string Units, String Type)
-        {
-            //this summary is text that describes to a lay user what this test does, and how it works functionally.  The user should have some familiarity with the basic knowledge of gbXML
-            //added 07/07/2020
-            report.testSummary = "";
-
-            report.unit = Units;
-
-            List<SurfaceDefinitions> TestSurfaces = new List<SurfaceDefinitions>();
-            XmlDocument TestFile = gbXMLDocs[0];
-            XmlNamespaceManager TestNSM = gbXMLnsm[0];
-            List<SurfaceDefinitions> StandardSurfaces = new List<SurfaceDefinitions>();
-            XmlDocument StandardFile = gbXMLDocs[1];
-            XmlNamespaceManager StandardNSM = gbXMLnsm[1];
-            TestSurfaces = GetFileSurfaceDefs(TestFile, TestNSM);
-            StandardSurfaces = GetFileSurfaceDefs(StandardFile, StandardNSM);
-
-            double testArea = 0.0;
-            double standardArea = 0.0;
-
-            for(int i=0; i<StandardSurfaces.Count; i++)
-            {
-                if(StandardSurfaces[i].SurfaceType == Type)
-                {
-                    standardArea += StandardSurfaces[i].computeArea();
-                }
-            }
-
-            for (int i = 0; i < TestSurfaces.Count; i++)
-            {
-                if (TestSurfaces[i].SurfaceType == Type)
-                {
-                    testArea += TestSurfaces[i].computeArea();
-                }
-            }
-
-            double difference = Math.Abs(standardArea - testArea);
-            report.testResult.Add(testArea.ToString());
-            report.standResult.Add(standardArea.ToString());
-            report.idList.Add("");
-
-            if (difference == 0)
-            {
-                report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
-                report.passOrFail = true;
-                return report;
-            }
-            else if (difference <= report.tolerance)
-            {
-                report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
-                report.passOrFail = true;
-                return report;
-            }
-            else
-            {
-                report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
-                    + ".  " + standardArea + " exterior wall surfaces in the Standard File and " + testArea + " exterior wall surfaces in the Test File.";
-                report.passOrFail = false;
-                return report;
-            }
         }
         #endregion
     }

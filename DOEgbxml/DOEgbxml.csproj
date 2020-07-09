@@ -57,6 +57,7 @@
     <Compile Include="gbXMLMatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="DOEgbXMLTestFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GreenBuildingXML_Ver5.10.xsd">
