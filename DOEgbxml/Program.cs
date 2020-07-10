@@ -16,6 +16,7 @@ namespace DOEgbxml
             parser.StartTest(reader, "test1", "dummy tester");
 
             Console.WriteLine(parser.summaryTable);
+            Console.WriteLine("End of testing...");
 
         }
     }
