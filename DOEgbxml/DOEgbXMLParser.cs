@@ -2792,6 +2792,7 @@ namespace DOEgbXML
                         {
                             indexFound.Add(j);
                             report.MessageList.Add("The standard file space id: " + standardId + "has found a spaceId match in the test file.");
+
                         }
                     }
                 }
