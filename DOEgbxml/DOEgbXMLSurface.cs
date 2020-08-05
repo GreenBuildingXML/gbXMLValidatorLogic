@@ -12,6 +12,7 @@ namespace DOEgbXML
         //creates instances of an object that store information about surfaces in a gbXML file
         public string SurfaceType;
         public string SurfaceId;
+        public String ConstructionId;
         public List<string> AdjSpaceId;
         public double Azimuth;
         public double Tilt;

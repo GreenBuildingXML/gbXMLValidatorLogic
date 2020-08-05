@@ -55,7 +55,8 @@ namespace DOEgbXML
         Exterior_Wall_Area,
         Roof_Area,
         SlabOnGrade_Area,
-        Shade_Area
+        Shade_Area,
+        Assembly_Test
     }
     public class DOEgbXMLenum
     {

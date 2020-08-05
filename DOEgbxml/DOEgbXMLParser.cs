@@ -210,6 +210,7 @@ namespace DOEgbXML
             }
 
             //if isMetric is true, then we would like to convert the test file's numbers to US-IP units
+            //TODORP-1810: The method is essentially returning an empty file - NOT IMPLEMENTED
             if(isMetric) gbXMLTestFile = ConvertMetricToUS(gbXMLTestFile);
 
             List<XmlDocument> gbXMLdocs = new List<XmlDocument>();
@@ -246,6 +247,12 @@ namespace DOEgbXML
             //Set up the Global Pass/Fail criteria for the test case file
             TestCriteria = new DOEgbXMLTestCriteriaObject();
             TestCriteria.InitializeTestCriteriaWithTestName(testToRun);
+
+            //Set up method global data for testing use
+            List<SurfaceDefinitions> standardSurfaces = GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2);
+            List<SurfaceDefinitions> testSurfaces = GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1);
+            List<DOEgbXMLConstruction> standardConstructions = GetConstructionDefs(gbXMLStandardFile, gbXMLns2);
+            List<DOEgbXMLConstruction> testConstructions = GetConstructionDefs(gbXMLTestFile, gbXMLns1);
 
             //Test 2 execute
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
@@ -589,8 +596,8 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Exterior_Wall_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1),
-                GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2), report, units,"ExteriorWall");
+            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
+                standardSurfaces, report, units,"ExteriorWall");
             AddToOutPut("Exterior Wall Area Test Results: ", report, true);
 
             //test 26 Compare roof area
@@ -598,8 +605,8 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Roof_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1),
-                GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2), report, units, "Roof");
+            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
+                standardSurfaces, report, units, "Roof");
             AddToOutPut("Roof Area Test Results: ", report, true);
 
             //test 27 Compare SlabOnGrade area
@@ -607,13 +614,25 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.SlabOnGrade_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1),
-                GetFileSurfaceDefs(gbXMLStandardFile, gbXMLns2), report, units, "SlabOnGrade");
+            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
+                standardSurfaces, report, units, "SlabOnGrade");
             AddToOutPut("Slab on Grade Area Test Results: ", report, true);
 
             //test 28 Compare shading area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Shade_Area;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            report = DOEgbXMLTestFunctions.TestShadeSurfaceArea(testSurfaces, standardSurfaces, report, units);
+            AddToOutPut("Shade Area Test Results: ", report, true);
+
+            //test 29 material and assembly test
+            report.Clear();
+            //TODO RP-1810 Need to think about the tolerance for the material assembly.
+            report.tolerance = DOEgbXMLBasics.Tolerances.dotproducttol;
+            report.testType = TestType.Assembly_Test;
+            report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions, standardConstructions, report, units);
+            AddToOutPut("Assembly test results: ", report, true);
 
             #region opening detailed test
             //openings detailed tests
@@ -3908,6 +3927,7 @@ namespace DOEgbXML
             return report;
         }
 
+        //deprecated? Seems pretty redundant and no where referenced.
         public static List<SurfaceDefinitions> MakeSurfaceList(XmlDocument xmldoc, XmlNamespaceManager xmlns)
         {
             List<SurfaceDefinitions> surfaces = new List<SurfaceDefinitions>();
@@ -4074,6 +4094,10 @@ namespace DOEgbXML
                         else if (at.Name == "surfaceType")
                         {
                             surfDef.SurfaceType = at.Value;
+                        }else if (at.Name == "constructionIdRef")
+                        {
+                            //RP-1810: add construction id for material testing
+                            surfDef.ConstructionId = at.Value;
                         }
                     }
                     if (surfaceNode.HasChildNodes)
@@ -4179,6 +4203,180 @@ namespace DOEgbXML
                 return surfaces;
             }
 
+        }
+
+        private static List<DOEgbXMLConstruction> GetConstructionDefs(XmlDocument xmldoc, XmlNamespaceManager xmlns)
+        {
+            List<DOEgbXMLConstruction> constructionList = new List<DOEgbXMLConstruction>();
+            Dictionary<String, DOEgbXMLLayer> layerMap = GetLayerMap(xmldoc, xmlns);
+            try
+            {
+                XmlNodeList constructions = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Construction", xmlns);
+                foreach (XmlNode constructionNode in constructions)
+                {
+                    //initialize a new instance of the class
+                    DOEgbXMLConstruction constructionDef = new DOEgbXMLConstruction();
+                    //get id attribute
+                    XmlAttributeCollection constructAtts = constructionNode.Attributes;
+                    foreach (XmlAttribute at in constructAtts)
+                    {
+                        if (at.Name == "id")
+                        {
+                            constructionDef.id = at.Value;
+                        }
+                    }
+
+                    //get data in the child nodes
+                    if (constructionNode.HasChildNodes)
+                    {
+                        XmlNodeList constructionChildNodes = constructionNode.ChildNodes;
+                        foreach (XmlNode node in constructionChildNodes)
+                        {
+                            if (node.Name == "Name")
+                            {
+                                constructionDef.name = node.InnerText;
+                            }
+                            else if (node.Name == "Absorptance")
+                            {
+                                constructionDef.absorptance = Convert.ToDouble(node.InnerText);
+                            }
+                            else if (node.Name == "LayerId")
+                            {
+                                //Currently we assume only one layer is allowed in the construction.
+                                String layerID = node.Value;
+                                if (layerMap.ContainsKey(layerID))
+                                {
+                                    constructionDef.layer = layerMap[layerID];
+                                }
+                            }
+                            else if (node.Name == "U-value")
+                            {
+                                constructionDef.uvalue = Convert.ToDouble(node.InnerText);
+                            }
+                            else if (node.Name == "Description")
+                            {
+                                constructionDef.description = node.InnerText;
+                            }
+                        }
+                    }
+                    constructionList.Add(constructionDef);
+                }
+                return constructionList;
+            }
+            catch (Exception e)
+            {
+                //return empty?
+                return constructionList;
+            }
+            
+        }
+
+        //get the layer map
+        private static Dictionary<String, DOEgbXMLLayer> GetLayerMap(XmlDocument xmldoc, XmlNamespaceManager xmlns)
+        {
+            XmlNodeList layers = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Layer", xmlns);
+            Dictionary<String, DOEgbXMLMaterial> materialMap = GetMaterialDict(xmldoc, xmlns);
+            Dictionary<String, DOEgbXMLLayer> layerMap = new Dictionary<String, DOEgbXMLLayer>();
+            foreach (XmlNode layerNode in layers)
+            {
+                DOEgbXMLLayer layer = new DOEgbXMLLayer();
+                XmlAttributeCollection layerAtts = layerNode.Attributes;
+                //get attributes
+                foreach (XmlAttribute at in layerAtts)
+                {
+                    if (at.Name == "id")
+                    {
+                        layer.id = at.Value;
+                    }//if
+                }//foreach
+
+                //get all the childNodes;
+                if (layerNode.HasChildNodes)
+                {
+                    XmlNodeList layerChildNodes = layerNode.ChildNodes;
+
+                    foreach (XmlNode node in layerChildNodes)
+                    {
+                        // list of materials with element: MaterialId
+                        //for safe, need to check exact match
+                        if(node.Name == "MaterialId")
+                        {
+                            XmlAttributeCollection materialAttr = node.Attributes;
+                            foreach (XmlAttribute att in materialAttr)
+                            {
+                                if(att.Name == "materialIdRef")
+                                {
+                                    String materialID = att.Value;
+                                    //make sure material map has the key
+                                    if (materialMap.ContainsKey(materialID))
+                                    {
+                                        layer.addMaterialToLayer(materialMap[materialID]);
+                                    }//if
+                                }//if
+                            }//foreach
+                        }//if
+                    }//foreach
+                }
+                else
+                {
+                    //add warning message - layer does not have materials.
+                }
+                layerMap.Add(layer.id, layer);
+            }
+
+            return layerMap;
+        }
+
+        private static Dictionary<String, DOEgbXMLMaterial> GetMaterialDict(XmlDocument xmldoc, XmlNamespaceManager xmlns)
+        {
+            XmlNodeList materialList = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Material", xmlns);
+            Dictionary<String, DOEgbXMLMaterial> materialMap = new Dictionary<String, DOEgbXMLMaterial>();
+            foreach(XmlNode materialNode in materialList)
+            {
+                DOEgbXMLMaterial material = new DOEgbXMLMaterial();
+                XmlAttributeCollection materialAtts = materialNode.Attributes;
+                //get attributes
+                foreach (XmlAttribute at in materialAtts)
+                {
+                    if (at.Name == "id")
+                    {
+                        material.id = at.Value;
+                    }//if
+                }//foreach
+                //fill in the child data
+                //get data in the child nodes
+                if (materialNode.HasChildNodes)
+                {
+                    XmlNodeList materialChildNodes = materialNode.ChildNodes;
+                    foreach(XmlNode childNode in materialChildNodes)
+                    {
+                        if(childNode.Name == "Name")
+                        {
+                            material.name = childNode.InnerText;
+                        }else if(childNode.Name == "Description")
+                        {
+                            material.description = childNode.InnerText;
+                        }else if(childNode.Name == "R-value")
+                        {
+                            material.rvalue = Convert.ToDouble(childNode.InnerText);
+                        }else if(childNode.Name == "Thickness")
+                        {
+                            material.thickness = Convert.ToDouble(childNode.InnerText);
+                        }else if(childNode.Name == "Conductivity")
+                        {
+                            material.conductivity = Convert.ToDouble(childNode.InnerText);
+                        }else if(childNode.Name == "Density")
+                        {
+                            material.density = Convert.ToDouble(childNode.InnerText);
+                        }else if(childNode.Name == "SpecificHeat")
+                        {
+                            material.specificheat = Convert.ToDouble(childNode.InnerText);
+                        }//if
+                    }//foreach
+                }//if
+                materialMap.Add(material.id, material);
+            }
+            return materialMap;
         }
 
         private static Vector.CartVect GetPLRHR(List<Vector.CartCoord> plCoords)

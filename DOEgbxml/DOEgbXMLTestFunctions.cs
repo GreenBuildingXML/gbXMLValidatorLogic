@@ -158,5 +158,11 @@ namespace DOEgbXML
                 return report;
             }
         }
+
+        public static DOEgbXMLReportingObj TestMaterialAssembly(List<DOEgbXMLConstruction> TestConstructions, List<DOEgbXMLConstruction> StandardConstructions, DOEgbXMLReportingObj report, string Units)
+        {
+
+            return null;
+        }
     }
 }
