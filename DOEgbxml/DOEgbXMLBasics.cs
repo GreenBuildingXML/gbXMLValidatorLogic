@@ -123,7 +123,7 @@ namespace DOEgbXML
         }
 
 
-        static public double FindAzimuth(Vector.MemorySafe_CartVect normalVector)
+        public static double FindAzimuth(Vector.MemorySafe_CartVect normalVector)
         {
             double calculatedAzimuth = -999;
             //may need to also take into account other factors that, at this stage, seem to not be important
@@ -161,6 +161,13 @@ namespace DOEgbXML
 
                 //modification for when the vector is in different quadrants
                 calculatedAzimuth = Math.Round(Math.Asin(azVectorMagnitude) * 180 / Math.PI, 2);
+
+                if(calculatedAzimuth == 0)
+                {
+                    //in case it is clash with the horizontal surface : floor or ceiling or roof
+                    calculatedAzimuth = 360;
+                }
+
                 return calculatedAzimuth;
             }
             //second quadrant
@@ -203,6 +210,51 @@ namespace DOEgbXML
             //get the 
 
             return calculatedAzimuth;
+        }
+
+
+        public static string getFaceDirection(double calculatedAzimuth)
+        {
+
+            if(calculatedAzimuth > 0 && calculatedAzimuth <= 22.5)
+            {
+                return "N";
+            }
+            if(calculatedAzimuth > 22.5 && calculatedAzimuth <= 67.5)
+            {
+                return "NE";
+            }
+            if(calculatedAzimuth > 67.5 && calculatedAzimuth <= 110.5)
+            {
+                return "E";
+            }
+            if(calculatedAzimuth > 110.5 && calculatedAzimuth <= 157.5)
+            {
+                return "SE";
+            }
+            if(calculatedAzimuth > 157.5 && calculatedAzimuth <= 202.5)
+            {
+                return "S";
+            }
+            if(calculatedAzimuth > 202.5 && calculatedAzimuth <= 247.5)
+            {
+                return "SW";
+            }
+            if(calculatedAzimuth > 247.5 && calculatedAzimuth <= 292.5)
+            {
+                return "W";
+            }
+            if(calculatedAzimuth > 292.5 && calculatedAzimuth <= 337.5)
+            {
+                return "NW";
+            }
+            if(calculatedAzimuth > 337.5 && calculatedAzimuth <= 360)
+            {
+                return "N";
+            }
+
+            return "UP";
+
         }
 
         public static void FindMatchingEdges(List<gbXMLSpaces.SpaceBoundary> sblist)

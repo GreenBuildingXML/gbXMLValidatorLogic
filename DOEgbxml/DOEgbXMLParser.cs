@@ -631,7 +631,7 @@ namespace DOEgbXML
             //TODO RP-1810 Need to think about the tolerance for the material assembly.
             report.tolerance = DOEgbXMLBasics.Tolerances.dotproducttol;
             report.testType = TestType.Assembly_Test;
-            report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions, standardConstructions, report, units);
+            //report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions, standardConstructions, report, units);
             AddToOutPut("Assembly test results: ", report, true);
 
             #region opening detailed test
@@ -4202,7 +4202,6 @@ namespace DOEgbXML
             {
                 return surfaces;
             }
-
         }
 
         private static List<DOEgbXMLConstruction> GetConstructionDefs(XmlDocument xmldoc, XmlNamespaceManager xmlns)
@@ -4244,7 +4243,7 @@ namespace DOEgbXML
                             {
                                 //Currently we assume only one layer is allowed in the construction.
                                 String layerID = node.Value;
-                                if (layerMap.ContainsKey(layerID))
+                                if (layerMap!=null && layerMap.ContainsKey(layerID))
                                 {
                                     constructionDef.layer = layerMap[layerID];
                                 }
@@ -4268,115 +4267,134 @@ namespace DOEgbXML
                 //return empty?
                 return constructionList;
             }
-            
         }
 
         //get the layer map
         private static Dictionary<String, DOEgbXMLLayer> GetLayerMap(XmlDocument xmldoc, XmlNamespaceManager xmlns)
         {
-            XmlNodeList layers = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Layer", xmlns);
             Dictionary<String, DOEgbXMLMaterial> materialMap = GetMaterialDict(xmldoc, xmlns);
             Dictionary<String, DOEgbXMLLayer> layerMap = new Dictionary<String, DOEgbXMLLayer>();
-            foreach (XmlNode layerNode in layers)
+            try
             {
-                DOEgbXMLLayer layer = new DOEgbXMLLayer();
-                XmlAttributeCollection layerAtts = layerNode.Attributes;
-                //get attributes
-                foreach (XmlAttribute at in layerAtts)
+                XmlNodeList layers = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Layer", xmlns);
+                foreach (XmlNode layerNode in layers)
                 {
-                    if (at.Name == "id")
+                    DOEgbXMLLayer layer = new DOEgbXMLLayer();
+                    XmlAttributeCollection layerAtts = layerNode.Attributes;
+                    //get attributes
+                    foreach (XmlAttribute at in layerAtts)
                     {
-                        layer.id = at.Value;
-                    }//if
-                }//foreach
-
-                //get all the childNodes;
-                if (layerNode.HasChildNodes)
-                {
-                    XmlNodeList layerChildNodes = layerNode.ChildNodes;
-
-                    foreach (XmlNode node in layerChildNodes)
-                    {
-                        // list of materials with element: MaterialId
-                        //for safe, need to check exact match
-                        if(node.Name == "MaterialId")
+                        if (at.Name == "id")
                         {
-                            XmlAttributeCollection materialAttr = node.Attributes;
-                            foreach (XmlAttribute att in materialAttr)
-                            {
-                                if(att.Name == "materialIdRef")
-                                {
-                                    String materialID = att.Value;
-                                    //make sure material map has the key
-                                    if (materialMap.ContainsKey(materialID))
-                                    {
-                                        layer.addMaterialToLayer(materialMap[materialID]);
-                                    }//if
-                                }//if
-                            }//foreach
+                            layer.id = at.Value;
                         }//if
                     }//foreach
-                }
-                else
-                {
-                    //add warning message - layer does not have materials.
-                }
-                layerMap.Add(layer.id, layer);
-            }
 
-            return layerMap;
+                    //get all the childNodes;
+                    if (layerNode.HasChildNodes)
+                    {
+                        XmlNodeList layerChildNodes = layerNode.ChildNodes;
+
+                        foreach (XmlNode node in layerChildNodes)
+                        {
+                            // list of materials with element: MaterialId
+                            //for safe, need to check exact match
+                            if (node.Name == "MaterialId")
+                            {
+                                XmlAttributeCollection materialAttr = node.Attributes;
+                                foreach (XmlAttribute att in materialAttr)
+                                {
+                                    if (att.Name == "materialIdRef")
+                                    {
+                                        String materialID = att.Value;
+                                        //make sure material map has the key
+                                        if (materialMap!=null && materialMap.ContainsKey(materialID))
+                                        {
+                                            layer.addMaterialToLayer(materialMap[materialID]);
+                                        }//if
+                                    }//if
+                                }//foreach
+                            }//if
+                        }//foreach
+                    }
+                    else
+                    {
+                        // empty layer
+                        //add warning message - layer does not have materials.
+                    }
+                    layerMap.Add(layer.id, layer);
+                }//foreach
+                return layerMap;
+            }
+            catch (Exception e)
+            {
+                //return empty layermap
+                return layerMap;
+            }
         }
 
         private static Dictionary<String, DOEgbXMLMaterial> GetMaterialDict(XmlDocument xmldoc, XmlNamespaceManager xmlns)
         {
             XmlNodeList materialList = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Material", xmlns);
             Dictionary<String, DOEgbXMLMaterial> materialMap = new Dictionary<String, DOEgbXMLMaterial>();
-            foreach(XmlNode materialNode in materialList)
+            try
             {
-                DOEgbXMLMaterial material = new DOEgbXMLMaterial();
-                XmlAttributeCollection materialAtts = materialNode.Attributes;
-                //get attributes
-                foreach (XmlAttribute at in materialAtts)
+                foreach (XmlNode materialNode in materialList)
                 {
-                    if (at.Name == "id")
+                    DOEgbXMLMaterial material = new DOEgbXMLMaterial();
+                    XmlAttributeCollection materialAtts = materialNode.Attributes;
+                    //get attributes
+                    foreach (XmlAttribute at in materialAtts)
                     {
-                        material.id = at.Value;
-                    }//if
-                }//foreach
-                //fill in the child data
-                //get data in the child nodes
-                if (materialNode.HasChildNodes)
-                {
-                    XmlNodeList materialChildNodes = materialNode.ChildNodes;
-                    foreach(XmlNode childNode in materialChildNodes)
-                    {
-                        if(childNode.Name == "Name")
+                        if (at.Name == "id")
                         {
-                            material.name = childNode.InnerText;
-                        }else if(childNode.Name == "Description")
-                        {
-                            material.description = childNode.InnerText;
-                        }else if(childNode.Name == "R-value")
-                        {
-                            material.rvalue = Convert.ToDouble(childNode.InnerText);
-                        }else if(childNode.Name == "Thickness")
-                        {
-                            material.thickness = Convert.ToDouble(childNode.InnerText);
-                        }else if(childNode.Name == "Conductivity")
-                        {
-                            material.conductivity = Convert.ToDouble(childNode.InnerText);
-                        }else if(childNode.Name == "Density")
-                        {
-                            material.density = Convert.ToDouble(childNode.InnerText);
-                        }else if(childNode.Name == "SpecificHeat")
-                        {
-                            material.specificheat = Convert.ToDouble(childNode.InnerText);
+                            material.id = at.Value;
                         }//if
                     }//foreach
-                }//if
-                materialMap.Add(material.id, material);
+                    //fill in the child data
+                    //get data in the child nodes
+                    if (materialNode.HasChildNodes)
+                    {
+                        XmlNodeList materialChildNodes = materialNode.ChildNodes;
+                        foreach (XmlNode childNode in materialChildNodes)
+                        {
+                            if (childNode.Name == "Name")
+                            {
+                                material.name = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "Description")
+                            {
+                                material.description = childNode.InnerText;
+                            }
+                            else if (childNode.Name == "R-value")
+                            {
+                                material.rvalue = Convert.ToDouble(childNode.InnerText);
+                            }
+                            else if (childNode.Name == "Thickness")
+                            {
+                                material.thickness = Convert.ToDouble(childNode.InnerText);
+                            }
+                            else if (childNode.Name == "Conductivity")
+                            {
+                                material.conductivity = Convert.ToDouble(childNode.InnerText);
+                            }
+                            else if (childNode.Name == "Density")
+                            {
+                                material.density = Convert.ToDouble(childNode.InnerText);
+                            }
+                            else if (childNode.Name == "SpecificHeat")
+                            {
+                                material.specificheat = Convert.ToDouble(childNode.InnerText);
+                            }//if
+                        }//foreach
+                    }//if
+                    materialMap.Add(material.id, material);
+                }
+                return materialMap;
+            }catch (Exception e)
+            {
+                    return materialMap;
             }
-            return materialMap;
         }
 
         private static Vector.CartVect GetPLRHR(List<Vector.CartCoord> plCoords)

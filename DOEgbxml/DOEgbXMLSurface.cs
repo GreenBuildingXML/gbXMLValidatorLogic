@@ -24,6 +24,17 @@ namespace DOEgbXML
 
         #region utility functions for RP-1810
 
+        //find the orientation of the surface.
+        //The orientation is defined according to ...
+        public string surfaceOrientation()
+        {
+            Vector.MemorySafe_CartVect normVect = Vector.convertToMemorySafeVector(getNorm());
+            double calculatedAzimuth = DOEgbXMLBasics.FindAzimuth(normVect);
+            string orientation = DOEgbXMLBasics.getFaceDirection(calculatedAzimuth);
+            return orientation;
+
+        }
+
         public double computeArea()
         {
             //have to be more than 3 points
@@ -75,11 +86,8 @@ namespace DOEgbXML
 
         }
 
-
         private Vector.CartVect getNorm()
         {
-            
-
             Vector.CartVect p1 = new Vector.CartVect();
             p1.X = PlCoords[0].X;
             p1.Y = PlCoords[0].Y;
@@ -98,6 +106,8 @@ namespace DOEgbXML
 
             return cross(vector21,vector31);
         }
+
+
 
         /*
          *Origin at first point in coords
