@@ -27,7 +27,7 @@ namespace DOEgbxml
                 }
             }
 
-            Console.WriteLine(parser.summaryTable);
+           // Console.WriteLine(parser.summaryTable);
             Console.WriteLine("End of testing...");
 
         }

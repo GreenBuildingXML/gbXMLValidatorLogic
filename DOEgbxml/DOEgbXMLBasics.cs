@@ -79,6 +79,10 @@ namespace DOEgbXML
             public const double OpeningSurfaceInsPtYTolerance = 0.5; //feet
             public const double OpeningSurfaceInsPtZTolerance = 0.5; //feet
             public const double OpeningAreaPercentageTolerance = 0.025;
+
+            //RP1810 new tolerances
+            public const double RVALUE = 0.05; //ft2-F-hr/Btu
+            public const double SPECIFICHEAT = 25;//BTUPerLbF
         }
 
         static public double FindTilt(Vector.MemorySafe_CartVect normalVector)

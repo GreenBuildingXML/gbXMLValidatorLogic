@@ -629,9 +629,10 @@ namespace DOEgbXML
             //test 29 material and assembly test
             report.Clear();
             //TODO RP-1810 Need to think about the tolerance for the material assembly.
-            report.tolerance = DOEgbXMLBasics.Tolerances.dotproducttol;
+            report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
             report.testType = TestType.Assembly_Test;
-            //report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions, standardConstructions, report, units);
+            report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions,
+                standardConstructions, testSurfaces, standardSurfaces ,report, units);
             AddToOutPut("Assembly test results: ", report, true);
 
             #region opening detailed test
@@ -4242,11 +4243,19 @@ namespace DOEgbXML
                             else if (node.Name == "LayerId")
                             {
                                 //Currently we assume only one layer is allowed in the construction.
-                                String layerID = node.Value;
-                                if (layerMap!=null && layerMap.ContainsKey(layerID))
+
+                                XmlAttributeCollection layerAttr = node.Attributes;
+                                foreach(XmlAttribute at in layerAttr)
                                 {
-                                    constructionDef.layer = layerMap[layerID];
-                                }
+                                    if(at.Name == "layerIdRef")
+                                    {
+                                        String layerID = at.Value;
+                                        if (layerMap != null && layerMap.ContainsKey(layerID))
+                                        {
+                                            constructionDef.layer = layerMap[layerID];
+                                        }
+                                    }
+                                } 
                             }
                             else if (node.Name == "U-value")
                             {

@@ -27,6 +27,9 @@ namespace DOEgbXML
                 if (StandardSurfaces[i].SurfaceType == Type)
                 {
                     standardArea += StandardSurfaces[i].computeArea();
+
+                    //test code: temp
+                    StandardSurfaces[i].surfaceOrientation();
                 }
             }
 
@@ -35,6 +38,9 @@ namespace DOEgbXML
                 if (TestSurfaces[i].SurfaceType == Type)
                 {
                     testArea += TestSurfaces[i].computeArea();
+
+                    //test code: temp
+                    TestSurfaces[i].surfaceOrientation();
                 }
             }
 
@@ -84,6 +90,7 @@ namespace DOEgbXML
                 {
                     //check the coordinates to determine whether this shade is at level 10'
                     SurfaceDefinitions surfDef = StandardSurfaces[i];
+
                     List<Vector.MemorySafe_CartCoord> plCoords = surfDef.PlCoords;
 
                     Double lowestZ = Double.MaxValue;
@@ -159,10 +166,101 @@ namespace DOEgbXML
             }
         }
 
-        public static DOEgbXMLReportingObj TestMaterialAssembly(List<DOEgbXMLConstruction> TestConstructions, List<DOEgbXMLConstruction> StandardConstructions, DOEgbXMLReportingObj report, string Units)
+        /**
+         * The function used to test the construction assemblies
+         * 
+         * Pre condition: Each surface category (wallnorth, wallsouth, walleast, wallwest, roof, floor) shall have the same construction id.
+         * 
+         * @TestConstruction - List of DOEgbXMLConstruction that contains the construction data extracted from a user submitted test model
+         * @StandardConstruction - List of DOEgbXMLConstruction that contains the construction data extracted from the standard model
+         * @TestSurfaces - A list of SurfaceDefinitions that contains the surfaces extracted from a user uploaded test model
+         * @StandardSurfaces - A list of SurfaceDefinitions that contains the surfaces extracted from the standard model.
+         * @Report - the DOEgbXMLReportingObj write in report message.
+         * @Units - units string
+         * @WallOnly - boolean flag, true - test only the wall construcitons, false - test all constructions
+         * 
+         */
+        public static DOEgbXMLReportingObj TestMaterialAssembly(List<DOEgbXMLConstruction> TestConstructions, List<DOEgbXMLConstruction> StandardConstructions,
+            List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces,
+            DOEgbXMLReportingObj report, string units)
         {
+            //RP-1810 Weili: first assemble a surface to construction map
+            //In this case, we use dictionary to map surfaces including:
+            //ExteriorWall (by orientation), Roof and Floor - future test can expand this list.
+            Dictionary<String, DOEgbXMLConstruction> StandardSurfaceToConstructionMap = new Dictionary<String, DOEgbXMLConstruction>();
+            Dictionary<String, DOEgbXMLConstruction> TestSurfaceToConstructionMap = new Dictionary<String, DOEgbXMLConstruction>();
 
-            return null;
+            //make standard surface map
+            foreach(SurfaceDefinitions sd in StandardSurfaces){
+                String constructionID = sd.ConstructionId;
+                foreach(DOEgbXMLConstruction constrct in StandardConstructions)
+                {
+                    if (constructionID == constrct.id)
+                    {
+                        String type = sd.SurfaceType;
+                        if(type == "ExteriorWall")
+                        {
+                            type += sd.surfaceOrientation();
+                        }
+                        StandardSurfaceToConstructionMap.Add(type, constrct);
+                    }
+                }
+            }
+
+            //make test surface map
+            foreach (SurfaceDefinitions sd in TestSurfaces)
+            {
+                String constructionID = sd.ConstructionId;
+                foreach (DOEgbXMLConstruction constrct in TestConstructions)
+                {
+                    if (constructionID == constrct.id)
+                    {
+                        String type = sd.SurfaceType;
+                        if (type == "ExteriorWall")
+                        {
+                            type += sd.surfaceOrientation();
+                        }
+                        TestSurfaceToConstructionMap.Add(type, constrct);
+                    }
+                }
+            }
+
+
+            //now compare the two types of constructions.
+            //initialize the message list
+            List<String> messageList = new List<string>();
+            foreach (KeyValuePair<String, DOEgbXMLConstruction> entry in StandardSurfaceToConstructionMap)
+            {
+
+                if (TestSurfaceToConstructionMap.ContainsKey(entry.Key))
+                {
+                    //find match surface - now check construction
+                    DOEgbXMLConstruction standardConst = StandardSurfaceToConstructionMap[entry.Key];
+                    DOEgbXMLConstruction testConst = TestSurfaceToConstructionMap[entry.Key];
+
+                    //compare and give a report
+
+                    Boolean compareResult = standardConst.compare(testConst, messageList);
+
+                    report.testResult.Add(testConst.name);
+                    report.standResult.Add(standardConst.name);
+                    report.idList.Add(entry.Key);
+
+                    if (compareResult == false)
+                    {
+                        report.longMsg = "The Test File's" + report.testType + " does not match the Standard File exactly. It failed the test.";
+                        report.MessageList = messageList;
+                        report.passOrFail = false;
+                        return report;
+                    }
+                }
+            }
+            
+            report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly. It pass the test.";
+            report.MessageList = messageList;
+            report.passOrFail = true;
+            
+            return report;
         }
     }
 }
