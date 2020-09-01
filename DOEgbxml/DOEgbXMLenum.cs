@@ -56,6 +56,7 @@ namespace DOEgbXML
         Roof_Area,
         SlabOnGrade_Area,
         Shade_Area,
+        Air_Area,
         Assembly_Test,
         Space_Name_Test
     }

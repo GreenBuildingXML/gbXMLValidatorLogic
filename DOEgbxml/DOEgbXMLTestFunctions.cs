@@ -9,6 +9,10 @@ namespace DOEgbXML
 
     {
 
+        /**
+         * Test whether the zone names in the test model match the standard model
+         * 
+         */
         public static DOEgbXMLReportingObj TestZoneNameMatch(List<gbXMLSpaces> testSpaces,List<gbXMLSpaces> standardSpaces,DOEgbXMLReportingObj report, String Units)
         {
             report.testSummary = "";
