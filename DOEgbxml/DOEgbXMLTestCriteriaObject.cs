@@ -53,6 +53,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
                 TestCriteriaDictionary.Add(TestType.Shade_Area, false);
                 TestCriteriaDictionary.Add(TestType.Assembly_Test, true);
+                TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
             }
             else if (testname == "Test2")
             {

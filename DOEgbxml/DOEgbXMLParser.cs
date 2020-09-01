@@ -253,6 +253,8 @@ namespace DOEgbXML
             List<SurfaceDefinitions> testSurfaces = GetFileSurfaceDefs(gbXMLTestFile, gbXMLns1);
             List<DOEgbXMLConstruction> standardConstructions = GetConstructionDefs(gbXMLStandardFile, gbXMLns2);
             List<DOEgbXMLConstruction> testConstructions = GetConstructionDefs(gbXMLTestFile, gbXMLns1);
+            List<gbXMLSpaces> testSpaces = gbXMLSpaces.getSimpleSpaces(gbXMLTestFile, gbXMLns1);
+            List<gbXMLSpaces> standardSpaces = gbXMLSpaces.getSimpleSpaces(gbXMLStandardFile, gbXMLns2);
 
             //Test 2 execute
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
@@ -634,6 +636,14 @@ namespace DOEgbXML
             report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions,
                 standardConstructions, testSurfaces, standardSurfaces ,report, units);
             AddToOutPut("Assembly test results: ", report, true);
+
+            //test 30 space name test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
+            report.testType = TestType.Space_Name_Test;
+            report = DOEgbXMLTestFunctions.TestZoneNameMatch(testSpaces, standardSpaces,report, units);
+            AddToOutPut("Space name results: ", report, true);
+
 
             #region opening detailed test
             //openings detailed tests

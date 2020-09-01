@@ -12,7 +12,7 @@ namespace DOEgbxml
         {
             XMLParser parser = new XMLParser();
 
-            XmlReader reader = XmlReader.Create("/Users/weilixu/Desktop/data/test/test1.gbxml");
+            XmlReader reader = XmlReader.Create("/Users/weilixu/Desktop/data/test/test1-2.gbxml");
 
             parser.StartTest(reader, "test1", "dummy tester");
 

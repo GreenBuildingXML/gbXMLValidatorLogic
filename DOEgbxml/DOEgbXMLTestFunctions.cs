@@ -6,7 +6,117 @@ using VectorMath;
 namespace DOEgbXML
 {
     public class DOEgbXMLTestFunctions
+
     {
+
+        public static DOEgbXMLReportingObj TestZoneNameMatch(List<gbXMLSpaces> testSpaces,List<gbXMLSpaces> standardSpaces,DOEgbXMLReportingObj report, String Units)
+        {
+            report.testSummary = "";
+            report.unit = Units;
+
+            int mismatchCounter = 0;
+
+            for(int i=0; i<standardSpaces.Count; i++)
+            {
+                gbXMLSpaces stdSpace = standardSpaces[i];
+                Boolean matchFlag = false;
+                //search for match
+                for (int j = 0; j < testSpaces.Count; j++)
+                {
+                    //We are not checking the plenum 
+                    if (stdSpace.spaceType != "Plenum")
+                    {
+                        if(stdSpace.name == testSpaces[j].name)
+                        {
+                            matchFlag = true;
+                        }
+                    }
+                }
+
+                if(!matchFlag)
+                {
+                    mismatchCounter++;
+                    string msg = "Cannot find a match space name in Test Model for the space: " + stdSpace.name + ".";
+                    report.MessageList.Add(msg);
+                    report.testResult.Add("NA");
+                    report.standResult.Add(stdSpace.name);
+                    report.idList.Add(i+"");
+                }
+                else
+                {
+                    string msg = "Find a match space name in Test Model for the space: " + stdSpace.name + ".";
+                    report.MessageList.Add(msg);
+                    report.testResult.Add(stdSpace.name);
+                    report.standResult.Add(stdSpace.name);
+                    report.idList.Add(i + "");
+                }
+            }
+
+            if (mismatchCounter == 0)
+            {
+                report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
+                report.passOrFail = true;
+                return report;
+            }
+            else
+            {
+                report.longMsg = "Spaces in The Test File's " + report.testType + " do not match those in the Standard File within the allowable tolerance, the difference between the two files is " + mismatchCounter + ". ";
+                report.passOrFail = false;
+                return report;
+            }
+        }
+
+        public static DOEgbXMLReportingObj TestSurfaceCountByType(List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces,
+            DOEgbXMLReportingObj report, string Units, String Type)
+        {
+            report.testSummary = "";
+            report.unit = Units;
+
+            int testSurfaceCount = 0;
+            int standardSurfaecCount = 0;
+
+            for(int i=0; i<StandardSurfaces.Count; i++)
+            {
+                if (StandardSurfaces[i].SurfaceType == Type)
+                {
+                    standardSurfaecCount += 1;
+                }
+            }
+
+            for (int i = 0; i < TestSurfaces.Count; i++)
+            {
+                if (TestSurfaces[i].SurfaceType == Type)
+                {
+                    testSurfaceCount += 1;
+                }
+            }
+
+            int difference = Math.Abs(standardSurfaecCount - testSurfaceCount);
+            report.testResult.Add(testSurfaceCount.ToString());
+            report.standResult.Add(standardSurfaecCount.ToString());
+            report.idList.Add("");
+
+            if (difference == 0)
+            {
+                report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
+                report.passOrFail = true;
+                return report;
+            }
+            else if (difference <= report.tolerance)
+            {
+                report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
+                report.passOrFail = true;
+                return report;
+            }
+            else
+            {
+                report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
+                        + ".  " + standardSurfaecCount + " surfaces in the Standard File and " + testSurfaceCount + " surfaces in the Test File.";
+                report.passOrFail = false;
+                return report;
+            }
+        }
+
        /*
         * This method compares the surface areas between test file and standard file by surface type
         * For example, it can be used to compare the exterior wall surface area.
@@ -27,9 +137,6 @@ namespace DOEgbXML
                 if (StandardSurfaces[i].SurfaceType == Type)
                 {
                     standardArea += StandardSurfaces[i].computeArea();
-
-                    //test code: temp
-                    StandardSurfaces[i].surfaceOrientation();
                 }
             }
 
@@ -38,9 +145,6 @@ namespace DOEgbXML
                 if (TestSurfaces[i].SurfaceType == Type)
                 {
                     testArea += TestSurfaces[i].computeArea();
-
-                    //test code: temp
-                    TestSurfaces[i].surfaceOrientation();
                 }
             }
 
@@ -64,7 +168,7 @@ namespace DOEgbXML
             else
             {
                 report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
-                        + ".  " + standardArea + " exterior wall surfaces in the Standard File and " + testArea + " exterior wall surfaces in the Test File.";
+                        + ".  " + standardArea + " (" + Type + ") surfaces in the Standard File and " + testArea + " (" + Type +") surfaces in the Test File.";
                 report.passOrFail = false;
                 return report;
             }

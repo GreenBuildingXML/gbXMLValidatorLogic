@@ -13,6 +13,8 @@ namespace DOEgbXML
     public class gbXMLSpaces
     {
         public string id;
+        public string name;
+        public string spaceType;
         public PlanarGeometry pg;
         public ShellGeometry sg;
         public List<SpaceBoundary> spacebounds;
@@ -101,7 +103,10 @@ namespace DOEgbXML
                         if (at.Name == "id")
                         {
                             space.id = at.Value;
-                            break;
+                        }
+                        if(at.Name == "spaceType")
+                        {
+                            space.spaceType = at.Value;
                         }
                     }
                     if (spaceNode.HasChildNodes)
@@ -272,6 +277,10 @@ namespace DOEgbXML
                                 }
                                 //finally, add the thing here
                                 space.spacebounds.Add(sb);
+                            }
+                            else if(node.Name == "Name")
+                            {
+                                space.name = node.InnerText;
                             }
                         }
                     }
