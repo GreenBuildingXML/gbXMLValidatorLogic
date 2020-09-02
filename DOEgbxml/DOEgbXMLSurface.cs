@@ -12,9 +12,11 @@ namespace DOEgbXML
         //creates instances of an object that store information about surfaces in a gbXML file
         public string SurfaceType;
         public string SurfaceId;
-        public String ConstructionId;
+        public string ConstructionId;
         public List<string> AdjSpaceId;
         public double Azimuth;
+        public string orientation;
+        public double area = 0.0; //initialize to 0.0
         public double Tilt;
         public double Height;
         public double Width;
@@ -28,15 +30,24 @@ namespace DOEgbXML
         //The orientation is defined according to ...
         public string surfaceOrientation()
         {
-            Vector.MemorySafe_CartVect normVect = Vector.convertToMemorySafeVector(getNorm());
-            double calculatedAzimuth = DOEgbXMLBasics.FindAzimuth(normVect);
-            string orientation = DOEgbXMLBasics.getFaceDirection(calculatedAzimuth);
+            if(orientation == null)
+            {
+                Vector.MemorySafe_CartVect normVect = Vector.convertToMemorySafeVector(getNorm());
+                double calculatedAzimuth = DOEgbXMLBasics.FindAzimuth(normVect);
+                orientation = DOEgbXMLBasics.getFaceDirection(calculatedAzimuth);
+            }
+
             return orientation;
 
         }
 
         public double computeArea()
         {
+            if (area > 0)
+            {
+                return area;
+            }
+
             //have to be more than 3 points
             if(PlCoords.Count < 3)
             {
@@ -80,9 +91,10 @@ namespace DOEgbXML
             Vector.CartVect normal = getNorm();
             normalize(normal);
 
-            double area = dot(sum, normal);
+            double surfaceArea = dot(sum, normal);
+            area = Math.Round(Math.Abs(surfaceArea / 2), 2);
 
-            return Math.Round(Math.Abs(area / 2),2);
+            return area;
 
         }
 

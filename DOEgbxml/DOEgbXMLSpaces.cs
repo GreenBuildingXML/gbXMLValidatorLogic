@@ -15,6 +15,8 @@ namespace DOEgbXML
         public string id;
         public string name;
         public string spaceType;
+        public Double area = 0.0;
+        public Double volume = 0.0;
         public PlanarGeometry pg;
         public ShellGeometry sg;
         public List<SpaceBoundary> spacebounds;
@@ -278,9 +280,17 @@ namespace DOEgbXML
                                 //finally, add the thing here
                                 space.spacebounds.Add(sb);
                             }
-                            else if(node.Name == "Name")
+                            else if (node.Name == "Name")
                             {
                                 space.name = node.InnerText;
+                            }
+                            else if (node.Name == "Area")
+                            {
+                                space.area = Convert.ToDouble(node.InnerText);
+                            }
+                            else if(node.Name == "Volume")
+                            {
+                                space.volume = Convert.ToDouble(node.InnerText);
                             }
                         }
                     }

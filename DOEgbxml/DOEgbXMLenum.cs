@@ -53,12 +53,14 @@ namespace DOEgbXML
         Surface_CC_Test,
         Check_Surface_Enclosure,
         Exterior_Wall_Area,
+        Exterior_Wall_Area_By_Orientation,
         Roof_Area,
         SlabOnGrade_Area,
         Shade_Area,
         Air_Area,
         Assembly_Test,
-        Space_Name_Test
+        Space_Name_Test,
+        Plenum_Volume_Test
     }
     public class DOEgbXMLenum
     {

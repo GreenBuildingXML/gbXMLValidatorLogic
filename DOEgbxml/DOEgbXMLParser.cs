@@ -602,7 +602,16 @@ namespace DOEgbXML
                 standardSurfaces, report, units,"ExteriorWall");
             AddToOutPut("Exterior Wall Area Test Results: ", report, true);
 
-            //test 26 Compare roof area
+            //test 26 Compare Exterior Wall Area By Orientation
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Exterior_Wall_Area_By_Orientation;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            report = DOEgbXMLTestFunctions.TestWallAreaByOrientation(testSurfaces,
+                standardSurfaces, report, units);
+            AddToOutPut("Exterior Wall Area Test By Orientation Results: ", report, true);
+
+            //test 27 Compare roof area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Roof_Area;
@@ -611,7 +620,7 @@ namespace DOEgbXML
                 standardSurfaces, report, units, "Roof");
             AddToOutPut("Roof Area Test Results: ", report, true);
 
-            //test 27 Compare SlabOnGrade area
+            //test 28 Compare SlabOnGrade area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.SlabOnGrade_Area;
@@ -620,7 +629,7 @@ namespace DOEgbXML
                 standardSurfaces, report, units, "SlabOnGrade");
             AddToOutPut("Slab on Grade Area Test Results: ", report, true);
 
-            //test 28 Compare shading area
+            //test 29 Compare shading area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Shade_Area;
@@ -628,7 +637,7 @@ namespace DOEgbXML
             report = DOEgbXMLTestFunctions.TestShadeSurfaceArea(testSurfaces, standardSurfaces, report, units);
             AddToOutPut("Shade Area Test Results: ", report, true);
 
-            //test 29 Compare air surface area
+            //test 30 Compare air surface area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Air_Area;
@@ -636,7 +645,7 @@ namespace DOEgbXML
             report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "Air");
             AddToOutPut("Air Surface Test Results: ", report, true);
 
-            //test 30 material and assembly test
+            //test 31 material and assembly test
             report.Clear();
             //TODO RP-1810 Need to think about the tolerance for the material assembly.
             report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
@@ -645,12 +654,20 @@ namespace DOEgbXML
                 standardConstructions, testSurfaces, standardSurfaces ,report, units);
             AddToOutPut("Assembly test results: ", report, true);
 
-            //test 31 space name test
+            //test 32 space name test
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
             report.testType = TestType.Space_Name_Test;
             report = DOEgbXMLTestFunctions.TestZoneNameMatch(testSpaces, standardSpaces,report, units);
             AddToOutPut("Space name results: ", report, true);
+
+            //test 33 plenum volume test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.VolumeTolerance;
+            report.testType = TestType.Plenum_Volume_Test;
+            units = DOEgbXMLBasics.MeasurementUnits.cubicft.ToString();
+            report = DOEgbXMLTestFunctions.TestPlenumSpaceVolume(testSpaces, standardSpaces, report, units);
+            AddToOutPut("Plenum volume results: ", report, true);
 
             #region opening detailed test
             //openings detailed tests

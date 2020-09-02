@@ -9,6 +9,56 @@ namespace DOEgbXML
 
     {
 
+        public static DOEgbXMLReportingObj TestPlenumSpaceVolume(List<gbXMLSpaces> testSpaces, List<gbXMLSpaces> standardSpaces, DOEgbXMLReportingObj report, String Units)
+        {
+            report.testSummary = "";
+            report.unit = Units;
+
+            double testVolume = 0.0;
+            double standardVolume = 0.0;
+
+            for(int i=0; i<testSpaces.Count; i++)
+            {
+                if(testSpaces[i].spaceType == "Plenum")
+                {
+                    testVolume += testSpaces[i].volume;
+                }
+            }
+
+            for(int i=0; i<standardSpaces.Count; i++)
+            {
+                if(standardSpaces[i].spaceType == "Plenum")
+                {
+                    standardVolume += standardSpaces[i].volume;
+                }
+            }
+
+            double difference = Math.Abs(standardVolume - testVolume);
+            report.testResult.Add(testVolume.ToString());
+            report.standResult.Add(standardVolume.ToString());
+            report.idList.Add("");
+
+            if (difference == 0)
+            {
+                report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
+                report.passOrFail = true;
+                return report;
+            }
+            else if (difference <= report.tolerance)
+            {
+                report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
+                report.passOrFail = true;
+                return report;
+            }
+            else
+            {
+                report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
+                        + ".  " + standardVolume + " in the Standard File and " + testVolume + " in the Test File.";
+                report.passOrFail = false;
+                return report;
+            }
+        }
+
         /**
          * Test whether the zone names in the test model match the standard model
          * 
@@ -121,7 +171,90 @@ namespace DOEgbXML
             }
         }
 
-       /*
+
+        /**
+         * 
+         * This test function is used to check test surface area by orientation will match those in the standard surface area.
+         * e.g. north face surface area
+         * 
+         **/
+        public static DOEgbXMLReportingObj TestWallAreaByOrientation(List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces,
+            DOEgbXMLReportingObj report, string Units)
+        {
+            report.testSummary = "";
+            report.unit = Units;
+
+            Dictionary<String, Double> standardSurfaceAreaMapOrientation = new Dictionary<String, Double>();
+            Dictionary<String, Double> testSurfaceAreaMapOrientation = new Dictionary<String, Double>();
+
+            foreach(SurfaceDefinitions surfDef in TestSurfaces)
+            {
+                string orientation = surfDef.surfaceOrientation();
+                if (!testSurfaceAreaMapOrientation.ContainsKey(orientation))
+                {
+                    testSurfaceAreaMapOrientation.Add(orientation, 0.0);
+                }
+                testSurfaceAreaMapOrientation[orientation] += surfDef.computeArea();
+            }
+
+            foreach(SurfaceDefinitions surfDef in StandardSurfaces)
+            {
+                string orientation = surfDef.surfaceOrientation();
+                if (!standardSurfaceAreaMapOrientation.ContainsKey(orientation))
+                {
+                    standardSurfaceAreaMapOrientation.Add(orientation, 0.0);
+                }
+                standardSurfaceAreaMapOrientation[orientation] += surfDef.computeArea();
+            }
+
+            //now loop through and standard dictionary and try to find the match keys from the test dictionary
+            report.passOrFail = true; //assume it is passed first.
+            foreach(KeyValuePair<String, Double> kvp in standardSurfaceAreaMapOrientation)
+            {
+                string key = kvp.Key;
+                double value = kvp.Value;
+
+                double testValue = 0.0;
+                if (testSurfaceAreaMapOrientation.ContainsKey(key))
+                {
+                    testValue = testSurfaceAreaMapOrientation[key];
+                }
+
+                report.testResult.Add(testValue.ToString());
+                report.standResult.Add(value.ToString());
+                report.idList.Add(key);
+                double difference = Math.Abs(value - testValue);
+
+                if (difference == 0)
+                {
+                    report.MessageList.Add("The orientation: " + key + " in the Test File matches the Standard File exactly, the difference is zero.");
+                }
+                else if (difference <= report.tolerance)
+                {
+                    report.MessageList.Add("The orientation: " + key + " in the Test File matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units);
+                }
+                else
+                {
+                    report.MessageList.Add("The orientation: " + key + " in the Test File does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
+                            + ".  " + value + " in the Standard File and " + testValue + " in the Test File.");
+                    report.passOrFail = false;
+                }
+            }
+
+
+            if (report.passOrFail)
+            {
+                report.longMsg = "The test model wall surface areas by orientations match the standard model or within the tolerance.";
+            }
+            else
+            {
+                report.longMsg = "The test model wall surface area in one or multiple orientations do not match the ones in the standard model, check message list for detail information";
+            }
+
+            return report;
+        }
+
+        /*
         * This method compares the surface areas between test file and standard file by surface type
         * For example, it can be used to compare the exterior wall surface area.
         */
