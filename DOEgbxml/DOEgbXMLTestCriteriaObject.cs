@@ -22,7 +22,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
-                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test , true);
+                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test , false);//uncheck ID
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume , true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count , false);
@@ -56,7 +56,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
             }
-            else if (testname == "Test2")
+            else if (testname == "test2")
             {
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
@@ -73,7 +73,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Interior_Wall_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, true);          //shades must match
+                TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);//shades must match
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
@@ -88,8 +88,19 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Detailed_Opening_Checks, true);
                 //As of Feb 13 2013, this test is for a future release.  Placeholder only
                 TestCriteriaDictionary.Add(TestType.Shell_Geom_RHR, false);
+                //As of July 07 2020, this test is added as requirements for certification L2 test
+                //RP-1810
+                TestCriteriaDictionary.Add(TestType.Exterior_Wall_Area, true);
+                TestCriteriaDictionary.Add(TestType.Roof_Area, true);
+                TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
+                TestCriteriaDictionary.Add(TestType.Shade_Area, false);
+                TestCriteriaDictionary.Add(TestType.Assembly_Test, false);
+                TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
+                TestCriteriaDictionary.Add(TestType.Air_Area, false);
+                TestCriteriaDictionary.Add(TestType.Window_Area_Test, false);
+                
             }
-            else if (testname == "Test3")
+            else if (testname == "test3")
             {
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
@@ -121,6 +132,15 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Detailed_Opening_Checks, true);
                 //As of Feb 13 2013, this test is for a future release.  Placeholder only
                 TestCriteriaDictionary.Add(TestType.Shell_Geom_RHR, false);
+                //As of July 07 2020, this test is added as requirements for certification L2 test
+                //RP-1810
+                TestCriteriaDictionary.Add(TestType.Exterior_Wall_Area, true);
+                TestCriteriaDictionary.Add(TestType.Roof_Area, true);
+                TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
+                TestCriteriaDictionary.Add(TestType.Shade_Area, false);
+                TestCriteriaDictionary.Add(TestType.Assembly_Test, false);
+                TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
+                TestCriteriaDictionary.Add(TestType.Air_Area, false);
             }
             else if (testname == "Test4")
             {

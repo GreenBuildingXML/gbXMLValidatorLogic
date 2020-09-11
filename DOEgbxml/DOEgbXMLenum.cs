@@ -60,7 +60,8 @@ namespace DOEgbXML
         Air_Area,
         Assembly_Test,
         Space_Name_Test,
-        Plenum_Volume_Test
+        Plenum_Volume_Test,
+        Window_Area_Test
     }
     public class DOEgbXMLenum
     {

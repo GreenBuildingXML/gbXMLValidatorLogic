@@ -52,7 +52,25 @@ namespace DOEgbXML
         static Dictionary<string, string> filepaths = new Dictionary<string, string>()
         {
             //WX 0420-2020 made change for testing
-            { "test1", "../../tests/test1.gbxml" }
+            { "test1", "../../tests/test1.gbxml"},
+            { "test2", "../../tests/test2.gbxml"},
+            { "test3", "../../tests/test3.gbxml"},
+            { "test4", "../../tests/test4.gbxml"},
+            { "test5", "../../tests/test5.gbxml"},
+            { "test6", "../../tests/test6.gbxml"},
+            { "test7", "../../tests/test7.gbxml"},
+            { "test8", "../../tests/test8.gbxml"},
+            { "test9", "../../tests/test9.gbxml"},
+            { "test10", "../../tests/test10.gbxml"},
+            { "test11", "../../tests/test11.gbxml"},
+            { "test12", "../../tests/test12.gbxml"},
+            { "test13", "../../tests/test13.gbxml"},
+            { "test14", "../../tests/test14.gbxml"},
+            { "test15", "../../tests/test15.gbxml"},
+            { "test16", "../../tests/test16.gbxml"},
+            { "test17", "../../tests/test17.gbxml"},
+            { "test18", "../../tests/test18.gbxml"},
+            { "test19", "../../tests/test19.gbxml"}
         };
 
 
@@ -414,14 +432,6 @@ namespace DOEgbXML
             //Jan 31-2012:  We may not want to perform these if the surface counts fail, but for now, we will include these tests
             //Detailed Surface Checks
             //Store Surface Element Information
-            List<SurfaceDefinitions> TestSurfaces = new List<SurfaceDefinitions>();
-            XmlDocument TestFile = gbXMLdocs[0];
-            XmlNamespaceManager TestNSM = gbXMLnsm[0];
-            List<SurfaceDefinitions> StandardSurfaces = new List<SurfaceDefinitions>();
-            XmlDocument StandardFile = gbXMLdocs[1];
-            XmlNamespaceManager StandardNSM = gbXMLnsm[1];
-            TestSurfaces = GetFileSurfaceDefs(TestFile, TestNSM);
-            StandardSurfaces = GetFileSurfaceDefs(StandardFile, StandardNSM);
             string TestSurfaceTable = " <div class='container'><table class='table table-bordered'>";
             TestSurfaceTable += "<tr class='info'>" +
                                    "<td>" + "Test Section Name" + "</td>" +
@@ -441,7 +451,7 @@ namespace DOEgbXML
             //all polyloops must be such that the surface defined by the coordinates is planar
             report.Clear();
             report.testType = TestType.Surface_Planar_Test;
-            report = TestSurfacePlanarTest(TestSurfaces, report);
+            report = TestSurfacePlanarTest(testSurfaces, report);
 
             if (!report.passOrFail)
             {
@@ -459,7 +469,7 @@ namespace DOEgbXML
                 //  globalMatchObject.MatchedSurfaceIds = new Dictionary<string, List<string>>();
                 int i = 1;
 
-                foreach (SurfaceDefinitions surface in StandardSurfaces)
+                foreach (SurfaceDefinitions surface in standardSurfaces)
                 {
                     report.Clear();
                     //multiple tolerances used
@@ -467,11 +477,11 @@ namespace DOEgbXML
                     report.subTestIndex = i;
 
                     //multiple units used, so ignore units
-                    report = GetPossibleSurfaceMatches(surface, TestSurfaces, report);
+                    //TODO need to add global match object in the get possible surface match method in order to have this function work
+                    report = GetPossibleSurfaceMatches(surface, testSurfaces, report);
 
                     AddToOutPut("Test 17 for Surface number " + i + " Result: ", report, false);
-
-                    foreach (SurfaceDefinitions ts in TestSurfaces)
+                    foreach (SurfaceDefinitions ts in testSurfaces)
                     {
                         if (globalMatchObject.MatchedSurfaceIds.ContainsKey(surface.SurfaceId))
                         {
@@ -669,6 +679,14 @@ namespace DOEgbXML
             report = DOEgbXMLTestFunctions.TestPlenumSpaceVolume(testSpaces, standardSpaces, report, units);
             AddToOutPut("Plenum volume results: ", report, true);
 
+            //test 34 window area test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Window_Area_Test;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            report = DOEgbXMLTestFunctions.TestWindowAreaByType(testSurfaces, standardSurfaces, report, units, null);
+            AddToOutPut("Window area results: ", report, true);
+
             #region opening detailed test
             //openings detailed tests
             List<OpeningDefinitions> TestOpenings = new List<OpeningDefinitions>();
@@ -677,8 +695,8 @@ namespace DOEgbXML
             List<OpeningDefinitions> StandardOpenings = new List<OpeningDefinitions>();
             XmlDocument standardFile = gbXMLdocs[1];
             XmlNamespaceManager standardNSM = gbXMLnsm[1];
-            TestOpenings = GetFileOpeningDefs(TestFile, TestNSM);
-            StandardOpenings = GetFileOpeningDefs(StandardFile, StandardNSM);
+            TestOpenings = GetFileOpeningDefs(testFile, testNSM);
+            StandardOpenings = GetFileOpeningDefs(standardFile, standardNSM);
 
             string TestOpeningTable = "";
             report.Clear();
@@ -4224,6 +4242,11 @@ namespace DOEgbXML
                                         }
                                     }
                                 }
+                            }
+                            else if (node.Name == "Opening")
+                            {
+                                SubSurfaceDefinition ssd = new SubSurfaceDefinition(node);
+                                surfDef.addSubSurface(ssd);
                             }
                         }
                     }

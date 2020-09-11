@@ -1896,5 +1896,146 @@ namespace DOEgbXML
         {
             return "(" + coord.X + "," + coord.Y + "," + coord.Z + ")";
         }
+
+        #region utility functions for calculating surface area.
+
+        /**
+         * Calculate the surface area use planar coordinates of a surface.
+         * Requires at least 3 planar coordinates, or else will return -1
+         * 
+         */
+        public static double computeArea(List<Vector.MemorySafe_CartCoord> PlCoords)
+        {
+
+            //have to be more than 3 points
+            if (PlCoords.Count < 3)
+            {
+                return -1;
+            }
+
+            int numPoints = PlCoords.Count;
+            Vector.CartVect p1, p2;
+            Vector.CartVect sum = new Vector.CartVect(0, 0, 0);
+            for (int i = 0; i < numPoints; i++)
+            {
+                p1 = new Vector.CartVect();
+                p2 = new Vector.CartVect();
+                p1.X = PlCoords[i].X;
+                p1.Y = PlCoords[i].Y;
+                p1.Z = PlCoords[i].Z;
+
+                if (i < numPoints - 1)
+                {
+                    p2.X = PlCoords[i + 1].X;
+                    p2.Y = PlCoords[i + 1].Y;
+                    p2.Z = PlCoords[i + 1].Z;
+                }
+                else
+                {
+                    p2.X = PlCoords[0].X;
+                    p2.Y = PlCoords[0].Y;
+                    p2.Z = PlCoords[0].Z;
+                }
+
+
+                Vector.CartVect crossPoint = cross(p1, p2);
+
+                sum.X = sum.X + crossPoint.X;
+                sum.Y = sum.Y + crossPoint.Y;
+                sum.Z = sum.Z + crossPoint.Z;
+            }
+
+            //Console.WriteLine(sum.X + "; " + sum.Y + "; " + sum.Z);
+
+            Vector.CartVect normal = getNorm(PlCoords);
+            normalize(normal);
+
+            double surfaceArea = dot(sum, normal);
+
+            return Math.Round(Math.Abs(surfaceArea / 2), 2);
+
+        }
+
+        public static Vector.CartVect getNorm(List<Vector.MemorySafe_CartCoord> PlCoords)
+        {
+            Vector.CartVect p1 = new Vector.CartVect();
+            p1.X = PlCoords[0].X;
+            p1.Y = PlCoords[0].Y;
+            p1.Z = PlCoords[0].Z;
+            Vector.CartVect p2 = new Vector.CartVect();
+            p2.X = PlCoords[1].X;
+            p2.Y = PlCoords[1].Y;
+            p2.Z = PlCoords[1].Z;
+            Vector.CartVect p3 = new Vector.CartVect();
+            p3.X = PlCoords[2].X;
+            p3.Y = PlCoords[2].Y;
+            p3.Z = PlCoords[2].Z;
+
+            Vector.CartVect vector21 = makeVector(p1, p2);
+            Vector.CartVect vector31 = makeVector(p1, p3);
+
+            return cross(vector21, vector31);
+        }
+
+        /*
+         *Origin at first point in coords
+        */
+        public static Vector.CartVect makeVector(Vector.CartVect p1, Vector.CartVect p2)
+        {
+            Vector.CartVect p = new Vector.CartVect();
+            p.X = p2.X - p1.X;
+            p.Y = p2.Y - p1.Y;
+            p.Z = p2.Z - p1.Z;
+            return p;
+        }
+
+        public static double dot(Vector.CartVect vector1, Vector.CartVect vector2)
+        {
+            return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
+        }
+
+
+        /*
+         * find the middle point of two cardition points.
+         */
+        public static Vector.CartVect cross(Vector.CartVect vector1, Vector.CartVect vector2)
+        {
+            double crossX = vector1.Y * vector2.Z - vector1.Z * vector2.Y;
+            double crossY = vector1.Z * vector2.X - vector1.X * vector2.Z;
+            double crossZ = vector1.X * vector2.Y - vector1.Y * vector2.X;
+
+            Vector.CartVect p = new Vector.CartVect();
+            p.X = crossX;
+            p.Y = crossY;
+            p.Z = crossZ;
+
+            return p;
+        }
+
+
+        /*
+         * Normalize the vector to the origin
+         */
+        public static void normalize(Vector.CartVect vector)
+        {
+            double len = computeLength(vector, new Vector.CartVect(0, 0, 0));
+            vector.X = vector.X / len;
+            vector.Y = vector.Y / len;
+            vector.Z = vector.Z / len;
+        }
+
+        /*
+         * Calculate the length between two points
+         */
+        public static double computeLength(Vector.CartVect vector1, Vector.CartVect vector2)
+        {
+            double len = 0;
+            len += Math.Pow((vector1.X - vector2.X), 2);
+            len += Math.Pow((vector1.Y - vector2.Y), 2);
+            len += Math.Pow((vector1.Z - vector2.Z), 2);
+
+            return Math.Sqrt(len);
+        }
+        #endregion
     }
 }

@@ -55,6 +55,31 @@ namespace DOEgbXML
 
         }
 
+        /**
+         * 
+         * Method to get a list of surfaces in the space.
+         * 
+         */
+        public List<String> getSurfaceID(List<SurfaceDefinitions> surfaceList)
+        {
+            List<String> surfaceIDList = new List<String>();
+
+            foreach(SurfaceDefinitions sd in surfaceList)
+            {
+                List<String> surfaceToSpaceList = sd.AdjSpaceId;
+                foreach(String s in surfaceToSpaceList)
+                {
+                    //ignore the case comparison
+                    if(s.Equals(id, StringComparison.OrdinalIgnoreCase))
+                    {
+                        surfaceIDList.Add(sd.SurfaceId);
+                    }
+                }
+            }
+
+            return surfaceIDList;
+        }
+
         public static List<string> getSpaceIds(XmlDocument xmldoc, XmlNamespaceManager xmlns, string searchpath)
         {
             List<string> spaceid = new List<string>();

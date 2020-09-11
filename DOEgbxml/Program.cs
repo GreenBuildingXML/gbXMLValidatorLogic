@@ -14,7 +14,7 @@ namespace DOEgbxml
 
             XmlReader reader = XmlReader.Create("/Users/weilixu/Desktop/data/test/test1-2.gbxml");
 
-            parser.StartTest(reader, "test1", "dummy tester");
+            parser.StartTest(reader, "test2", "dummy tester");
 
             List<DOEgbXMLReportingObj> reportList = parser.ReportList;
             foreach(DOEgbXMLReportingObj report in reportList)

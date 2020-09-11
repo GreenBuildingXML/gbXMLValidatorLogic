@@ -8,6 +8,88 @@ namespace DOEgbXML
     public class DOEgbXMLTestFunctions
 
     {
+        /**
+         * 
+         * Test to match window areas between standard and test.
+         * If the type set to null, the method will compare all openings
+         * else if type is set to one of the opening type (e.g. operable window), the method will only compare the area of 
+         * operable windows between standard and test models.
+         * 
+         */
+        public static DOEgbXMLReportingObj TestWindowAreaByType(List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces,
+            DOEgbXMLReportingObj report, string Units, string Type)
+        {
+            report.testSummary = "";
+            report.unit = Units;
+
+            double testArea = 0.0;
+            double standardArea = 0.0;
+
+            for (int i = 0; i < StandardSurfaces.Count; i++)
+            {
+                SurfaceDefinitions sd = StandardSurfaces[i];
+                if(sd.subSurfaceList.Count > 0)
+                {
+                    foreach(SubSurfaceDefinition ssd in sd.subSurfaceList)
+                    {
+                        if (Type == null)
+                        {
+                            standardArea += ssd.computeArea();
+                        }
+                        else if(ssd.openingType == Type)
+                        {
+                            standardArea += ssd.computeArea();
+
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < TestSurfaces.Count; i++)
+            {
+                SurfaceDefinitions sd = TestSurfaces[i];
+                if (sd.subSurfaceList.Count > 0)
+                {
+                    foreach (SubSurfaceDefinition ssd in sd.subSurfaceList)
+                    {
+                        if (Type == null)
+                        {
+                            testArea += ssd.computeArea();
+                        }
+                        else if (ssd.openingType == Type)
+                        {
+                            testArea += ssd.computeArea();
+                        }
+                    }
+                }
+            }
+
+            double difference = Math.Abs(standardArea - testArea);
+            report.testResult.Add(testArea.ToString());
+            report.standResult.Add(standardArea.ToString());
+            report.idList.Add("");
+
+            if (difference == 0)
+            {
+                report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
+                report.passOrFail = true;
+                return report;
+            }
+            else if (difference <= report.tolerance)
+            {
+                report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
+                report.passOrFail = true;
+                return report;
+            }
+            else
+            {
+                report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
+                        + ".  " + standardArea + " (" + Type + ") surfaces in the Standard File and " + testArea + " (" + Type +") surfaces in the Test File.";
+                report.passOrFail = false;
+                return report;
+            }
+
+        }
 
         public static DOEgbXMLReportingObj TestPlenumSpaceVolume(List<gbXMLSpaces> testSpaces, List<gbXMLSpaces> standardSpaces, DOEgbXMLReportingObj report, String Units)
         {

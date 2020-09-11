@@ -23,16 +23,17 @@ namespace DOEgbXML
         public Vector.CartCoord InsertionPoint;
         public List<Vector.MemorySafe_CartCoord> PlCoords;
         public Vector.MemorySafe_CartVect PlRHRVector;
+        //initialize the list
+        public List<SubSurfaceDefinition> subSurfaceList = new List<SubSurfaceDefinition>();
 
         #region utility functions for RP-1810
-
         //find the orientation of the surface.
         //The orientation is defined according to ...
         public string surfaceOrientation()
         {
             if(orientation == null)
             {
-                Vector.MemorySafe_CartVect normVect = Vector.convertToMemorySafeVector(getNorm());
+                Vector.MemorySafe_CartVect normVect = Vector.convertToMemorySafeVector(DOEgbXMLBasics.getNorm(PlCoords));
                 double calculatedAzimuth = DOEgbXMLBasics.FindAzimuth(normVect);
                 orientation = DOEgbXMLBasics.getFaceDirection(calculatedAzimuth);
             }
@@ -48,137 +49,27 @@ namespace DOEgbXML
                 return area;
             }
 
-            //have to be more than 3 points
-            if(PlCoords.Count < 3)
+            area = DOEgbXMLBasics.computeArea(PlCoords);
+            if(area == -1)
             {
+                //send warning: PlCoords has less than 3 coordinates
                 return 0;
             }
-
-            int numPoints = PlCoords.Count;
-            Vector.CartVect p1, p2;
-            Vector.CartVect sum = new Vector.CartVect(0, 0, 0);
-            for(int i=0; i<numPoints; i++)
+            else
             {
-                p1 = new Vector.CartVect();
-                p2 = new Vector.CartVect();
-                p1.X = PlCoords[i].X;
-                p1.Y = PlCoords[i].Y;
-                p1.Z = PlCoords[i].Z;
+                return area;
 
-                if (i<numPoints - 1)
-                {
-                    p2.X = PlCoords[i+1].X;
-                    p2.Y = PlCoords[i+1].Y;
-                    p2.Z = PlCoords[i+1].Z;
-                }
-                else
-                {
-                    p2.X = PlCoords[0].X;
-                    p2.Y = PlCoords[0].Y;
-                    p2.Z = PlCoords[0].Z;
-                }
-
-
-                Vector.CartVect crossPoint = cross(p1, p2);
-
-                sum.X = sum.X + crossPoint.X;
-                sum.Y = sum.Y + crossPoint.Y;
-                sum.Z = sum.Z + crossPoint.Z;
             }
-
-            //Console.WriteLine(sum.X + "; " + sum.Y + "; " + sum.Z);
-
-            Vector.CartVect normal = getNorm();
-            normalize(normal);
-
-            double surfaceArea = dot(sum, normal);
-            area = Math.Round(Math.Abs(surfaceArea / 2), 2);
-
-            return area;
-
         }
 
-        private Vector.CartVect getNorm()
+        public void addSubSurface(SubSurfaceDefinition subSurface)
         {
-            Vector.CartVect p1 = new Vector.CartVect();
-            p1.X = PlCoords[0].X;
-            p1.Y = PlCoords[0].Y;
-            p1.Z = PlCoords[0].Z;
-            Vector.CartVect p2 = new Vector.CartVect();
-            p2.X = PlCoords[1].X;
-            p2.Y = PlCoords[1].Y;
-            p2.Z = PlCoords[1].Z;
-            Vector.CartVect p3 = new Vector.CartVect();
-            p3.X = PlCoords[2].X;
-            p3.Y = PlCoords[2].Y;
-            p3.Z = PlCoords[2].Z;
+            subSurface.parentID = SurfaceId;
+            subSurface.parentTilt = Tilt;
+            subSurface.parentAzimuth = Azimuth;
+            subSurface.parentHeight = Height;
 
-            Vector.CartVect vector21 = makeVector(p1, p2);
-            Vector.CartVect vector31 = makeVector(p1, p3);
-
-            return cross(vector21,vector31);
-        }
-
-
-
-        /*
-         *Origin at first point in coords
-        */
-        private static Vector.CartVect makeVector(Vector.CartVect p1, Vector.CartVect p2)
-        {
-            Vector.CartVect p = new Vector.CartVect();
-            p.X = p2.X - p1.X;
-            p.Y = p2.Y - p1.Y;
-            p.Z = p2.Z - p1.Z;
-            return p;
-        }
-
-        private static double dot(Vector.CartVect vector1, Vector.CartVect vector2)
-        {
-            return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
-        }
-
-
-        /*
-         * find the middle point of two cardition points.
-         */
-        public static Vector.CartVect cross(Vector.CartVect vector1, Vector.CartVect vector2)
-        {
-            double crossX = vector1.Y * vector2.Z - vector1.Z * vector2.Y;
-            double crossY = vector1.Z * vector2.X - vector1.X * vector2.Z;
-            double crossZ = vector1.X * vector2.Y - vector1.Y * vector2.X;
-
-            Vector.CartVect p = new Vector.CartVect();
-            p.X = crossX;
-            p.Y = crossY;
-            p.Z = crossZ;
-
-            return p;
-        }
-
-
-        /*
-         * Normalize the vector to the origin
-         */
-        public static void normalize(Vector.CartVect vector)
-        {
-            double len = computeLength(vector, new Vector.CartVect(0,0,0));
-            vector.X = vector.X / len;
-            vector.Y = vector.Y / len;
-            vector.Z = vector.Z / len;
-        }
-
-        /*
-         * Calculate the length between two points
-         */
-        private static double computeLength(Vector.CartVect vector1, Vector.CartVect vector2)
-        {
-            double len = 0;
-            len += Math.Pow((vector1.X - vector2.X), 2);
-            len += Math.Pow((vector1.Y - vector2.Y), 2);
-            len += Math.Pow((vector1.Z - vector2.Z), 2);
-
-            return Math.Sqrt(len);
+            subSurfaceList.Add(subSurface);
         }
 
         #endregion
@@ -1659,7 +1550,167 @@ namespace DOEgbXML
         }
     }
 
-    
+
+    public class SubSurfaceDefinition
+    {
+        //creates instances of an object that store information about the subsurface in a gbXML file
+        public string id;
+        public string openingType;
+        public string name;
+        public double tilt;
+        public double width;
+        public double height;
+        public double area;
+        public double azimuth;
+        public string orientation;
+        public Vector.CartCoord InsertionPoint;
+        public Vector.MemorySafe_CartVect plRHRVect;
+        public List<Vector.MemorySafe_CartCoord> PlCoords;
+
+        //parent data
+        public string parentID;
+        public double parentTilt;
+        public double parentAzimuth;
+        public double parentHeight;
+
+        //constructor?
+        public SubSurfaceDefinition(XmlNode surfaceNode)
+        {
+            //get id and surfaceType
+            XmlAttributeCollection spaceAtts = surfaceNode.Attributes;
+            foreach (XmlAttribute at in spaceAtts)
+            {
+                if (at.Name == "id")
+                {
+                    id = at.Value;
+                }
+                else if (at.Name == "openingType")
+                {
+                    openingType = at.Value;
+                }
+            }
+            if (surfaceNode.HasChildNodes)
+            {
+                XmlNodeList surfChildNodes = surfaceNode.ChildNodes;
+                foreach (XmlNode node in surfChildNodes)
+                {
+                    if (node.Name == "RectangularGeometry")
+                    {
+                        if (node.HasChildNodes)
+                        {
+                            XmlNodeList rectGeomChildren = node.ChildNodes;
+                            foreach (XmlNode rgChildNode in rectGeomChildren)
+                            {
+                                if (rgChildNode.Name == "Azimuth") { azimuth = Convert.ToDouble(rgChildNode.InnerText); }
+                                else if (rgChildNode.Name == "CartesianPoint")
+                                {
+                                    if (rgChildNode.HasChildNodes)
+                                    {
+                                        XmlNodeList coordinates = rgChildNode.ChildNodes;
+                                        int pointCount = 1;
+                                        foreach (XmlNode coordinate in coordinates)
+                                        {
+                                            switch (pointCount)
+                                            {
+                                                case 1:
+                                                    InsertionPoint.X = Convert.ToDouble(coordinate.InnerText);
+                                                    break;
+                                                case 2:
+                                                    InsertionPoint.Y = Convert.ToDouble(coordinate.InnerText);
+                                                    break;
+                                                case 3:
+                                                    InsertionPoint.Z = Convert.ToDouble(coordinate.InnerText);
+                                                    break;
+                                            }
+                                            pointCount++;
+                                        }
+                                    }
+                                }
+                                else if (rgChildNode.Name == "Tilt") { tilt = Convert.ToDouble(rgChildNode.InnerText); }
+                                else if (rgChildNode.Name == "Height") { height = Convert.ToDouble(rgChildNode.InnerText); }
+                                else if (rgChildNode.Name == "Width") { width = Convert.ToDouble(rgChildNode.InnerText); }
+                            }
+                        }
+                    }
+                    else if (node.Name == "PlanarGeometry")
+                    {
+                        XmlNode polyLoop = node.FirstChild;
+                        if (polyLoop.HasChildNodes)
+                        {
+                            XmlNodeList cartesianPoints = polyLoop.ChildNodes;
+                            foreach (XmlNode coordinatePt in cartesianPoints)
+                            {
+                                Vector.CartCoord coord = new Vector.CartCoord();
+                                if (coordinatePt.HasChildNodes)
+                                {
+                                    XmlNodeList coordinates = coordinatePt.ChildNodes;
+                                    int pointCount = 1;
+                                    foreach (XmlNode coordinate in coordinatePt)
+                                    {
+
+                                        switch (pointCount)
+                                        {
+                                            case 1:
+                                                coord.X = Convert.ToDouble(coordinate.InnerText);
+                                                break;
+                                            case 2:
+                                                coord.Y = Convert.ToDouble(coordinate.InnerText);
+                                                break;
+                                            case 3:
+                                                coord.Z = Convert.ToDouble(coordinate.InnerText);
+                                                break;
+                                        }
+                                        pointCount++;
+                                    }
+                                    Vector.MemorySafe_CartCoord memsafecoord = Vector.convertToMemorySafeCoord(coord);
+                                    PlCoords.Add(memsafecoord);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            plRHRVect = Vector.GetMemRHR(PlCoords);
+        }
+
+        //find the orientation of the surface.
+        //The orientation is defined according to ...
+        public string surfaceOrientation()
+        {
+            if (orientation == null)
+            {
+                Vector.MemorySafe_CartVect normVect = Vector.convertToMemorySafeVector(DOEgbXMLBasics.getNorm(PlCoords));
+                double calculatedAzimuth = DOEgbXMLBasics.FindAzimuth(normVect);
+                orientation = DOEgbXMLBasics.getFaceDirection(calculatedAzimuth);
+            }
+
+            return orientation;
+
+        }
+
+        public double computeArea()
+        {
+            if (area > 0)
+            {
+                return area;
+            }
+
+            area = DOEgbXMLBasics.computeArea(PlCoords);
+            if (area == -1)
+            {
+                //send warning: PlCoords has less than 3 coordinates
+                return 0;
+            }
+            else
+            {
+                return area;
+
+            }
+        }
+
+
+    }
+
     class SurfaceResults
     {
         public int matchCount;
