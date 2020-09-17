@@ -2957,12 +2957,18 @@ namespace DOEgbXML
                         if (i % 2 != 0)
                         {
                             spaceId = spaceNode.ParentNode.Attributes[0].Value;
-                            testFileAreaDict.Add(spaceId, Convert.ToDouble(area));
+                            if (!testFileAreaDict.ContainsKey(spaceId))
+                            {
+                                testFileAreaDict.Add(spaceId, Convert.ToDouble(area));
+                            }
                         }
                         else
                         {
                             spaceId = spaceNode.ParentNode.Attributes[0].Value;
-                            standardFileAreaDict.Add(spaceId, Convert.ToDouble(area));
+                            if (!standardFileAreaDict.ContainsKey(spaceId))
+                            {
+                                standardFileAreaDict.Add(spaceId, Convert.ToDouble(area));
+                            }
                         }
                     }
                 }
