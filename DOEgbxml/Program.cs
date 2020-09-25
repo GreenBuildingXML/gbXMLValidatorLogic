@@ -29,7 +29,7 @@ namespace DOEgbxml
             //    }
             //}
 
-           // Console.WriteLine(parser.summaryTable);
+            Console.WriteLine(parser.output);
             Console.WriteLine("End of testing...");
 
         }

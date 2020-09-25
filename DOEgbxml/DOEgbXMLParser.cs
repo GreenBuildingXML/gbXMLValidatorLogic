@@ -262,6 +262,7 @@ namespace DOEgbXML
             report.MessageList = new List<string>();
             report.TestPassedDict = new Dictionary<string, bool>();
             report.OutputTypeDict = new Dictionary<string, OutPutEnum>();
+            report.MessageDict = new Dictionary<string, string>();
 
             //Set up the Global Pass/Fail criteria for the test case file
             TestCriteria = new DOEgbXMLTestCriteriaObject();
@@ -859,6 +860,17 @@ namespace DOEgbXML
             }
 
             log += report.longMsg + System.Environment.NewLine;
+
+            //message dict, print out each error message with the key.
+            if(report.MessageDict.Count > 0)
+            {
+                var keys = report.MessageDict.Keys;
+                foreach(string key in keys)
+                {
+                    output += "<p class='text-info' key=" + key + "><a>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+                }
+            }
+            
 
             //message list, print out each message in the list if there are any
             if (report.MessageList.Count > 0)
@@ -2487,7 +2499,8 @@ namespace DOEgbXML
                                 string equivLevel = "";
                                 if (testStoryHeight.ContainsKey(standardPair2.Key))
                                 {
-                                    report.MessageList.Add("Matched Standard File's " + standardPair2.Value + " with Test File's " + testStoryHeight[standardPair2.Key] + " @ " + standardPair2.Key + Units.ToString() + " Exactly");
+                                    string message = "Matched Standard File's " + standardPair2.Value + " with Test File's " + testStoryHeight[standardPair2.Key] + " @ " + standardPair2.Key + Units.ToString() + " Exactly";
+                                    report.MessageDict.Add(standardPair2.Value, message);
                                     report.TestPassedDict.Add(standardPair2.Value, true);
                                     report.OutputTypeDict.Add(standardPair2.Value, OutPutEnum.Matched);
                                     /*
@@ -2520,13 +2533,13 @@ namespace DOEgbXML
                                 }
                                 if (StoryHeightMin < report.tolerance)
                                 {
-                                    report.MessageList.Add("Matched Standard File's " + standardPair2.Value + " @ " + standardPair2.Key + Units.ToString() + " within the Tolerance allowed");
+                                    report.MessageDict.Add(standLevel, "Matched Standard File's " + standardPair2.Value + " @ " + standardPair2.Key + Units.ToString() + " within the Tolerance allowed");
                                     report.TestPassedDict.Add(standLevel, true);
                                     report.OutputTypeDict.Add(standLevel, OutPutEnum.Warning);
                                 }
                                 else
                                 {
-                                    report.MessageList.Add("Standard File's " + standardPair2.Value + " equivalent was not found in the test file.  The closest level in the test file was found at " + equivLevel + " in the test file.  The difference in heights was " + StoryHeightMin.ToString() + Units.ToString());
+                                    report.MessageDict.Add(standLevel, "Standard File's " + standardPair2.Value + " equivalent was not found in the test file.  The closest level in the test file was found at " + equivLevel + " in the test file.  The difference in heights was " + StoryHeightMin.ToString() + Units.ToString());
                                     report.TestPassedDict.Add(standLevel, false);
                                     report.OutputTypeDict.Add(standLevel, OutPutEnum.Failed);
                                 }
@@ -3034,19 +3047,19 @@ namespace DOEgbXML
                         double difference = Math.Abs(testFileSpaceArea - standardFileSpaceArea);
                         if (difference == 0)
                         {
-                            report.MessageList.Add("For Space Id: " + key + ".  Success finding matching space area.  The Standard File and the Test File both have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
+                            report.MessageDict.Add(key, "For Space Id: " + key + ".  Success finding matching space area.  The Standard File and the Test File both have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
                             report.TestPassedDict.Add(key, true);
                             report.OutputTypeDict.Add(key, OutPutEnum.Matched);
                         }
                         else if (difference < report.tolerance)
                         {
-                            report.MessageList.Add("For Space Id: " + key + ".  Success finding matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
+                            report.MessageDict.Add(key, "For Space Id: " + key + ".  Success finding matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
                             report.TestPassedDict.Add(key, true);
                             report.OutputTypeDict.Add(key, OutPutEnum.Warning);
                         }
                         else
                         {
-                            report.MessageList.Add("For space Id: " + key + ".  Failure to find an space area match.  THe area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
+                            report.MessageDict.Add(key, "For space Id: " + key + ".  Failure to find an space area match.  THe area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
                             report.TestPassedDict.Add(key, false);
                             report.OutputTypeDict.Add(key, OutPutEnum.Failed);
                         }
@@ -3059,7 +3072,7 @@ namespace DOEgbXML
                         //failure to match spaceIds
                         report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + key + " could not be found in the test file.");
                         report.passOrFail = false;
-                        report.OutputTypeDict.Add(key, OutPutEnum.Failed);
+                        report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                 }

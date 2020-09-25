@@ -24,6 +24,7 @@ namespace DOEgbXML
         public string unit;
         public Dictionary<string, bool> TestPassedDict;
         public Dictionary<string, OutPutEnum> OutputTypeDict;
+        public Dictionary<string, string> MessageDict;
         public bool passOrFail;
         public List<string> MessageList;
         public string longMsg;
@@ -56,6 +57,7 @@ namespace DOEgbXML
             if (MessageList != null) { MessageList.Clear(); }
             if (TestPassedDict != null) { TestPassedDict.Clear(); }
             if (OutputTypeDict != null) { OutputTypeDict.Clear(); }
+            if (MessageDict != null) { MessageDict.Clear(); }
             longMsg = "";
 
         }
@@ -69,6 +71,7 @@ namespace DOEgbXML
             report.idList = new List<string>(this.idList);
             report.TestPassedDict = new Dictionary<string, bool>(this.TestPassedDict);
             report.OutputTypeDict = new Dictionary<string, OutPutEnum>(this.OutputTypeDict);
+            report.MessageDict = new Dictionary<string, string>(this.MessageDict);
             report.MessageList = new List<string>(this.MessageList);
           //  if (this.MatchedSurfaceIds != null)
           //      report.MatchedSurfaceIds = new Dictionary<string, List<string>>(this.MatchedSurfaceIds);
@@ -109,6 +112,7 @@ namespace DOEgbXML
         public string unit;
         public Dictionary<string, bool> TestPassedDict;
         public Dictionary<string, OutPutEnum> OutputTypeDict;
+        public Dictionary<string, string> MessageDict;
         public bool passOrFail;
         public Dictionary<string,List<string>> MessageList;
         public string longMsg;
@@ -140,6 +144,7 @@ namespace DOEgbXML
             if (MessageList != null) { MessageList.Clear(); }
             if (TestPassedDict != null) { TestPassedDict.Clear(); }
             if (OutputTypeDict != null) { OutputTypeDict.Clear(); }
+            if (MessageDict != null) { MessageDict.Clear(); }
             longMsg = "";
 
         }
@@ -153,6 +158,7 @@ namespace DOEgbXML
             report.idList = new List<string>(this.idList);
             report.TestPassedDict = new Dictionary<string, bool>(this.TestPassedDict);
             report.OutputTypeDict = new Dictionary<string, OutPutEnum>(this.OutputTypeDict);
+            report.MessageDict = new Dictionary<string, string>(this.MessageDict);
             report.MessageList = new Dictionary<string,List<string>>(this.MessageList);
             //  if (this.MatchedSurfaceIds != null)
             //      report.MatchedSurfaceIds = new Dictionary<string, List<string>>(this.MatchedSurfaceIds);
