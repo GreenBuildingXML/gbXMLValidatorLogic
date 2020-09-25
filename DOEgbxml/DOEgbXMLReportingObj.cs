@@ -23,10 +23,12 @@ namespace DOEgbXML
         public int subTestIndex = -1;
         public string unit;
         public Dictionary<string, bool> TestPassedDict;
+        public Dictionary<string, OutPutEnum> OutputTypeDict;
         public bool passOrFail;
         public List<string> MessageList;
         public string longMsg;
         public Exception e;
+        public OutPutEnum outputType;
      //   public Dictionary<string, List<string>> MatchedSurfaceIds;
      //   public Dictionary<string, List<string>> MatchedOpening;
 
@@ -48,10 +50,12 @@ namespace DOEgbXML
             vectorangletol = DOEgbXMLBasics.Tolerances.ToleranceDefault;
             coordtol = DOEgbXMLBasics.Tolerances.ToleranceDefault;
             testType = TestType.None;
+            outputType = OutPutEnum.None;
             subTestIndex = -1;
             passOrFail = false;
             if (MessageList != null) { MessageList.Clear(); }
             if (TestPassedDict != null) { TestPassedDict.Clear(); }
+            if (OutputTypeDict != null) { OutputTypeDict.Clear(); }
             longMsg = "";
 
         }
@@ -64,6 +68,7 @@ namespace DOEgbXML
             report.testResult = new List<string>(this.testResult);
             report.idList = new List<string>(this.idList);
             report.TestPassedDict = new Dictionary<string, bool>(this.TestPassedDict);
+            report.OutputTypeDict = new Dictionary<string, OutPutEnum>(this.OutputTypeDict);
             report.MessageList = new List<string>(this.MessageList);
           //  if (this.MatchedSurfaceIds != null)
           //      report.MatchedSurfaceIds = new Dictionary<string, List<string>>(this.MatchedSurfaceIds);
@@ -71,6 +76,7 @@ namespace DOEgbXML
            
             report.tolerance = this.tolerance;
             report.testType = this.testType;
+            report.outputType = this.outputType;
             report.subTestIndex = this.subTestIndex;
             report.unit = this.unit;
             report.passOrFail = this.passOrFail;
@@ -98,9 +104,11 @@ namespace DOEgbXML
         public double vectorangletol;
         public double coordtol;
         public TestType testType;
+        public OutPutEnum outputType;
         public int subTestIndex = -1;
         public string unit;
         public Dictionary<string, bool> TestPassedDict;
+        public Dictionary<string, OutPutEnum> OutputTypeDict;
         public bool passOrFail;
         public Dictionary<string,List<string>> MessageList;
         public string longMsg;
@@ -126,10 +134,12 @@ namespace DOEgbXML
             vectorangletol = DOEgbXMLBasics.Tolerances.ToleranceDefault;
             coordtol = DOEgbXMLBasics.Tolerances.ToleranceDefault;
             testType = TestType.None;
+            outputType = OutPutEnum.None;
             subTestIndex = -1;
             passOrFail = false;
             if (MessageList != null) { MessageList.Clear(); }
             if (TestPassedDict != null) { TestPassedDict.Clear(); }
+            if (OutputTypeDict != null) { OutputTypeDict.Clear(); }
             longMsg = "";
 
         }
@@ -142,6 +152,7 @@ namespace DOEgbXML
             report.testResult = new List<string>(this.testResult);
             report.idList = new List<string>(this.idList);
             report.TestPassedDict = new Dictionary<string, bool>(this.TestPassedDict);
+            report.OutputTypeDict = new Dictionary<string, OutPutEnum>(this.OutputTypeDict);
             report.MessageList = new Dictionary<string,List<string>>(this.MessageList);
             //  if (this.MatchedSurfaceIds != null)
             //      report.MatchedSurfaceIds = new Dictionary<string, List<string>>(this.MatchedSurfaceIds);
@@ -149,6 +160,7 @@ namespace DOEgbXML
 
             report.tolerance = this.tolerance;
             report.testType = this.testType;
+            report.outputType = this.outputType;
             report.subTestIndex = this.subTestIndex;
             report.unit = this.unit;
             report.passOrFail = this.passOrFail;

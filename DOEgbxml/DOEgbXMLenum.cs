@@ -63,6 +63,15 @@ namespace DOEgbXML
         Plenum_Volume_Test,
         Window_Area_Test
     }
+
+    public enum OutPutEnum
+    {
+        None,
+        Matched,
+        Warning,
+        Failed
+    }
+
     public class DOEgbXMLenum
     {
     }

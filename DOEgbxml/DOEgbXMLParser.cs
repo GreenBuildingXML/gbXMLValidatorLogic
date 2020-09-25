@@ -228,7 +228,7 @@ namespace DOEgbXML
             }
 
             //if isMetric is true, then we would like to convert the test file's numbers to US-IP units
-            //TODORP-1810: The method is essentially returning an empty file - NOT IMPLEMENTED
+            //TODO RP-1810: The method is essentially returning an empty file - NOT IMPLEMENTED
             if(isMetric) gbXMLTestFile = ConvertMetricToUS(gbXMLTestFile);
 
             List<XmlDocument> gbXMLdocs = new List<XmlDocument>();
@@ -261,6 +261,7 @@ namespace DOEgbXML
             report.idList = new List<string>();
             report.MessageList = new List<string>();
             report.TestPassedDict = new Dictionary<string, bool>();
+            report.OutputTypeDict = new Dictionary<string, OutPutEnum>();
 
             //Set up the Global Pass/Fail criteria for the test case file
             TestCriteria = new DOEgbXMLTestCriteriaObject();
@@ -828,8 +829,29 @@ namespace DOEgbXML
                     break;
                 }
             }
+            //severe level
+            var outputResults = report.OutputTypeDict.Values;
+            bool warningTestBool = false;
+            foreach(OutPutEnum output in outputResults)
+            {
+                if (output.Equals(OutPutEnum.Warning))
+                {
+                    warningTestBool = true;
+                    break;
+                }
+            }
+
             if (report.passOrFail && individualTestBool)
-                output += "<h4 class='text-success'>" + report.longMsg + "</h4>";
+            {
+                if (warningTestBool)
+                {
+                    output += "<h4 class='text-warning'>" + report.longMsg + "</h4>";
+                }
+                else
+                {
+                    output += "<h4 class='text-success'>" + report.longMsg + "</h4>";
+                }
+            }
             else
             {
                 output += "<h4 class='text-error'>" + report.longMsg + "</h4>";
@@ -2198,6 +2220,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The test file's " + report.testType + "matches the standard file Building Area exactly.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
 
@@ -2205,12 +2228,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The test file's " + report.testType + " is within the allowable tolerance of = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
                         {
                             report.longMsg = "The test file's " + report.testType + "  is not within the allowable tolerance of " + report.tolerance.ToString() + " " + Units + "The difference between the standard and test file is " + difference.ToString() + ".";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -2265,18 +2290,21 @@ namespace DOEgbXML
                         {
                             report.longMsg = " The test file's " + report.testType + " matches the standard file exactly.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = " The test file's " + report.testType + " matches the standard file " + report.testType + ", the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
                         {
                             report.longMsg = "The test file's " + report.testType + " is not within the allowable tolerance of " + report.tolerance.ToString() + " " + Units + " The difference between the standard and test file is " + difference.ToString() + " " + Units;
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -2336,18 +2364,21 @@ namespace DOEgbXML
                         {
                             report.longMsg = " The test file's " + report.testType + " matches the standard file exactly.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = " The test file's " + report.testType + " matches the standard file " + report.testType + ", the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
                         {
                             report.longMsg = "The test file's " + report.testType + " is not within the allowable tolerance of " + report.tolerance.ToString() + " " + Units + " The difference between the standard and test file is " + difference.ToString() + " " + Units;
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -2433,12 +2464,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "Test cannot be completed.  Standard File Level Count returns Zero.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                         else if (testStoryHeight.Count == 0)
                         {
                             report.longMsg = "Test cannot be completed.  Test File Level Count returns Zero.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                         else
@@ -2456,6 +2489,7 @@ namespace DOEgbXML
                                 {
                                     report.MessageList.Add("Matched Standard File's " + standardPair2.Value + " with Test File's " + testStoryHeight[standardPair2.Key] + " @ " + standardPair2.Key + Units.ToString() + " Exactly");
                                     report.TestPassedDict.Add(standardPair2.Value, true);
+                                    report.OutputTypeDict.Add(standardPair2.Value, OutPutEnum.Matched);
                                     /*
                                      * ADD test results when find exact match - WX 07072020 RP-1810
                                      */
@@ -2488,11 +2522,13 @@ namespace DOEgbXML
                                 {
                                     report.MessageList.Add("Matched Standard File's " + standardPair2.Value + " @ " + standardPair2.Key + Units.ToString() + " within the Tolerance allowed");
                                     report.TestPassedDict.Add(standLevel, true);
+                                    report.OutputTypeDict.Add(standLevel, OutPutEnum.Warning);
                                 }
                                 else
                                 {
                                     report.MessageList.Add("Standard File's " + standardPair2.Value + " equivalent was not found in the test file.  The closest level in the test file was found at " + equivLevel + " in the test file.  The difference in heights was " + StoryHeightMin.ToString() + Units.ToString());
                                     report.TestPassedDict.Add(standLevel, false);
+                                    report.OutputTypeDict.Add(standLevel, OutPutEnum.Failed);
                                 }
 
                             }
@@ -2506,12 +2542,14 @@ namespace DOEgbXML
                     report.longMsg = e.ToString();
                     report.MessageList.Add(" Failed to locate Building " + report.testType + " in the XML file.");
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
 
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -2589,12 +2627,14 @@ namespace DOEgbXML
                             {
                                 report.MessageList.Add("While searching for matching building levels, there has been a Successful match.  Building Story Level " + pair.Key + " in the Standard file found a match in the Test File.");
                                 report.passOrFail = true;
+                                report.outputType = OutPutEnum.Matched;
                                 //perform cross product again of the two vectors in question.  The result should be a zero since they should be parallel
                                 VectorMath.Vector.CartVect rhrTestVector = VectorMath.Vector.CrossProduct(testDict[pair.Key], standDict[pair.Key]);
                                 if (rhrTestVector.X == 0 && rhrTestVector.Y == 0 && rhrTestVector.Z == 0)
                                 {
                                     report.MessageList.Add("For this level match, there is Normal Vector Test Success.  The right hand rule test identified a parallel normal vector for Level " + pair.Key + " in both the Standard and Test gbXML Files.");
                                     report.passOrFail = true;
+                                    report.outputType = OutPutEnum.Matched;
                                 }
                                 else
                                 {
@@ -2611,6 +2651,7 @@ namespace DOEgbXML
                             {
                                 report.MessageList.Add("The right hand rule test for Level " + pair.Key + " in the Standard File could not be completed.  A match for this level could not be found in the test file.");
                                 report.passOrFail = false;
+                                report.outputType = OutPutEnum.Failed;
                                 errorCount++;
                             }
                         }
@@ -2634,6 +2675,7 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to complete RHR Test for the Building Storey Nodes.  Exception noted.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
@@ -2873,12 +2915,14 @@ namespace DOEgbXML
                 {
                     report.MessageList.Add("The standard file has found a match only once in the test file.  All spaceIds have been matched.");
                     report.passOrFail = true;
+                    report.outputType = OutPutEnum.Warning;
                     report.longMsg = "SpaceId Match test has passed.";
                     return report;
                 }
                 else
                 {
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     string index = "";
                     foreach (int p in indexFound)
                     {
@@ -2913,6 +2957,7 @@ namespace DOEgbXML
             {
                 report.longMsg = e.ToString();
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
             return report;
@@ -2991,16 +3036,19 @@ namespace DOEgbXML
                         {
                             report.MessageList.Add("For Space Id: " + key + ".  Success finding matching space area.  The Standard File and the Test File both have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
                             report.TestPassedDict.Add(key, true);
+                            report.OutputTypeDict.Add(key, OutPutEnum.Matched);
                         }
                         else if (difference < report.tolerance)
                         {
                             report.MessageList.Add("For Space Id: " + key + ".  Success finding matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
                             report.TestPassedDict.Add(key, true);
+                            report.OutputTypeDict.Add(key, OutPutEnum.Warning);
                         }
                         else
                         {
                             report.MessageList.Add("For space Id: " + key + ".  Failure to find an space area match.  THe area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
                             report.TestPassedDict.Add(key, false);
+                            report.OutputTypeDict.Add(key, OutPutEnum.Failed);
                         }
                     }
                     else
@@ -3011,6 +3059,7 @@ namespace DOEgbXML
                         //failure to match spaceIds
                         report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + key + " could not be found in the test file.");
                         report.passOrFail = false;
+                        report.OutputTypeDict.Add(key, OutPutEnum.Failed);
                         return report;
                     }
                 }
@@ -3022,6 +3071,7 @@ namespace DOEgbXML
                 report.MessageList.Add(e.ToString());
                 report.longMsg = "Failed to complete the " + report.testType + ".  See exceptions noted.";
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
@@ -3079,17 +3129,20 @@ namespace DOEgbXML
                         {
                             report.MessageList.Add("For Space Id: " + key + ".  Success finding matching space volume.  The Standard and Test Files both have identical volumes: " + testFileVolume + " " + Units + "for Space Id: " + key);
                             report.TestPassedDict.Add(key, true);
+                            report.OutputTypeDict.Add(key, OutPutEnum.Matched);
                         }
                         else if (difference < report.tolerance)
                         {
                             report.MessageList.Add("For Space Id: " + key + ".  Success finding matching space volume.  The Standard Files space volume of " + standardFileVolume.ToString() + " " + Units + "and the Test File space volume: " + testFileVolume + " are within the allowed tolerance of" + report.tolerance.ToString() + " " + Units + ".");
                             report.TestPassedDict.Add(key, true);
+                            report.OutputTypeDict.Add(key, OutPutEnum.Warning);
                         }
                         else
                         {
                             //at the point of failure, the test will return with details about which volume failed.
                             report.MessageList.Add("For Space Id: " + key + ".  Failure to find a volume match.  The Volume in the Test File equal to: " + testFileVolume.ToString() + " " + Units + " was not within the allowed tolerance.  SpaceId: " + key + " in the Standard file has a volume: " + standardFileVolume.ToString() + " .");
                             report.TestPassedDict.Add(key, false);
+                            report.OutputTypeDict.Add(key, OutPutEnum.Failed);
                         }
                     }
                     else
@@ -3101,6 +3154,7 @@ namespace DOEgbXML
                         //at the point of failure, the test will return with details about which volume failed.
                         report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + key + " could not be found in the test file.");
                         report.passOrFail = false;
+                        report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                 }
@@ -3112,12 +3166,9 @@ namespace DOEgbXML
                 report.MessageList.Add(e.ToString());
                 report.longMsg = " Failed to complete the " + report.testType + ".  See exceptions noted.";
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
-
-            report.longMsg = "Fatal " + report.testType + " Test Failure";
-            report.passOrFail = false;
-            return report;
         }
 
         //this function was abandoned until the second phase
@@ -3389,12 +3440,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
                         {
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference;
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -3405,11 +3458,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
         //<Get Exterior Wall Surface Count>
@@ -3475,12 +3530,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
@@ -3488,6 +3545,7 @@ namespace DOEgbXML
                             report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " exterior wall surfaces in the Standard File and " + resultsArray[i - 1] + " exterior wall surfaces in the Test File.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -3499,11 +3557,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
         //<Get Interior Wall Surface Count>
@@ -3571,12 +3631,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
@@ -3584,6 +3646,7 @@ namespace DOEgbXML
                             report.longMsg = "The Test File's" + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " interior wall surfaces in the standard file and " + resultsArray[i - 1] + " interior wall surfaces in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -3595,11 +3658,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
         //<Get Interior Floor Surface Count>
@@ -3665,12 +3730,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
@@ -3678,6 +3745,7 @@ namespace DOEgbXML
                             report.longMsg = "The Test File's" + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " interior floor surfaces in the standard file and " + resultsArray[i - 1] + " interior floor surfaces in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -3689,11 +3757,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -3761,12 +3831,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
@@ -3774,6 +3846,7 @@ namespace DOEgbXML
                             report.longMsg = "The Test File's" + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " roof surfaces in the standard file and " + resultsArray[i - 1] + " roof surfaces in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -3785,11 +3858,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -3858,12 +3933,14 @@ namespace DOEgbXML
                             {
                                 report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
                                 report.passOrFail = true;
+                                report.outputType = OutPutEnum.Matched;
                                 return report;
                             }
                             else if (difference <= report.tolerance)
                             {
                                 report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
                                 report.passOrFail = true;
+                                report.outputType = OutPutEnum.Warning;
                                 return report;
                             }
                             else
@@ -3871,6 +3948,7 @@ namespace DOEgbXML
                                 report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                     + ".  " + resultsArray[i] + " shading surfaces in the standard file and " + resultsArray[i - 1] + " shading surfaces in the test file.";
                                 report.passOrFail = false;
+                                report.outputType = OutPutEnum.Failed;
                                 return report;
                             }
                     }
@@ -3882,11 +3960,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -3954,12 +4034,14 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The Test File's" + report.testType + " matches the Standard File exactly, the difference is zero.";
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else if (difference <= report.tolerance)
                         {
                             report.longMsg = "The Test File's " + report.testType + " matches Standard File within the allowable tolerance, the difference between the two files is " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Warning;
                             return report;
                         }
                         else
@@ -3967,6 +4049,7 @@ namespace DOEgbXML
                             report.longMsg = "The Test File's " + report.testType + " does not match Standard File, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " air surfaces in the standard file and " + resultsArray[i - 1] + " air surfaces in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -3978,11 +4061,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -4633,6 +4718,7 @@ namespace DOEgbXML
                 {
                     report.longMsg = "In the test file, no matches could be found in the standard file that have the same AdjacentSpaceId(s) and SurfaceType.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
                 //begin to filter back this list
@@ -4686,6 +4772,7 @@ namespace DOEgbXML
                 {
                     report.longMsg = "In the test file, surfaces could be found that match the standard file's AdjacentSpaceId and SurfaceType, but of these matches, none could be identified that also have a tilt or azimuth that exactly matches the standard file's, or is within the allowable tolerance.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
                 //clear the first list
@@ -4752,6 +4839,7 @@ namespace DOEgbXML
                                     {
                                         report.MessageList.Add("This test does not allow slivers less than " + DOEgbXMLBasics.Tolerances.SliverDimensionTolerance + " ft.  A sliver has been detected.  Test surface id: " + testsurface.SurfaceId + " is a sliver.");
                                         report.passOrFail = false;
+                                        report.outputType = OutPutEnum.Failed;
                                         return report;
                                     }
                                 }
@@ -5153,6 +5241,7 @@ namespace DOEgbXML
                     {
                         report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: " + surface.SurfaceId + " AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, and Surface Area.  Failed when attempting to match the surface area.";
                         report.passOrFail = false;
+                        report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                     possiblesList1.Clear();
@@ -5195,6 +5284,7 @@ namespace DOEgbXML
                     {
                         report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: " + surface.SurfaceId + " AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, Surface Area, and PolyLoop Coordinates.  Failed when matching PolyLoop coordinates.";
                         report.passOrFail = false;
+                        report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                     if (possiblesList1.Count == 1)
@@ -5211,12 +5301,14 @@ namespace DOEgbXML
                     {
                         report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: " + surface.SurfaceId + " AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, Surface Area, PolyLoop Coordinates, and Insertion Point.  Failed when attempting to match the insertion point coordinates.";
                         report.passOrFail = false;
+                        report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                     else if (possiblesList1.Count > 1)
                     {
                         report.longMsg = "Advanced Surface Test found more than one match for Standard file surface id: " + surface.SurfaceId + " in the test file.  It was not possible to determine only one unique surface.";
                         report.passOrFail = false;
+                        report.outputType = OutPutEnum.Failed;
                         //List<string> testFileSurfIds = new List<string>();
                         //foreach (SurfaceDefinitions surf in possiblesList1) { testFileSurfIds.Add(surf.SurfaceId); }
                         //report.MatchedSurfaceIds.Add(surface.SurfaceId, testFileSurfIds);
@@ -5400,30 +5492,35 @@ namespace DOEgbXML
             {
                 report.MessageList.Add("Error, overlapping polyLoop coordinates found in the Test Surface PolyLoop.");
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
             else if (exactMatch.Count == 1)
             {
                 report.MessageList.Add("One coordinate candidate found.  Exact match");
                 report.passOrFail = true;
+                report.outputType = OutPutEnum.Matched;
                 return report;
             }
             if (possibleMatch.Count > 1)
             {
                 report.MessageList.Add("No exact solution for a match of the polyLoop coordinate.  More than one coordinate candidate found.");
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
             else if (possibleMatch.Count == 1)
             {
                 report.MessageList.Add("One coordinate candidate found.");
                 report.passOrFail = true;
+                report.outputType = OutPutEnum.Warning;
                 return report;
             }
             else
             {
                 report.MessageList.Add("No coordinate candidate found.");
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
 
@@ -5595,30 +5692,35 @@ namespace DOEgbXML
             {
                 report.MessageList.Add("Error, overlapping polyLoop coordinates found in the Test Opening PolyLoop.");
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
             else if (exactMatch.Count == 1)
             {
                 report.MessageList.Add("One coordinate candidate found.  Exact match");
                 report.passOrFail = true;
+                report.outputType = OutPutEnum.Matched;
                 return report;
             }
             if (possibleMatch.Count > 1)
             {
                 report.MessageList.Add("No exact solution for a match of the polyLoop coordinate.  More than one coordinate candidate found.");
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
             else if (possibleMatch.Count == 1)
             {
                 report.MessageList.Add("One coordinate candidate found.");
                 report.passOrFail = true;
+                report.outputType = OutPutEnum.Warning;
                 return report;
             }
             else
             {
                 report.MessageList.Add("No coordinate candidate found.");
                 report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
                 return report;
             }
 
@@ -5835,6 +5937,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
@@ -5842,6 +5945,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " fixed windows in the standard file and " + resultsArray[i - 1] + " fixed windows in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -5853,11 +5957,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -5912,6 +6018,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
@@ -5919,6 +6026,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " operable windows in the standard file and " + resultsArray[i - 1] + " operable windows in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -5930,11 +6038,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -5989,6 +6099,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
@@ -5996,6 +6107,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " fixed skylights in the standard file and " + resultsArray[i - 1] + " fixed skylights in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -6007,11 +6119,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -6066,6 +6180,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                         else
@@ -6073,6 +6188,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " operable skylights in the standard file and " + resultsArray[i - 1] + " operable skylights in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -6084,11 +6200,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -6143,6 +6261,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
@@ -6150,6 +6269,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " sliding doors in the standard file and " + resultsArray[i - 1] + " sliding doors in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -6161,11 +6281,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -6220,6 +6342,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
@@ -6227,6 +6350,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " non-sliding doors in the standard file and " + resultsArray[i - 1] + " non-sliding doors in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -6238,11 +6362,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
 
@@ -6297,6 +6423,7 @@ namespace DOEgbXML
                         {
                             report.longMsg = "The " + report.testType + " matches standard file, the difference was within tolerance = " + report.tolerance.ToString() + " " + Units;
                             report.passOrFail = true;
+                            report.outputType = OutPutEnum.Matched;
                             return report;
                         }
                         else
@@ -6304,6 +6431,7 @@ namespace DOEgbXML
                             report.longMsg = "The " + report.testType + " does not match standard file, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + difference
                                 + ".  " + resultsArray[i] + " air openings in the standard file and " + resultsArray[i - 1] + " air openings in the test file.";
                             report.passOrFail = false;
+                            report.outputType = OutPutEnum.Failed;
                             return report;
                         }
                     }
@@ -6315,11 +6443,13 @@ namespace DOEgbXML
                     report.MessageList.Add(e.ToString());
                     report.longMsg = " Failed to locate " + report.testType + " in the XML file.";
                     report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                     return report;
                 }
             }
             report.longMsg = "Fatal " + report.testType + " Test Failure";
             report.passOrFail = false;
+            report.outputType = OutPutEnum.Failed;
             return report;
         }
         #endregion
