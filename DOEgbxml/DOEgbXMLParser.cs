@@ -3116,12 +3116,18 @@ namespace DOEgbXML
                         if (i % 2 != 0)
                         {
                             spaceId = spaceNode.ParentNode.Attributes[0].Value;
-                            testFileVolumeDict.Add(spaceId, Convert.ToDouble(volume));
+                            if (testFileVolumeDict.ContainsKey(spaceId))
+                            {
+                                testFileVolumeDict.Add(spaceId, Convert.ToDouble(volume));
+                            }
                         }
                         else
                         {
                             spaceId = spaceNode.ParentNode.Attributes[0].Value;
-                            standardFileVolumeDict.Add(spaceId, Convert.ToDouble(volume));
+                            if (standardFileVolumeDict.ContainsKey(spaceId))
+                            {
+                                standardFileVolumeDict.Add(spaceId, Convert.ToDouble(volume));
+                            }
                         }
                     }
                 }
