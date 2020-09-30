@@ -612,5 +612,53 @@ namespace DOEgbXML
             
             return report;
         }
+
+        public static DOEgbXMLReportingObj TestCurvedWallSurfaceArea(List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces, DOEgbXMLReportingObj report, string units)
+        {
+            //1. first find all the roof surfaces
+            List<Vector.MemorySafe_CartCoord> testRoofCoordsTemp = new List<Vector.MemorySafe_CartCoord>();
+            List<Vector.MemorySafe_CartCoord> standardRoofCoordsTemp = new List<Vector.MemorySafe_CartCoord>();
+            List<Vector.MemorySafe_CartCoord> testRoofCoords = new List<Vector.MemorySafe_CartCoord>();
+            List<Vector.MemorySafe_CartCoord> standardRoofCoords = new List<Vector.MemorySafe_CartCoord>();
+
+            foreach(SurfaceDefinitions sfd in TestSurfaces){
+                if (sfd.SurfaceType.Equals("Roof"))
+                {
+                    List<Vector.MemorySafe_CartCoord> plCoords = sfd.PlCoords;
+                    testRoofCoordsTemp.AddRange(plCoords);
+                }
+            }
+
+            foreach(SurfaceDefinitions sfd in StandardSurfaces)
+            {
+                if (sfd.SurfaceType.Equals("Roof"))
+                {
+                    List<Vector.MemorySafe_CartCoord> plCoords = sfd.PlCoords;
+                    standardRoofCoordsTemp.AddRange(plCoords);
+                }
+            }
+
+            //2. remove the duplicated vectors (those are mostly inner edge of multiple roof surfaces, we will need are the priemeter vectors)
+            for(int i=0; i< testRoofCoordsTemp.Count; i++)
+            {
+                Vector.MemorySafe_CartCoord coord = testRoofCoordsTemp[i];
+                Boolean addFlag = true; // indicate whether we can add this coord into the list
+                for(int j = i+1; j<testRoofCoordsTemp.Count; j++)
+                {
+                    Vector.MemorySafe_CartCoord matchCoord = testRoofCoordsTemp[j];
+                    if (coord.Equals(matchCoord)){
+                        addFlag = false;
+                    }
+                }
+                if (addFlag)
+                {
+                    testRoofCoords.Add(coord);
+                }
+            }
+
+
+
+            return null;
+        }
     }
 }

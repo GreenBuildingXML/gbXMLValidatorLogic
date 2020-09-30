@@ -35,7 +35,8 @@ namespace DOEgbXML
         public string output;
         public string log;
         public string table;
-        bool overallPassTest = true;
+        public bool overallPassTest = true;
+        public int failCounter = 0;
         DOEgbXMLTestCriteriaObject TestCriteria;
         DOEgbXMLTestDetail TestDetail;
         gbXMLMatches globalMatchObject;
@@ -281,7 +282,7 @@ namespace DOEgbXML
             report.testType = TestType.Building_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = GetBuildingArea(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Area Test Passed: ", report, true);
+            AddToOutPut("Building Area Test", report, true);
 
             //Test 3 execute
             report.Clear();
@@ -289,7 +290,7 @@ namespace DOEgbXML
             report.testType = TestType.Space_Count;
             units = DOEgbXMLBasics.MeasurementUnits.spaces.ToString();
             report = GetBuildingSpaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Space Quantity Count Test Passed: ", report, true);
+            AddToOutPut("Building Space Quantity Count Test", report, true);
 
 
             ////Test 4 execute
@@ -298,7 +299,7 @@ namespace DOEgbXML
             report.testType = TestType.Building_Story_Count;
             units = DOEgbXMLBasics.MeasurementUnits.levels.ToString();
             report = GetBuildingStoryCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Story Count Test Passed: ", report, true);
+            AddToOutPut("Building Story Count Test", report, true);
 
 
             //Test 5 execute
@@ -307,7 +308,7 @@ namespace DOEgbXML
             report.testType = TestType.Building_Story_Z_Height;
             units = DOEgbXMLBasics.MeasurementUnits.ft.ToString();
             report = GetStoryHeights(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Story Z-Height Test: ", report, true);
+            AddToOutPut("Building Story Z-Height Test", report, true);
 
 
             //Test 6 execute
@@ -316,7 +317,7 @@ namespace DOEgbXML
             report.testType = TestType.Building_Story_PolyLoop_RHR;
             units = "degrees";
             report = TestBuildingStoryRHR(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Story PolyLoop Right Hand Rule Test Result:", report, true);
+            AddToOutPut("Building Story PolyLoop Right Hand Rule Test Result", report, true);
 
 
             //String spShellGeometrySurfaceNum = TestShellGeomSurfaceNum(gbXMLTestFile, gbXMLns);
@@ -327,7 +328,7 @@ namespace DOEgbXML
             report.Clear();
             report.testType = TestType.SpaceId_Match_Test;
             report = UniqueSpaceIdTest(gbXMLdocs, gbXMLnsm, report);
-            AddToOutPut("SpaceId Match Test: ", report, true);
+            AddToOutPut("SpaceId Match Test", report, true);
 
 
             //Test 8 execute
@@ -336,7 +337,7 @@ namespace DOEgbXML
             report.testType = TestType.Space_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = TestSpaceAreas(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Space Areas Test: ", report, true);
+            AddToOutPut("Space Areas Test", report, true);
 
 
             //Test 9 execute
@@ -345,7 +346,7 @@ namespace DOEgbXML
             report.testType = TestType.Space_Volume;
             units = DOEgbXMLBasics.MeasurementUnits.cubicft.ToString();
             report = TestSpaceVolumes(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Space Volumes Test: ", report, true);
+            AddToOutPut("Space Volumes Test", report, true);
 
 
             //Test 10 Execute
@@ -363,7 +364,7 @@ namespace DOEgbXML
             report.testType = TestType.Total_Surface_Count;
             units = "";
             report = GetSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Surface Count Test Result: ", report, true);
+            AddToOutPut("Surface Count Test", report, true);
 
 
             //Surface Element tests
@@ -373,14 +374,14 @@ namespace DOEgbXML
             report.testType = TestType.Exterior_Wall_Surface_Count;
             units = "";
             report = GetEWSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Exterior Wall Surface Count Test Result: ", report, true);
+            AddToOutPut("Exterior Wall Surface Count Test", report, true);
 
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.SurfaceCountTolerance;
             report.testType = TestType.Underground_Surface_Count;
             units = "";
             report = GetUGSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Underground Wall Count Test Result: ", report, true);
+            AddToOutPut("Underground Wall Count Test", report, true);
 
             //Surface Element tests
             //Test 13 Execute
@@ -389,7 +390,7 @@ namespace DOEgbXML
             report.testType = TestType.Interior_Wall_Surface_Count;
             units = "";
             report = GetIWSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Interior Wall Surface Count Test Result: ", report, true);
+            AddToOutPut("Interior Wall Surface Count Test", report, true);
 
             //Surface Element tests
             //Test 13 Execute
@@ -398,7 +399,7 @@ namespace DOEgbXML
             report.testType = TestType.Interior_Floor_Surface_Count;
             units = "";
             report = GetIFSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Interior Floor Surface Count Test Result: ", report, true);
+            AddToOutPut("Interior Floor Surface Count Test", report, true);
 
 
             //Surface Element tests
@@ -408,7 +409,7 @@ namespace DOEgbXML
             report.testType = TestType.Roof_Surface_Count;
             units = "";
             report = GetRoofSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Roof Surface Count Test Result: ", report, true);
+            AddToOutPut("Roof Surface Count Test", report, true);
 
 
             //Surface Element tests
@@ -418,7 +419,7 @@ namespace DOEgbXML
             report.testType = TestType.Shading_Surface_Count;
             units = "";
             report = GetShadeSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Shading Surface Count Test Result: ", report, true);
+            AddToOutPut("Shading Surface Count Test", report, true);
 
 
             //Test 16 Execute
@@ -427,7 +428,7 @@ namespace DOEgbXML
             report.testType = TestType.Air_Surface_Count;
             units = "";
             report = GetAirSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Air Surface Count Test Result: ", report, true);
+            AddToOutPut("Air Surface Count Test", report, true);
 
 
             #region surface detailed test
@@ -457,7 +458,7 @@ namespace DOEgbXML
 
             if (!report.passOrFail)
             {
-                AddToOutPut("Test File Planar Surface Check: ", report, true);
+                AddToOutPut("Test File Planar Surface Check", report, true);
                 report.Clear();
             }
             //only run detailed surface checks if the surfaces are planar
@@ -482,7 +483,7 @@ namespace DOEgbXML
                     //TODO need to add global match object in the get possible surface match method in order to have this function work
                     report = GetPossibleSurfaceMatches(surface, testSurfaces, report);
 
-                    AddToOutPut("Test 17 for Surface number " + i + " Result: ", report, false);
+                    AddToOutPut("Test 17 for Surface number " + i + " Result", report, false);
                     foreach (SurfaceDefinitions ts in testSurfaces)
                     {
                         if (globalMatchObject.MatchedSurfaceIds.ContainsKey(surface.SurfaceId))
@@ -545,7 +546,7 @@ namespace DOEgbXML
             report.testType = TestType.Fixed_Windows_Count;
             units = "";
             report = CountFixedWindows(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Fixed Windows Count Test Result: ", report, true);
+            AddToOutPut("Fixed Windows Count Test", report, true);
 
             //test 19 CountOperableWindows
             //Test 19 Execute
@@ -554,7 +555,7 @@ namespace DOEgbXML
             report.testType = TestType.Operable_Windows_Count;
             units = "";
             report = CountOperableWindows(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Operable Windows Count Test Result: ", report, true);
+            AddToOutPut("Operable Windows Count Test", report, true);
 
             //test 20 CountFixedSkylights
             //Test 20 Execute
@@ -563,7 +564,7 @@ namespace DOEgbXML
             report.testType = TestType.Fixed_Skylight_Count;
             units = "";
             report = CountFixedSkylights(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Fixed Skylight Count Test Result: ", report, true);
+            AddToOutPut("Fixed Skylight Count Test", report, true);
 
             //test 21 CountOperableSkylights
             //Test 21 Execute
@@ -572,7 +573,7 @@ namespace DOEgbXML
             report.testType = TestType.Operable_Skylight_Count;
             units = "";
             report = CountOperableSkylights(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Operable Skylight Count Test Result: ", report, true);
+            AddToOutPut("Operable Skylight Count Test", report, true);
 
 
             //test 22 CountSlidingDoors
@@ -582,7 +583,7 @@ namespace DOEgbXML
             report.testType = TestType.Sliding_Doors_Count;
             units = "";
             report = CountSlidingDoors(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Sliding Doors Count Test Result: ", report, true);
+            AddToOutPut("Sliding Doors Count Test", report, true);
 
             //test 23 CountNonSlidingDoors
             //Test 23 Execute
@@ -591,7 +592,7 @@ namespace DOEgbXML
             report.testType = TestType.Non_Sliding_Doors_Count;
             units = "";
             report = CountNonSlidingDoors(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Non Sliding Doors Count Test Result: ", report, true);
+            AddToOutPut("Non Sliding Doors Count Test", report, true);
 
             //test 24 CountAirOpenings
             //Test 24 Execute
@@ -600,7 +601,7 @@ namespace DOEgbXML
             report.testType = TestType.Air_Openings_Count;
             units = "";
             report = CountAirOpenings(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Air Openings Count Test Result: ", report, true);
+            AddToOutPut("Air Openings Count Test", report, true);
 
             /*
              * New test sets added for RP-1810 project
@@ -612,7 +613,7 @@ namespace DOEgbXML
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
                 standardSurfaces, report, units,"ExteriorWall");
-            AddToOutPut("Exterior Wall Area Test Results: ", report, true);
+            AddToOutPut("Exterior Wall Area Test", report, true);
 
             //test 26 Compare Exterior Wall Area By Orientation
             report.Clear();
@@ -621,7 +622,7 @@ namespace DOEgbXML
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestWallAreaByOrientation(testSurfaces,
                 standardSurfaces, report, units);
-            AddToOutPut("Exterior Wall Area Test By Orientation Results: ", report, true);
+            AddToOutPut("Exterior Wall Area Test By Orientation Test", report, true);
 
             //test 27 Compare roof area
             report.Clear();
@@ -630,7 +631,7 @@ namespace DOEgbXML
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
                 standardSurfaces, report, units, "Roof");
-            AddToOutPut("Roof Area Test Results: ", report, true);
+            AddToOutPut("Roof Area Test", report, true);
 
             //test 28 Compare SlabOnGrade area
             report.Clear();
@@ -639,7 +640,7 @@ namespace DOEgbXML
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
                 standardSurfaces, report, units, "SlabOnGrade");
-            AddToOutPut("Slab on Grade Area Test Results: ", report, true);
+            AddToOutPut("Slab on Grade Area Test", report, true);
 
             //test 29 Compare shading area
             report.Clear();
@@ -647,7 +648,7 @@ namespace DOEgbXML
             report.testType = TestType.Shade_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestShadeSurfaceArea(testSurfaces, standardSurfaces, report, units);
-            AddToOutPut("Shade Area Test Results: ", report, true);
+            AddToOutPut("Shade Area Test", report, true);
 
             //test 30 Compare air surface area
             report.Clear();
@@ -655,7 +656,7 @@ namespace DOEgbXML
             report.testType = TestType.Air_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "Air");
-            AddToOutPut("Air Surface Test Results: ", report, true);
+            AddToOutPut("Air Surface Test", report, true);
 
             //test 31 material and assembly test
             report.Clear();
@@ -664,14 +665,14 @@ namespace DOEgbXML
             report.testType = TestType.Assembly_Test;
             report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions,
                 standardConstructions, testSurfaces, standardSurfaces ,report, units);
-            AddToOutPut("Assembly test results: ", report, true);
+            AddToOutPut("Assembly Test", report, true);
 
             //test 32 space name test
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
             report.testType = TestType.Space_Name_Test;
             report = DOEgbXMLTestFunctions.TestZoneNameMatch(testSpaces, standardSpaces,report, units);
-            AddToOutPut("Space name results: ", report, true);
+            AddToOutPut("Space name Test", report, true);
 
             //test 33 plenum volume test
             report.Clear();
@@ -679,7 +680,7 @@ namespace DOEgbXML
             report.testType = TestType.Plenum_Volume_Test;
             units = DOEgbXMLBasics.MeasurementUnits.cubicft.ToString();
             report = DOEgbXMLTestFunctions.TestPlenumSpaceVolume(testSpaces, standardSpaces, report, units);
-            AddToOutPut("Plenum volume results: ", report, true);
+            AddToOutPut("Plenum volume Test", report, true);
 
             //test 34 window area test
             report.Clear();
@@ -687,7 +688,7 @@ namespace DOEgbXML
             report.testType = TestType.Window_Area_Test;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             report = DOEgbXMLTestFunctions.TestWindowAreaByType(testSurfaces, standardSurfaces, report, units, null);
-            AddToOutPut("Window area results: ", report, true);
+            AddToOutPut("Window area Test", report, true);
 
             #region opening detailed test
             //openings detailed tests
@@ -707,7 +708,7 @@ namespace DOEgbXML
 
             if (!report.passOrFail)
             {
-                AddToOutPut("Test File Planar Opening Check: ", report, true);
+                AddToOutPut("Test File Planar Opening Check", report, true);
                 report.Clear();
             }
             //only run detailed opening checks if the opening are planar
@@ -744,7 +745,7 @@ namespace DOEgbXML
 
                     report = GetPossibleOpeningMatches(opening, TestOpenings, report);
 
-                    AddToOutPut("Test 17 for Opening number " + i + " Result: ", report, false);
+                    AddToOutPut("Test 17 for Opening number " + i, report, false);
 
                     foreach (OpeningDefinitions to in TestOpenings)
                     {
@@ -816,6 +817,7 @@ namespace DOEgbXML
             ReportList.Add(tmpreport);
 
             //title
+            output += "<div id='testresult'>";
             output += "<h3>" + title + "</h3>";
             log += title + System.Environment.NewLine;
 
@@ -857,6 +859,7 @@ namespace DOEgbXML
             {
                 output += "<h4 class='text-error'>" + report.longMsg + "</h4>";
                 overallPassTest = false;
+                failCounter++;
             }
 
             log += report.longMsg + System.Environment.NewLine;
@@ -867,7 +870,7 @@ namespace DOEgbXML
                 var keys = report.MessageDict.Keys;
                 foreach(string key in keys)
                 {
-                    output += "<p class='text-info' key=" + key + "><a>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+                    output += "<p class='text-info' key='" + key + "'><a class='model-link'>" + key + ":</a> " + report.MessageDict[key] + "</p>";
                 }
             }
             
@@ -880,7 +883,7 @@ namespace DOEgbXML
                     log += report.MessageList[i] + System.Environment.NewLine;
                 }
 
-            output += "<br/>";
+            output += "</div>";
             log += System.Environment.NewLine;
 
             //create table row
