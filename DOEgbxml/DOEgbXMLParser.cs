@@ -1009,7 +1009,6 @@ namespace DOEgbXML
             //have to deep copy the report before put report in the list
             DOEgbXMLReportingObj tmpreport = report.Copy();
             ReportList.Add(tmpreport);
-
             //title
             output += "<div id='testresult'>";
             output += "<h3>" + title + "</h3>";
@@ -1052,7 +1051,6 @@ namespace DOEgbXML
             else
             {
                 output += "<h4 class='text-error'>" + report.longMsg + "</h4>";
-                Console.WriteLine(report.testType);
                 overallPassTest = false;
                 failCounter++;
             }
@@ -1138,10 +1136,10 @@ namespace DOEgbXML
             bool aceTest = true;
             foreach (DOEgbXMLReportingObj tmpreport in ReportList)
             {
-                Console.WriteLine(tmpreport.testType);
+                //Console.WriteLine(tmpreport.testType);
                 if (TestCriteria.TestCriteriaDictionary.ContainsKey(tmpreport.testType))
                 {
-                    Console.WriteLine("This criteria is tested, results (test/standard): " + String.Join("\n", tmpreport.testResult)+"/"+String.Join("\n",tmpreport.standResult));
+                    //Console.WriteLine("This criteria is tested, results (test/standard): " + String.Join("\n", tmpreport.testResult)+"/"+String.Join("\n",tmpreport.standResult));
                     if (TestCriteria.TestCriteriaDictionary[tmpreport.testType] && !tmpreport.passOrFail)
                         passTest = false;
                     if (!TestCriteria.TestCriteriaDictionary[tmpreport.testType] && !tmpreport.passOrFail)

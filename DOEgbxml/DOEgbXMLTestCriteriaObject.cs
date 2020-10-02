@@ -34,7 +34,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
-                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
+                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Skylight_Count, false);
@@ -76,7 +76,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);//shades must match
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
-                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
+                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Skylight_Count, false);
@@ -120,7 +120,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
-                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
+                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Skylight_Count, false);
@@ -162,7 +162,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, true);            //shades must match
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
-                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
+                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Skylight_Count, false);
@@ -195,7 +195,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, true);             //shading surface must match
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
-                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
+                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Skylight_Count, false);
