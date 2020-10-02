@@ -264,6 +264,22 @@ namespace DOEgbXML
             }
         }
 
+        private static Dictionary<String, Double> getSurfaceAreaMapOrientation(List<SurfaceDefinitions> surfaces)
+        {
+            Dictionary<String, Double> surfaceAreaMapOrientation = new Dictionary<String, Double>();
+            foreach (SurfaceDefinitions surfDef in surfaces)
+            {
+                string orientation = surfDef.surfaceOrientation();
+                if (!surfaceAreaMapOrientation.ContainsKey(orientation))
+                {
+                    surfaceAreaMapOrientation.Add(orientation, 0.0);
+                }
+                surfaceAreaMapOrientation[orientation] += surfDef.computeArea();
+            }
+
+            return surfaceAreaMapOrientation;
+        }
+
 
         /**
          * 
@@ -277,28 +293,8 @@ namespace DOEgbXML
             report.testSummary = "";
             report.unit = Units;
 
-            Dictionary<String, Double> standardSurfaceAreaMapOrientation = new Dictionary<String, Double>();
-            Dictionary<String, Double> testSurfaceAreaMapOrientation = new Dictionary<String, Double>();
-
-            foreach(SurfaceDefinitions surfDef in TestSurfaces)
-            {
-                string orientation = surfDef.surfaceOrientation();
-                if (!testSurfaceAreaMapOrientation.ContainsKey(orientation))
-                {
-                    testSurfaceAreaMapOrientation.Add(orientation, 0.0);
-                }
-                testSurfaceAreaMapOrientation[orientation] += surfDef.computeArea();
-            }
-
-            foreach(SurfaceDefinitions surfDef in StandardSurfaces)
-            {
-                string orientation = surfDef.surfaceOrientation();
-                if (!standardSurfaceAreaMapOrientation.ContainsKey(orientation))
-                {
-                    standardSurfaceAreaMapOrientation.Add(orientation, 0.0);
-                }
-                standardSurfaceAreaMapOrientation[orientation] += surfDef.computeArea();
-            }
+            Dictionary<String, Double> standardSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(StandardSurfaces);
+            Dictionary<String, Double> testSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(TestSurfaces);
 
             //now loop through and standard dictionary and try to find the match keys from the test dictionary
             report.passOrFail = true; //assume it is passed first.
@@ -613,48 +609,43 @@ namespace DOEgbXML
             return report;
         }
 
-        public static DOEgbXMLReportingObj TestCurvedWallSurfaceArea(List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces, DOEgbXMLReportingObj report, string units)
+
+        //this test only works for Curved wall test - other test case should not touch this test case.
+        public static DOEgbXMLReportingObj TestCurvedWallSurfaceArea(List<SurfaceDefinitions> TestSurfaces, DOEgbXMLReportingObj report, string units)
         {
-            //1. first find all the roof surfaces
-            List<Vector.MemorySafe_CartCoord> testRoofCoordsTemp = new List<Vector.MemorySafe_CartCoord>();
-            List<Vector.MemorySafe_CartCoord> standardRoofCoordsTemp = new List<Vector.MemorySafe_CartCoord>();
-            List<Vector.MemorySafe_CartCoord> testRoofCoords = new List<Vector.MemorySafe_CartCoord>();
-            List<Vector.MemorySafe_CartCoord> standardRoofCoords = new List<Vector.MemorySafe_CartCoord>();
+            //1. first determine the surface areas
+            double n = 0.0; //0-22.5
+            double ne = 0.0; //22.5 - 67.5
+            double e = 0.0; //67.5 - 110.5
+            double se = 0.0;//110.5 - 157.5
+            double s = 0.0; // 157.5 - 180
 
-            foreach(SurfaceDefinitions sfd in TestSurfaces){
-                if (sfd.SurfaceType.Equals("Roof"))
-                {
-                    List<Vector.MemorySafe_CartCoord> plCoords = sfd.PlCoords;
-                    testRoofCoordsTemp.AddRange(plCoords);
-                }
-            }
+            Dictionary<String, Double> testSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(TestSurfaces);
 
-            foreach(SurfaceDefinitions sfd in StandardSurfaces)
+            foreach (KeyValuePair<String, Double> kvp in testSurfaceAreaMapOrientation)
             {
-                if (sfd.SurfaceType.Equals("Roof"))
+                string key = kvp.Key;
+                double value = kvp.Value;
+
+                if (key.Equals("N"))
                 {
-                    List<Vector.MemorySafe_CartCoord> plCoords = sfd.PlCoords;
-                    standardRoofCoordsTemp.AddRange(plCoords);
+                    n += value;
+                }else if (key.Equals("NE"))
+                {
+                    ne += value;
+                }else if (key.Equals("E"))
+                {
+                    e += value;
+                }else if (key.Equals("SE"))
+                {
+                    se += value;
+                }else if (key.Equals("S"))
+                {
+                    s += value;
                 }
             }
 
-            //2. remove the duplicated vectors (those are mostly inner edge of multiple roof surfaces, we will need are the priemeter vectors)
-            for(int i=0; i< testRoofCoordsTemp.Count; i++)
-            {
-                Vector.MemorySafe_CartCoord coord = testRoofCoordsTemp[i];
-                Boolean addFlag = true; // indicate whether we can add this coord into the list
-                for(int j = i+1; j<testRoofCoordsTemp.Count; j++)
-                {
-                    Vector.MemorySafe_CartCoord matchCoord = testRoofCoordsTemp[j];
-                    if (coord.Equals(matchCoord)){
-                        addFlag = false;
-                    }
-                }
-                if (addFlag)
-                {
-                    testRoofCoords.Add(coord);
-                }
-            }
+
 
 
 

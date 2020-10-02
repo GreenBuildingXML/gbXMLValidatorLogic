@@ -281,16 +281,30 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Building_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = GetBuildingArea(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Area Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetBuildingArea(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Building Area Test", report, true);
+                }
+            }
+            
 
             //Test 3 execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.SpaceCountTolerance;
             report.testType = TestType.Space_Count;
             units = DOEgbXMLBasics.MeasurementUnits.spaces.ToString();
-            report = GetBuildingSpaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Space Quantity Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetBuildingSpaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Building Space Quantity Count Test", report, true);
+                }
+            }
+
 
 
             ////Test 4 execute
@@ -298,27 +312,42 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.LevelCountTolerance;
             report.testType = TestType.Building_Story_Count;
             units = DOEgbXMLBasics.MeasurementUnits.levels.ToString();
-            report = GetBuildingStoryCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Story Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetBuildingStoryCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Building Story Count Test", report, true);
+                }
+            }
 
             //Test 5 execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.LevelHeightTolerance;
             report.testType = TestType.Building_Story_Z_Height;
             units = DOEgbXMLBasics.MeasurementUnits.ft.ToString();
-            report = GetStoryHeights(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Story Z-Height Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetStoryHeights(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Building Story Z-Height Test", report, true);
+                }
+            }
 
             //Test 6 execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.VectorAngleTolerance;
             report.testType = TestType.Building_Story_PolyLoop_RHR;
             units = "degrees";
-            report = TestBuildingStoryRHR(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Building Story PolyLoop Right Hand Rule Test Result", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = TestBuildingStoryRHR(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Building Story PolyLoop Right Hand Rule Test Result", report, true);
+                }
+            }
 
             //String spShellGeometrySurfaceNum = TestShellGeomSurfaceNum(gbXMLTestFile, gbXMLns);
 
@@ -327,35 +356,56 @@ namespace DOEgbXML
             //only needs to test the test file
             report.Clear();
             report.testType = TestType.SpaceId_Match_Test;
-            report = UniqueSpaceIdTest(gbXMLdocs, gbXMLnsm, report);
-            AddToOutPut("SpaceId Match Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = UniqueSpaceIdTest(gbXMLdocs, gbXMLnsm, report);
+                    AddToOutPut("SpaceId Match Test", report, true);
+                }
+            }
 
             //Test 8 execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.SpaceAreaTolerance;
             report.testType = TestType.Space_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = TestSpaceAreas(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Space Areas Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = TestSpaceAreas(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Space Areas Test", report, true);
+                }
+            }
 
             //Test 9 execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.VolumeTolerance;
             report.testType = TestType.Space_Volume;
             units = DOEgbXMLBasics.MeasurementUnits.cubicft.ToString();
-            report = TestSpaceVolumes(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Space Volumes Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = TestSpaceVolumes(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Space Volumes Test", report, true);
+                }
+            }
 
             //Test 10 Execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.VectorAngleTolerance;
             report.testType = TestType.Shell_Geom_RHR;
             units = "degrees";
-            report = TestShellGeomPLRHR(gbXMLdocs, gbXMLnsm, report, units);
-            //AddToOutPut("Shell Geometry RHR Test: ",report);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = TestShellGeomPLRHR(gbXMLdocs, gbXMLnsm, report, units);
+                    //AddToOutPut("Shell Geometry RHR Test: ",report);
+                }
+            }
 
             //Surface Element tests
             //Test 11 Execute
@@ -363,9 +413,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.SurfaceCountTolerance;
             report.testType = TestType.Total_Surface_Count;
             units = "";
-            report = GetSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Surface Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Surface Count Test", report, true);
+                }
+            }
 
             //Surface Element tests
             //Test 12 Execute
@@ -373,15 +428,27 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.ExteriorWallCountTolerance;
             report.testType = TestType.Exterior_Wall_Surface_Count;
             units = "";
-            report = GetEWSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Exterior Wall Surface Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetEWSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Exterior Wall Surface Count Test", report, true);
+                }
+            }
 
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.SurfaceCountTolerance;
             report.testType = TestType.Underground_Surface_Count;
             units = "";
-            report = GetUGSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Underground Wall Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetUGSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Underground Wall Count Test", report, true);
+                }
+            }
 
             //Surface Element tests
             //Test 13 Execute
@@ -389,8 +456,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.InteriorWallCountTolerance;
             report.testType = TestType.Interior_Wall_Surface_Count;
             units = "";
-            report = GetIWSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Interior Wall Surface Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetIWSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Interior Wall Surface Count Test", report, true);
+                }
+            }
 
             //Surface Element tests
             //Test 13 Execute
@@ -398,9 +471,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.InteriorFloorCountTolerance;
             report.testType = TestType.Interior_Floor_Surface_Count;
             units = "";
-            report = GetIFSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Interior Floor Surface Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetIFSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Interior Floor Surface Count Test", report, true);
+                }
+            }
 
             //Surface Element tests
             //Test 14 Execute
@@ -408,9 +486,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.InteriorWallCountTolerance;
             report.testType = TestType.Roof_Surface_Count;
             units = "";
-            report = GetRoofSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Roof Surface Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetRoofSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Roof Surface Count Test", report, true);
+                }
+            }
 
             //Surface Element tests
             //Test 15 Execute
@@ -418,18 +501,28 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.InteriorWallCountTolerance;
             report.testType = TestType.Shading_Surface_Count;
             units = "";
-            report = GetShadeSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Shading Surface Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetShadeSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Shading Surface Count Test", report, true);
+                }
+            }
 
             //Test 16 Execute
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AirWallCountTolerance;
             report.testType = TestType.Air_Surface_Count;
             units = "";
-            report = GetAirSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Air Surface Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = GetAirSurfaceCount(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Air Surface Count Test", report, true);
+                }
+            }
 
             #region surface detailed test
             //Jan 31-2012:  We may not want to perform these if the surface counts fail, but for now, we will include these tests
@@ -545,8 +638,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.FixedWindowCountTolerance;
             report.testType = TestType.Fixed_Windows_Count;
             units = "";
-            report = CountFixedWindows(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Fixed Windows Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountFixedWindows(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Fixed Windows Count Test", report, true);
+                }
+            }
 
             //test 19 CountOperableWindows
             //Test 19 Execute
@@ -554,8 +653,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.OperableWindowCountTolerance;
             report.testType = TestType.Operable_Windows_Count;
             units = "";
-            report = CountOperableWindows(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Operable Windows Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountOperableWindows(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Operable Windows Count Test", report, true);
+                }
+            }
 
             //test 20 CountFixedSkylights
             //Test 20 Execute
@@ -563,8 +668,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.FixedSkylightCountTolerance;
             report.testType = TestType.Fixed_Skylight_Count;
             units = "";
-            report = CountFixedSkylights(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Fixed Skylight Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountFixedSkylights(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Fixed Skylight Count Test", report, true);
+                }
+            }
 
             //test 21 CountOperableSkylights
             //Test 21 Execute
@@ -572,9 +683,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.OperableSkylightCountTolerance;
             report.testType = TestType.Operable_Skylight_Count;
             units = "";
-            report = CountOperableSkylights(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Operable Skylight Count Test", report, true);
-
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountOperableSkylights(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Operable Skylight Count Test", report, true);
+                }
+            }
 
             //test 22 CountSlidingDoors
             //Test 22 Execute
@@ -582,8 +698,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.SlidingDoorCountTolerance;
             report.testType = TestType.Sliding_Doors_Count;
             units = "";
-            report = CountSlidingDoors(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Sliding Doors Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountSlidingDoors(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Sliding Doors Count Test", report, true);
+                }
+            }
 
             //test 23 CountNonSlidingDoors
             //Test 23 Execute
@@ -591,8 +713,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.NonSlidingDoorCountTolerance;
             report.testType = TestType.Non_Sliding_Doors_Count;
             units = "";
-            report = CountNonSlidingDoors(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Non Sliding Doors Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountNonSlidingDoors(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Non Sliding Doors Count Test", report, true);
+                }
+            }
 
             //test 24 CountAirOpenings
             //Test 24 Execute
@@ -600,8 +728,14 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AirOpeningCountTolerance;
             report.testType = TestType.Air_Openings_Count;
             units = "";
-            report = CountAirOpenings(gbXMLdocs, gbXMLnsm, report, units);
-            AddToOutPut("Air Openings Count Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = CountAirOpenings(gbXMLdocs, gbXMLnsm, report, units);
+                    AddToOutPut("Air Openings Count Test", report, true);
+                }
+            }
 
             /*
              * New test sets added for RP-1810 project
@@ -611,84 +745,144 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Exterior_Wall_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
-                standardSurfaces, report, units,"ExteriorWall");
-            AddToOutPut("Exterior Wall Area Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
+                        standardSurfaces, report, units, "ExteriorWall");
+                    AddToOutPut("Exterior Wall Area Test", report, true);
+                }
+            }
 
             //test 26 Compare Exterior Wall Area By Orientation
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Exterior_Wall_Area_By_Orientation;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestWallAreaByOrientation(testSurfaces,
-                standardSurfaces, report, units);
-            AddToOutPut("Exterior Wall Area Test By Orientation Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestWallAreaByOrientation(testSurfaces,
+                        standardSurfaces, report, units);
+                    AddToOutPut("Exterior Wall Area Test By Orientation Test", report, true);
+                }
+            }
 
             //test 27 Compare roof area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Roof_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
-                standardSurfaces, report, units, "Roof");
-            AddToOutPut("Roof Area Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
+                        standardSurfaces, report, units, "Roof");
+                    AddToOutPut("Roof Area Test", report, true);
+                }
+            }
 
             //test 28 Compare SlabOnGrade area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.SlabOnGrade_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
-                standardSurfaces, report, units, "SlabOnGrade");
-            AddToOutPut("Slab on Grade Area Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces,
+                        standardSurfaces, report, units, "SlabOnGrade");
+                    AddToOutPut("Slab on Grade Area Test", report, true);
+                }
+            }
 
             //test 29 Compare shading area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Shade_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestShadeSurfaceArea(testSurfaces, standardSurfaces, report, units);
-            AddToOutPut("Shade Area Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestShadeSurfaceArea(testSurfaces, standardSurfaces, report, units);
+                    AddToOutPut("Shade Area Test", report, true);
+                }
+            }
 
             //test 30 Compare air surface area
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Air_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "Air");
-            AddToOutPut("Air Surface Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "Air");
+                    AddToOutPut("Air Surface Test", report, true);
+                }
+            }
 
             //test 31 material and assembly test
             report.Clear();
             //TODO RP-1810 Need to think about the tolerance for the material assembly.
             report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
             report.testType = TestType.Assembly_Test;
-            report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions,
-                standardConstructions, testSurfaces, standardSurfaces ,report, units);
-            AddToOutPut("Assembly Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestMaterialAssembly(testConstructions,
+                        standardConstructions, testSurfaces, standardSurfaces, report, units);
+                    AddToOutPut("Assembly Test", report, true);
+                }
+            }
 
             //test 32 space name test
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.RVALUE;
             report.testType = TestType.Space_Name_Test;
-            report = DOEgbXMLTestFunctions.TestZoneNameMatch(testSpaces, standardSpaces,report, units);
-            AddToOutPut("Space name Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestZoneNameMatch(testSpaces, standardSpaces, report, units);
+                    AddToOutPut("Space name Test", report, true);
+                }
+            }
 
             //test 33 plenum volume test
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.VolumeTolerance;
             report.testType = TestType.Plenum_Volume_Test;
             units = DOEgbXMLBasics.MeasurementUnits.cubicft.ToString();
-            report = DOEgbXMLTestFunctions.TestPlenumSpaceVolume(testSpaces, standardSpaces, report, units);
-            AddToOutPut("Plenum volume Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestPlenumSpaceVolume(testSpaces, standardSpaces, report, units);
+                    AddToOutPut("Plenum volume Test", report, true);
+                }
+            }
 
             //test 34 window area test
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Window_Area_Test;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
-            report = DOEgbXMLTestFunctions.TestWindowAreaByType(testSurfaces, standardSurfaces, report, units, null);
-            AddToOutPut("Window area Test", report, true);
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestWindowAreaByType(testSurfaces, standardSurfaces, report, units, null);
+                    AddToOutPut("Window area Test", report, true);
+                }
+            }
 
             #region opening detailed test
             //openings detailed tests
@@ -858,6 +1052,7 @@ namespace DOEgbXML
             else
             {
                 output += "<h4 class='text-error'>" + report.longMsg + "</h4>";
+                Console.WriteLine(report.testType);
                 overallPassTest = false;
                 failCounter++;
             }

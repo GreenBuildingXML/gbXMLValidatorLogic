@@ -64,7 +64,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
-                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, true);
+                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
@@ -108,7 +108,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
-                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, true);
+                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
@@ -150,7 +150,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
-                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, true);
+                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
@@ -183,7 +183,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
-                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, true);
+                TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
