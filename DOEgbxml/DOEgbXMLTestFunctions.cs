@@ -611,7 +611,7 @@ namespace DOEgbXML
 
 
         //this test only works for Curved wall test - other test case should not touch this test case.
-        public static DOEgbXMLReportingObj TestCurvedWallSurfaceArea(List<SurfaceDefinitions> TestSurfaces, DOEgbXMLReportingObj report, string units)
+        public static DOEgbXMLReportingObj TestCurvedWallSurfaceArea(List<SurfaceDefinitions> TestSurfaces, DOEgbXMLReportingObj report, string Units)
         {
             //1. first determine the surface areas
             double n = 0.0; //0-22.5
@@ -619,6 +619,7 @@ namespace DOEgbXML
             double e = 0.0; //67.5 - 110.5
             double se = 0.0;//110.5 - 157.5
             double s = 0.0; // 157.5 - 180
+            double w = 0.0; // 270
 
             Dictionary<String, Double> testSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(TestSurfaces);
 
@@ -642,14 +643,112 @@ namespace DOEgbXML
                 }else if (key.Equals("S"))
                 {
                     s += value;
+                }else if (key.Equals("W"))
+                {
+                    w += value;
                 }
             }
 
+            //test if matches
+            double nsdifference = Math.Abs(n - s);
 
+            if (nsdifference == 0)
+            {
+                report.MessageDict.Add("n-s", "The north wall surface area matches the south wall surface area, the difference is zero. (North: " + n + ") South: " + s + ")" );
+                report.TestPassedDict.Add("n-s", true);
+                report.OutputTypeDict.Add("n-s", OutPutEnum.Matched);
+            }
+            else if (nsdifference <= report.tolerance)
+            {
+                report.MessageDict.Add("n-s", "The north wall surface area matches the south wall surface area, the difference is within the allowable tolerance. (North: " + n + ") South: " + s + ")");
+                report.TestPassedDict.Add("n-s", true);
+                report.OutputTypeDict.Add("n-s", OutPutEnum.Warning);
+            }
+            else
+            {
+                report.MessageDict.Add("n-s", "The north wall surface area does not match the south wall surface area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + nsdifference
+                        + ".  " + n + " north walls urface area and " + s + " sourth wall surface area.");
+                report.TestPassedDict.Add("n-s", false);
+                report.OutputTypeDict.Add("n-s", OutPutEnum.Failed);
+            }
 
+            //test if matches
+            double NESEdifference = Math.Abs(ne - se);
 
+            if (NESEdifference == 0)
+            {
+                report.MessageDict.Add("ne-se", "The north-east wall surface area matches the south-east wall surface area, the difference is zero. (North East: " + ne + ") South East: " + se + ")");
+                report.TestPassedDict.Add("ne-se", true);
+                report.OutputTypeDict.Add("ne-se", OutPutEnum.Matched);
+            }
+            else if (NESEdifference <= report.tolerance)
+            {
+                report.MessageDict.Add("ne-se", "The north-east wall surface area matches the south-east wall surface area, the difference is within the allowable tolerance. (North East: " + ne + ") South East: " + se + ")");
+                report.TestPassedDict.Add("ne-se", true);
+                report.OutputTypeDict.Add("ne-se", OutPutEnum.Warning);
+            }
+            else
+            {
+                report.MessageDict.Add("ne-se", "The north-east wall surface area does not match the south-east wall surface area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + NESEdifference
+                        + ".  " + ne + " north-east walls urface area and " + se + " sourth-east wall surface area.");
+                report.TestPassedDict.Add("ne-se", false);
+                report.OutputTypeDict.Add("ne-se", OutPutEnum.Failed);
+            }
 
-            return null;
+            //now check roof perimeter and the suppose area vs. actual area
+            double actualArea = n + s + ne + se + e + w;
+            double calculatedArea = 0.0;
+            //retrieve all the exterior wall surfaces
+            double linearLength = 0.0;
+            foreach(SurfaceDefinitions sf in TestSurfaces)
+            {
+                if (sf.SurfaceType.Equals("ExteriorWall"))
+                {
+                    List<Vector.MemorySafe_CartCoord> plCoords = sf.PlCoords;
+                    List<Vector.MemorySafe_CartCoord> higherCoords = new List<Vector.MemorySafe_CartCoord>();
+                    for(int i=0; i<plCoords.Count; i++)
+                    {
+                        Vector.MemorySafe_CartCoord coord = plCoords[i];
+                        if(coord.Z >= 10) //hard-code,we need a higher value.
+                        {
+                            higherCoords.Add(coord);
+                        }
+                    }
+                    //find out the length of two points.
+                    if(higherCoords.Count >= 2)
+                    {
+                        for(int j=0; j<higherCoords.Count-1; j++)
+                        {
+                            Vector.MemorySafe_CartCoord currentCoord = higherCoords[j];
+                            Vector.MemorySafe_CartCoord nextCoord = higherCoords[j + 1];
+                            linearLength += Math.Sqrt(Math.Pow(currentCoord.X - nextCoord.X, 2) + Math.Pow(currentCoord.Y - nextCoord.Y, 2) + Math.Pow(currentCoord.Z - nextCoord.Z, 2));
+                        }
+                    }
+                }
+            }
+            calculatedArea = linearLength * 10;//10 is the height;
+            //test if matches
+            double areaMatch = Math.Abs(actualArea - calculatedArea);
+            if (areaMatch == 0)
+            {
+                report.MessageDict.Add("area", "The calculated area matches the actual area, the difference is zero. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
+                report.TestPassedDict.Add("area", true);
+                report.OutputTypeDict.Add("area", OutPutEnum.Matched);
+            }
+            else if (areaMatch <= report.tolerance)
+            {
+                report.MessageDict.Add("area", "The calculated area matches the actual area, the difference is within the allowable tolerance. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
+                report.TestPassedDict.Add("area", true);
+                report.OutputTypeDict.Add("area", OutPutEnum.Warning);
+            }
+            else
+            {
+                report.MessageDict.Add("area", "The calculated area does not match the actual area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + calculatedArea
+                        + ".  " + calculatedArea + ", calculated area and " + actualArea + ", calculated area.");
+                report.TestPassedDict.Add("area", false);
+                report.OutputTypeDict.Add("area", OutPutEnum.Failed);
+            }
+            return report;
         }
     }
 }

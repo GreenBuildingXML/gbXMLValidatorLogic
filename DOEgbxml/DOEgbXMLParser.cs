@@ -547,88 +547,91 @@ namespace DOEgbXML
             //all polyloops must be such that the surface defined by the coordinates is planar
             report.Clear();
             report.testType = TestType.Surface_Planar_Test;
-            report = TestSurfacePlanarTest(testSurfaces, report);
-
-            if (!report.passOrFail)
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
             {
-                AddToOutPut("Test File Planar Surface Check", report, true);
-                report.Clear();
-            }
-            //only run detailed surface checks if the surfaces are planar
-            else
-            {
-                //<For each surface in the Standard File, try to find a match for this surface in the test file>
-                //Written Jan 31, 2013 by Chien Si Harriman, Senior Product Manager, Carmel Software Corporation
-                //Execute Tests
-
-
-                //  globalMatchObject.MatchedSurfaceIds = new Dictionary<string, List<string>>();
-                int i = 1;
-
-                foreach (SurfaceDefinitions surface in standardSurfaces)
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
                 {
-                    report.Clear();
-                    //multiple tolerances used
-                    report.testType = TestType.Detailed_Surface_Checks;
-                    report.subTestIndex = i;
-
-                    //multiple units used, so ignore units
-                    //TODO need to add global match object in the get possible surface match method in order to have this function work
-                    report = GetPossibleSurfaceMatches(surface, testSurfaces, report);
-
-                    AddToOutPut("Test 17 for Surface number " + i + " Result", report, false);
-                    foreach (SurfaceDefinitions ts in testSurfaces)
-                    {
-                        if (globalMatchObject.MatchedSurfaceIds.ContainsKey(surface.SurfaceId))
-                        {
-                            foreach (string id in globalMatchObject.MatchedSurfaceIds[surface.SurfaceId])
-                            {
-                                if (ts.SurfaceId == id)
-                                {
-                                    if (report.passOrFail)
-                                        TestSurfaceTable += "<tr class='success'>" +
-                                            "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
-                                            "Detailed Surface Checks " + report.subTestIndex + "</a>" + "</td>" +
-
-                                            "<td>" + surface.SurfaceId + "</td>" +
-                                            "<td>" + ts.SurfaceId + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", surface.Tilt) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", ts.Tilt) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", surface.Azimuth) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", ts.Azimuth) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", surface.Height) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", ts.Height) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", surface.Width) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", ts.Width) + "</td>" +
-                                            "<td>" + "Pass" + "</td>" +
-                                            "</tr>";
-                                }
-
-                            }
-
-                        }
-                    }
-                    //if didn't find match means it failed the test
+                    report = TestSurfacePlanarTest(testSurfaces, report);
                     if (!report.passOrFail)
-                        TestSurfaceTable += "<tr class='error'>" +
-                                          "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
-                                          "Detailed Surface Checks " + report.subTestIndex + "</a>" + "</td>" +
-                                          "<td>" + surface.SurfaceId + "</td>" +
-                                          "<td>" + "---</td>" +
-                                          "<td>" + String.Format("{0:#,0.00}", surface.Tilt) + "</td>" +
-                                          "<td>" + "---</td>" +
-                                          "<td>" + String.Format("{0:#,0.00}", surface.Azimuth) + "</td>" +
-                                          "<td>" + "---</td>" +
-                                          "<td>" + String.Format("{0:#,0.00}", surface.Height) + "</td>" +
-                                          "<td>" + "---</td>" +
-                                          "<td>" + String.Format("{0:#,0.00}", surface.Width) + "</td>" +
-                                          "<td>" + "---</td>" +
-                                          "<td>" + "Fail" + "</td>" +
-                                          "</tr>";
-                    i += 1;
-                }
+                    {
+                        AddToOutPut("Test File Planar Surface Check", report, true);
+                        report.Clear();
+                    }
+                    else
+                    {
+                        //<For each surface in the Standard File, try to find a match for this surface in the test file>
+                        //Written Jan 31, 2013 by Chien Si Harriman, Senior Product Manager, Carmel Software Corporation
+                        //Execute Tests
 
-                TestSurfaceTable += "</table></div><br/>";
+
+                        //  globalMatchObject.MatchedSurfaceIds = new Dictionary<string, List<string>>();
+                        int i = 1;
+
+                        foreach (SurfaceDefinitions surface in standardSurfaces)
+                        {
+                            report.Clear();
+                            //multiple tolerances used
+                            report.testType = TestType.Detailed_Surface_Checks;
+                            report.subTestIndex = i;
+
+                            //multiple units used, so ignore units
+                            //TODO need to add global match object in the get possible surface match method in order to have this function work
+                            report = GetPossibleSurfaceMatches(surface, testSurfaces, report);
+
+                            AddToOutPut("Test for Surface number " + i + " Result", report, false);
+                            foreach (SurfaceDefinitions ts in testSurfaces)
+                            {
+                                if (globalMatchObject.MatchedSurfaceIds.ContainsKey(surface.SurfaceId))
+                                {
+                                    foreach (string id in globalMatchObject.MatchedSurfaceIds[surface.SurfaceId])
+                                    {
+                                        if (ts.SurfaceId == id)
+                                        {
+                                            if (report.passOrFail)
+                                                TestSurfaceTable += "<tr class='success'>" +
+                                                    "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
+                                                    "Detailed Surface Checks " + report.subTestIndex + "</a>" + "</td>" +
+
+                                                    "<td>" + surface.SurfaceId + "</td>" +
+                                                    "<td>" + ts.SurfaceId + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", surface.Tilt) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", ts.Tilt) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", surface.Azimuth) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", ts.Azimuth) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", surface.Height) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", ts.Height) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", surface.Width) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", ts.Width) + "</td>" +
+                                                    "<td>" + "Pass" + "</td>" +
+                                                    "</tr>";
+                                        }
+
+                                    }
+
+                                }
+                            }
+                            //if didn't find match means it failed the test
+                            if (!report.passOrFail)
+                                TestSurfaceTable += "<tr class='error'>" +
+                                                  "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
+                                                  "Detailed Surface Checks " + report.subTestIndex + "</a>" + "</td>" +
+                                                  "<td>" + surface.SurfaceId + "</td>" +
+                                                  "<td>" + "---</td>" +
+                                                  "<td>" + String.Format("{0:#,0.00}", surface.Tilt) + "</td>" +
+                                                  "<td>" + "---</td>" +
+                                                  "<td>" + String.Format("{0:#,0.00}", surface.Azimuth) + "</td>" +
+                                                  "<td>" + "---</td>" +
+                                                  "<td>" + String.Format("{0:#,0.00}", surface.Height) + "</td>" +
+                                                  "<td>" + "---</td>" +
+                                                  "<td>" + String.Format("{0:#,0.00}", surface.Width) + "</td>" +
+                                                  "<td>" + "---</td>" +
+                                                  "<td>" + "Fail" + "</td>" +
+                                                  "</tr>";
+                            i += 1;
+                        }
+                        TestSurfaceTable += "</table></div><br/>";
+                    }
+                }
             }
             #endregion
 
@@ -881,6 +884,20 @@ namespace DOEgbXML
                 {
                     report = DOEgbXMLTestFunctions.TestWindowAreaByType(testSurfaces, standardSurfaces, report, units, null);
                     AddToOutPut("Window area Test", report, true);
+                }
+            }
+
+            //test 35 curved wall test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Curved_Wall_Test;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestCurvedWallSurfaceArea(testSurfaces, report, units);
+                    AddToOutPut("Curved Wall area Test", report, true);
                 }
             }
 

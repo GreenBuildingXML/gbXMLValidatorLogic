@@ -142,7 +142,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
             }
-            else if (testname == "Test4")
+            else if (testname == "test4")
             {
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
@@ -175,7 +175,7 @@ namespace DOEgbXML
                 //As of Feb 13 2013, this test is for a future release.  Placeholder only
                 TestCriteriaDictionary.Add(TestType.Shell_Geom_RHR, false);
             }
-            else if (testname == "Test5")
+            else if (testname == "test5")
             {
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
@@ -208,7 +208,7 @@ namespace DOEgbXML
                 //As of Feb 13 2013, this test is for a future release.  Placeholder only
                 TestCriteriaDictionary.Add(TestType.Shell_Geom_RHR, false);
             }
-            else if (testname == "Test7")
+            else if (testname == "test17")
             {
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
@@ -219,7 +219,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, true);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
-                TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
+                TestCriteriaDictionary.Add(TestType.Total_Surface_Count, true);
                 TestCriteriaDictionary.Add(TestType.Exterior_Wall_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Underground_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Interior_Wall_Surface_Count, false);
@@ -227,8 +227,8 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
-                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
+                TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Skylight_Count, false);
@@ -240,6 +240,16 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Detailed_Opening_Checks, true);
                 //As of Feb 13 2013, this test is for a future release.  Placeholder only
                 TestCriteriaDictionary.Add(TestType.Shell_Geom_RHR, false);
+                //As of July 07 2020, this test is added as requirements for certification L2 test
+                //RP-1810
+                TestCriteriaDictionary.Add(TestType.Exterior_Wall_Area, true);
+                TestCriteriaDictionary.Add(TestType.Roof_Area, true);
+                TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
+                TestCriteriaDictionary.Add(TestType.Shade_Area, false);
+                TestCriteriaDictionary.Add(TestType.Assembly_Test, true);
+                TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
+                TestCriteriaDictionary.Add(TestType.Air_Area, false);
+                TestCriteriaDictionary.Add(TestType.Curved_Wall_Test, true);
             }
             else if (testname == "Test8")
             {
