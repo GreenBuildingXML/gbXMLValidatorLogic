@@ -37,6 +37,7 @@ namespace DOEgbXML
         public string table;
         public bool overallPassTest = true;
         public int failCounter = 0;
+        public int successCounter = 0;
         DOEgbXMLTestCriteriaObject TestCriteria;
         DOEgbXMLTestDetail TestDetail;
         gbXMLMatches globalMatchObject;
@@ -902,6 +903,20 @@ namespace DOEgbXML
                 }
             }
 
+            //test 36 operation schedul test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.SCHEDULEDIFFERENCES;
+            report.testType = TestType.Operation_Sched_Test;
+            units = DOEgbXMLBasics.MeasurementUnits.dimensionless.ToString();
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestHVACOperationSchedule(report, gbXMLdocs, gbXMLnsm, units);
+                    AddToOutPut("Operation Schedule Test", report, true);
+                }
+            }
+
             #region opening detailed test
             //openings detailed tests
             List<OpeningDefinitions> TestOpenings = new List<OpeningDefinitions>();
@@ -1061,10 +1076,12 @@ namespace DOEgbXML
                 if (warningTestBool)
                 {
                     output += "<h4 class='text-warning'>" + report.longMsg + "</h4>";
+                    successCounter++;
                 }
                 else
                 {
                     output += "<h4 class='text-success'>" + report.longMsg + "</h4>";
+                    successCounter++;
                 }
             }
             else
