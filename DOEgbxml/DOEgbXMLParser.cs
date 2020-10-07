@@ -2735,9 +2735,9 @@ namespace DOEgbXML
                                 if (testStoryHeight.ContainsKey(standardPair2.Key))
                                 {
                                     string message = "Matched Standard File's " + standardPair2.Value + " with Test File's " + testStoryHeight[standardPair2.Key] + " @ " + standardPair2.Key + Units.ToString() + " Exactly";
-                                    report.MessageDict.Add(standardPair2.Value, message);
-                                    report.TestPassedDict.Add(standardPair2.Value, true);
-                                    report.OutputTypeDict.Add(standardPair2.Value, OutPutEnum.Matched);
+                                    report.MessageDict.Add(standardPair2.Key, message);
+                                    report.TestPassedDict.Add(standardPair2.Key, true);
+                                    report.OutputTypeDict.Add(standardPair2.Key, OutPutEnum.Matched);
                                     /*
                                      * ADD test results when find exact match - WX 07072020 RP-1810
                                      */
@@ -2768,15 +2768,15 @@ namespace DOEgbXML
                                 }
                                 if (StoryHeightMin < report.tolerance)
                                 {
-                                    report.MessageDict.Add(standLevel, "Matched Standard File's " + standardPair2.Value + " @ " + standardPair2.Key + Units.ToString() + " within the Tolerance allowed");
-                                    report.TestPassedDict.Add(standLevel, true);
-                                    report.OutputTypeDict.Add(standLevel, OutPutEnum.Warning);
+                                    report.MessageDict.Add(standardPair2.Key, "Matched Standard File's " + standardPair2.Value + " @ " + standardPair2.Key + Units.ToString() + " within the Tolerance allowed");
+                                    report.TestPassedDict.Add(standardPair2.Key, true);
+                                    report.OutputTypeDict.Add(standardPair2.Key, OutPutEnum.Warning);
                                 }
                                 else
                                 {
-                                    report.MessageDict.Add(standLevel, "Standard File's " + standardPair2.Value + " equivalent was not found in the test file.  The closest level in the test file was found at " + equivLevel + " in the test file.  The difference in heights was " + StoryHeightMin.ToString() + Units.ToString());
-                                    report.TestPassedDict.Add(standLevel, false);
-                                    report.OutputTypeDict.Add(standLevel, OutPutEnum.Failed);
+                                    report.MessageDict.Add(standardPair2.Key, "Standard File's " + standardPair2.Value + " equivalent was not found in the test file.  The closest level in the test file was found at " + equivLevel + " in the test file.  The difference in heights was " + StoryHeightMin.ToString() + Units.ToString());
+                                    report.TestPassedDict.Add(standardPair2.Key, false);
+                                    report.OutputTypeDict.Add(standardPair2.Key, OutPutEnum.Failed);
                                 }
                             }
                             return report;
@@ -4934,7 +4934,7 @@ namespace DOEgbXML
 
             try
             {
-                report.MessageList.Add("Standard Surface Id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a>");
+                report.MessageList.Add("Test Surface Id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a>");
                 //initialize the return list
                 //alternate between these two to filter out bad matches
                 List<SurfaceDefinitions> possiblesList1 = new List<SurfaceDefinitions>();
