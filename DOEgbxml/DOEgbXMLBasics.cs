@@ -24,6 +24,7 @@ namespace DOEgbXML
             ft,
             spaces,
             levels,
+            dimensionless
         }
 
         public class Tolerances
@@ -83,6 +84,7 @@ namespace DOEgbXML
             //RP1810 new tolerances
             public const double RVALUE = 0.05; //ft2-F-hr/Btu
             public const double SPECIFICHEAT = 25;//BTUPerLbF
+            public const double SCHEDULEDIFFERENCES = 0.1;//10% schedule differences
         }
 
         static public double FindTilt(Vector.MemorySafe_CartVect normalVector)

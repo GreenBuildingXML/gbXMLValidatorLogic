@@ -750,5 +750,112 @@ namespace DOEgbXML
             }
             return report;
         }
+
+        public static DOEgbXMLReportingObj TestHVACSystem(DOEgbXMLReportingObj report, List<XmlDocument> gbXMLDocs, List<XmlNamespaceManager> gbXMLnsm, string Units)
+        {
+
+            //get HVAC system
+            DOEgbXMLPTAC testPTAC = new DOEgbXMLPTAC(gbXMLDocs[0], gbXMLnsm[0]);
+            DOEgbXMLPTAC standardPTAC = new DOEgbXMLPTAC(gbXMLDocs[1], gbXMLnsm[1]);
+
+
+            //compare the HVAC operation schedule
+            DOEgbXMLSchedule testSchedule = new DOEgbXMLSchedule(gbXMLDocs[0], gbXMLnsm[0]);
+            //check if the process is successful.
+            Dictionary<string, string> scheduleMsg = testSchedule.ErrorMessage;
+            if(scheduleMsg.Count > 0)
+            {
+                foreach (KeyValuePair<string, string> msgKVP in scheduleMsg)
+                {
+                    report.MessageList.Add(msgKVP.Value);
+                }
+                report.longMsg = "The Test File's Operation Schedules are incomplete, the process is halted, Check detail message for the errors.";
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                return report;
+            }
+            
+            DOEgbXMLSchedule standardSchedule = new DOEgbXMLSchedule(gbXMLDocs[1], gbXMLnsm[1]);
+            string testOperationSchedule = testPTAC.OperationScheduleId;
+            string standardOperationSchedule = standardPTAC.OperationScheduleId;
+
+            string testOperationType = testSchedule.SchedTypeMap[testOperationSchedule];
+            string standardOperationType = standardSchedule.SchedTypeMap[standardOperationSchedule];
+
+            if (!testOperationType.Equals(standardOperationType, StringComparison.InvariantCultureIgnoreCase))
+            {
+                report.MessageDict.Add("testOperationSchedule", "The Test Operation schedule: <a class='" + testOperationSchedule + "'>" + testOperationSchedule + "</a> type is different from standard operation schedule. " +
+                    "Test operation schedule type: " + testOperationType + ", Stanard operation schedule type: " + standardOperationType);
+                report.TestPassedDict.Add("testOperationSchedule", false);
+                report.OutputTypeDict.Add("testOperationSchedule", OutPutEnum.Failed);
+            }
+
+            List<double> testAnnualOperationSchedule = testSchedule.SchedValueMap[testOperationSchedule];
+            List<double> standardAnnualOperationSchedule = standardSchedule.SchedValueMap[standardOperationSchedule];
+            //calculate the RSME
+            if(testAnnualOperationSchedule.Count != standardAnnualOperationSchedule.Count)
+            {
+                report.MessageDict.Add("testOperationSchedule", "The Test operation schedule: <a class='" + testOperationSchedule + "'>" + testOperationSchedule + "</a> is not completed. Number of Datapoint in the test operation schedule: " + testAnnualOperationSchedule.Count +
+                    "; Number of Datapoints in the standard operation schedule: " + standardAnnualOperationSchedule.Count);
+                report.TestPassedDict.Add("testOperationSchedule", false);
+                report.OutputTypeDict.Add("testOperationSchedule", OutPutEnum.Failed);
+            }
+            else
+            {
+                double sum = 0.0;
+                for(int i=0; i<testAnnualOperationSchedule.Count; i++)
+                {
+                    double differences = testAnnualOperationSchedule[i] - standardAnnualOperationSchedule[i];
+                    sum = sum + Math.Pow(differences, 2);
+                }
+
+                double rmse = Math.Sqrt(sum);
+                if(rmse == 0)
+                {
+                    report.MessageDict.Add("schedule", "The Test operation schedule: <a class='" + testOperationSchedule + "'>" + testOperationSchedule + "</a> exactly matches the standard schedule");
+                    report.TestPassedDict.Add("schedule", true);
+                    report.OutputTypeDict.Add("schedule", OutPutEnum.Matched);
+                }else if(rmse < report.tolerance)
+                {
+                    report.MessageDict.Add("schedule", "The Test operation schedule: <a class='" + testOperationSchedule + "'>" + testOperationSchedule + "</a> matches the standard schedule withint the tolerance, Tolerance (RMSE): " + report.tolerance);
+                    report.TestPassedDict.Add("schedule", true);
+                    report.OutputTypeDict.Add("schedule", OutPutEnum.Warning);
+                }
+                else
+                {
+                    report.MessageDict.Add("schedule", "The Test operation schedule: <a class='" + testOperationSchedule + "'>" + testOperationSchedule + "</a> does not match the standard schedule, The RMSE is: " + rmse + ", higher than the tolerance: " + report.tolerance);
+                    report.TestPassedDict.Add("schedule", false);
+                    report.OutputTypeDict.Add("schedule", OutPutEnum.Failed);
+                }
+            }
+            return report;
+        }
+
+        public static DOEgbXMLReportingObj TestHVACOperationSchedule(DOEgbXMLReportingObj report, List<XmlDocument> gbXMLDocs, List<XmlNamespaceManager> gbXMLnsm, string Units)
+        {
+            DOEgbXMLSchedule testSchedule = new DOEgbXMLSchedule(gbXMLDocs[0], gbXMLnsm[0]);
+            DOEgbXMLSchedule standardSchedule = new DOEgbXMLSchedule(gbXMLDocs[1], gbXMLnsm[1]);
+
+            Dictionary<string, List<double>> testSchedValue = testSchedule.SchedValueMap;
+            Dictionary<string, List<double>> standardSchedValue = standardSchedule.SchedValueMap;
+
+            foreach(KeyValuePair<string, List<double>> entry in testSchedValue)
+            {
+                List<double> valueList = entry.Value;
+                int counter = 0;
+                for(int i=0; i<valueList.Count; i++)
+                {
+                    counter++;
+                }
+                Console.WriteLine("Number of data point: " + counter);
+
+            }
+
+            report.passOrFail = true;
+
+            return report;
+        }
     }
+
+
 }

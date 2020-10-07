@@ -55,6 +55,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Assembly_Test, true);
                 TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
+                TestCriteriaDictionary.Add(TestType.Operation_Sched_Test, true);
             }
             else if (testname == "test2")
             {

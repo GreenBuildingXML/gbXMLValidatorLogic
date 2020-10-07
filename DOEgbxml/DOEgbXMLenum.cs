@@ -62,7 +62,8 @@ namespace DOEgbXML
         Space_Name_Test,
         Plenum_Volume_Test,
         Window_Area_Test,
-        Curved_Wall_Test
+        Curved_Wall_Test,
+        Operation_Sched_Test
     }
 
     public enum OutPutEnum
