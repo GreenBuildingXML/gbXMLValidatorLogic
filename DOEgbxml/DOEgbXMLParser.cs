@@ -264,6 +264,7 @@ namespace DOEgbXML
             report.TestPassedDict = new Dictionary<string, bool>();
             report.OutputTypeDict = new Dictionary<string, OutPutEnum>();
             report.MessageDict = new Dictionary<string, string>();
+            report.KeyToIDDict = new Dictionary<string, string>();
 
             //Set up the Global Pass/Fail criteria for the test case file
             TestCriteria = new DOEgbXMLTestCriteriaObject();
@@ -1020,6 +1021,7 @@ namespace DOEgbXML
             CreateSummaryTable();
 
         }
+
         private void AddToOutPut(string title, DOEgbXMLReportingObj report, bool createTable)
         {
             //add report to report list
@@ -1080,11 +1082,19 @@ namespace DOEgbXML
                 var keys = report.MessageDict.Keys;
                 foreach(string key in keys)
                 {
-                    output += "<p class='text-info' key='" + key + "'><a class='model-link'>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+                    if (report.KeyToIDDict.ContainsKey(key))
+                    {
+                        output += "<p class='text-info' key='" + key + "'><a class='" + report.KeyToIDDict[key] + "'>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+                    }
+                    else
+                    {
+                        output += "<p class='text-info' key='" + key + "'><a class='" + key + "'>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+
+                    }
+
                 }
             }
             
-
             //message list, print out each message in the list if there are any
             if (report.MessageList.Count > 0)
                 for (int i = 0; i < report.MessageList.Count; i++)
@@ -1374,8 +1384,8 @@ namespace DOEgbXML
                     if (testOpening.ParentAzimuth == standardOpening.ParentAzimuth && testOpening.ParentTilt == standardOpening.ParentTilt)
                     {
                         report.MessageList.Add("Candidate Found.  Test file opening has EXACTLY matched its parent surface azimuth and tilt with the standard opening parent surface azimuth and tilt.");
-                        report.MessageList.Add("Test Opening " + testOpening.OpeningId + "'s [parent, azimuth, tilt]: [" + testOpening.ParentSurfaceId + ", " + testOpening.ParentAzimuth + ", " + testOpening.ParentTilt + "]");
-                        report.MessageList.Add("Standard Opening " + standardOpening.OpeningId + "'s [parent, azimuth, tilt]: [" + standardOpening.ParentSurfaceId + "," + standardOpening.ParentAzimuth + ", " + standardOpening.ParentTilt + "]");
+                        report.MessageList.Add("Test Opening <a class='" + testOpening.OpeningId +"'>" + testOpening.OpeningId + "</a>'s [parent, azimuth, tilt]: [" + testOpening.ParentSurfaceId + ", " + testOpening.ParentAzimuth + ", " + testOpening.ParentTilt + "]");
+                        report.MessageList.Add("Standard Opening <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>'s [parent, azimuth, tilt]: [" + standardOpening.ParentSurfaceId + "," + standardOpening.ParentAzimuth + ", " + standardOpening.ParentTilt + "]");
 
                         matchedParentAz = true;
                         matchedParentTilt = true;
@@ -1387,8 +1397,8 @@ namespace DOEgbXML
                         if (azDifference < DOEgbXMLBasics.Tolerances.SurfaceAzimuthTolerance && tiltDifference < DOEgbXMLBasics.Tolerances.SurfaceTiltTolerance)
                         {
                             report.MessageList.Add("Candidate found.  Test file opening HAS matched WITHIN ALLOWABLE TOLERANCE its parent surface azimuth and tilt with the standard opening parent surface azimuth and tilt.");
-                            report.MessageList.Add("Test Opening " + testOpening.OpeningId + "'s [parent, azimuth, tilt]: [" + testOpening.ParentSurfaceId + ", " + testOpening.ParentAzimuth + ", " + testOpening.ParentTilt + "]");
-                            report.MessageList.Add("Standard Opening " + standardOpening.OpeningId + "'s [parent, azimuth, tilt]: [" + standardOpening.ParentSurfaceId + "," + standardOpening.ParentAzimuth + ", " + standardOpening.ParentTilt + "]");
+                            report.MessageList.Add("Test Opening <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>'s [parent, azimuth, tilt]: [" + testOpening.ParentSurfaceId + ", " + testOpening.ParentAzimuth + ", " + testOpening.ParentTilt + "]");
+                            report.MessageList.Add("Standard Opening <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>'s [parent, azimuth, tilt]: [" + standardOpening.ParentSurfaceId + "," + standardOpening.ParentAzimuth + ", " + standardOpening.ParentTilt + "]");
 
                             matchedParentAz = true;
                             matchedParentTilt = true;
@@ -1396,8 +1406,8 @@ namespace DOEgbXML
                         else
                         {
                             report.MessageList.Add("Candidate rejected.  Test file opening HAS NOT matched WITHIN ALLOWABLE TOLERANCE its parent surface azimuth and tilt with the standard opening parent surface azimuth and tilt.");
-                            report.MessageList.Add("Test Opening " + testOpening.OpeningId + "'s [parent, azimuth, tilt]: [" + testOpening.ParentSurfaceId + ", " + testOpening.ParentAzimuth + ", " + testOpening.ParentTilt + "]");
-                            report.MessageList.Add("Standard Opening " + standardOpening.OpeningId + "'s [parent, azimuth, tilt]: [" + standardOpening.ParentSurfaceId + "," + standardOpening.ParentAzimuth + ", " + standardOpening.ParentTilt + "]");
+                            report.MessageList.Add("Test Opening <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>'s [parent, azimuth, tilt]: [" + testOpening.ParentSurfaceId + ", " + testOpening.ParentAzimuth + ", " + testOpening.ParentTilt + "]");
+                            report.MessageList.Add("Standard Opening <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>'s [parent, azimuth, tilt]: [" + standardOpening.ParentSurfaceId + "," + standardOpening.ParentAzimuth + ", " + standardOpening.ParentTilt + "]");
                             report.MessageList.Add("</br>");
                         }
                     }
@@ -1415,7 +1425,7 @@ namespace DOEgbXML
                         if (possibleMatches.Count == 0)
                         {
                             //no candidates found
-                            report.MessageList.Add("No candidates found in the test file to match standard file opening " + standardOpening.OpeningId);
+                            report.MessageList.Add("No candidates found in the test file to match standard file opening <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>");
                             report.passOrFail = false;
                             report.longMsg = "Test to find suitable opening candidate in the test file has failed.  Parent Tilt and Azimuth matches could not be established.";
                             //no need to go further
@@ -1462,7 +1472,7 @@ namespace DOEgbXML
                     {
                         if (possibleMatches2.Count == 0)
                         {
-                            report.MessageList.Add("No candidates found in the test file to match standard file opening " + standardOpening.OpeningId);
+                            report.MessageList.Add("No candidates found in the test file to match standard file opening <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>");
                             report.passOrFail = false;
                             report.longMsg = "Test to find suitable opening candidate in the test file has failed.  Parent Tilt and Azimuth matches were established, but these candidates did not produce good polyLoop coordinate matches.";
                             //no need to go further
@@ -1473,7 +1483,6 @@ namespace DOEgbXML
                 }
                 //next set of tests 
                 //polyloop area tests
-                report.MessageList.Add("</br>");
                 report.MessageList.Add("Starting Opening Surface Area Match test.........");
                 possibleMatches.Clear();
                 i = 0;
@@ -1537,18 +1546,18 @@ namespace DOEgbXML
                                 {
                                     //then it perfectly matches, go on to check the poly loop coordinates
                                     //then check the insertion point
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard opening: " + standardOpening.OpeningId + " exactly.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> exactly.");
                                     possibleMatches.Add(testOpening);
                                 }
                                 else
                                 {
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard opening: " + standardOpening.OpeningId + " within the allowable area percentage tolerance.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>'s polyloop surface area matches the polyLoop surface area of the standard opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> within the allowable area percentage tolerance.");
                                     possibleMatches.Add(testOpening);
                                 }
                             }
                             else
                             {
-                                report.MessageList.Add("The standard file opening cannot find a match for its surface area of opening: " + standardOpening.OpeningId + " through a comparison of its polyloop coordinates with test opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("The standard file opening cannot find a match for its surface area of opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>'s through a comparison of its polyloop coordinates with test opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>");
                                 //don't return here, it will be returned below
                             }
                         }
@@ -1557,7 +1566,7 @@ namespace DOEgbXML
                             //by definition, the Window opening should always use coordinates that create a normal vector that points in the 
                             //positive or negative X direction.  If the test file does not do this, then this is in violation of the 
                             //gbXML spec
-                            report.longMsg = ("This test has failed because the test opening" + testOpening.OpeningId + "has polyloop coordinates ");
+                            report.longMsg = ("This test has failed because the test opening <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> has polyloop coordinates ");
                             report.longMsg += (" that do not have the same normal vector as the standard opening.");
                             report.passOrFail = false;
                         }
@@ -1617,18 +1626,18 @@ namespace DOEgbXML
                                 {
                                     //then it perfectly matches, go on to check the poly loop coordinates
                                     //then check the insertion point
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard Opening: " + standardOpening.OpeningId + " exactly.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> exactly.");
                                     possibleMatches.Add(testOpening);
                                 }
                                 else
                                 {
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard Opening: " + standardOpening.OpeningId + " within the allowable area percentage tolerance.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> within the allowable area percentage tolerance.");
                                     possibleMatches.Add(testOpening);
                                 }
                             }
                             else
                             {
-                                report.MessageList.Add("The standard file opening cannot find a match for its surface area of Opening: " + standardOpening.OpeningId + " through a comparison of its polyloop coordinates with test Opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("The standard file opening cannot find a match for its surface area of Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> through a comparison of its polyloop coordinates with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                 //don't return here, it will be returned below
                             }
                         }
@@ -1637,7 +1646,7 @@ namespace DOEgbXML
                             //by definition, the Window opening should always use coordinates that create a normal vector that points in the 
                             //positive or negative X direction.  If the test file does not do this, then this is in violation of the 
                             //gbXML spec
-                            report.longMsg = ("This test has failed because the test opening" + testOpening.OpeningId + "has polyloop coordinates ");
+                            report.longMsg = ("This test has failed because the test opening <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>has polyloop coordinates ");
                             report.longMsg += (" that do not have the same normal vector as the standard opening.");
                             report.passOrFail = false;
                         }
@@ -1692,18 +1701,18 @@ namespace DOEgbXML
                                 {
                                     //then it perfectly matches, go on to check the poly loop coordinates
                                     //then check the insertion point
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard Opening: " + standardOpening.OpeningId + " exactly.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> exactly.");
                                     possibleMatches.Add(testOpening);
                                 }
                                 else
                                 {
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard Opening: " + standardOpening.OpeningId + " within the allowable area percentage tolerance.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> within the allowable area percentage tolerance.");
                                     possibleMatches.Add(testOpening);
                                 }
                             }
                             else
                             {
-                                report.MessageList.Add("The standard file opening cannot find a match for its surface area of Opening: " + standardOpening.OpeningId + " through a comparison of its polyloop coordinates with test Opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("The standard file opening cannot find a match for its surface area of Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> through a comparison of its polyloop coordinates with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                 //don't return here, it will be returned below
                             }
                         }
@@ -1712,7 +1721,7 @@ namespace DOEgbXML
                             //by definition, the Window opening should always use coordinates that create a normal vector that points in the 
                             //positive or negative X direction.  If the test file does not do this, then this is in violation of the 
                             //gbXML spec
-                            report.longMsg = ("This test has failed because the test opening" + testOpening.OpeningId + "has polyloop coordinates ");
+                            report.longMsg = ("This test has failed because the test opening <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> has polyloop coordinates ");
                             report.longMsg += (" that do not have the same normal vector as the standard opening.");
                             report.passOrFail = false;
                         }
@@ -1826,18 +1835,18 @@ namespace DOEgbXML
                             {
                                 //then it perfectly matches, go on to check the poly loop coordinates
                                 //then check the insertion point
-                                report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard Opening: " + standardOpening.OpeningId + " exactly.");
+                                report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> exactly.");
                                 possibleMatches.Add(testOpening);
                             }
                             else
                             {
-                                report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " polyloop surface area matches the polyLoop surface area of the standard Opening: " + standardOpening.OpeningId + " within the allowable area percentage tolerance.");
+                                report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> polyloop surface area matches the polyLoop surface area of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> within the allowable area percentage tolerance.");
                                 possibleMatches.Add(testOpening);
                             }
                         }
                         else
                         {
-                            report.MessageList.Add("The standard file opening cannot find a match for its surface area of Opening: " + standardOpening.OpeningId + " through a comparison of its polyloop coordinates with test Opening: " + testOpening.OpeningId);
+                            report.MessageList.Add("The standard file opening cannot find a match for its surface area of Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> through a comparison of its polyloop coordinates with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                             //don't return here, it will be returned below
                         }
 
@@ -1847,16 +1856,15 @@ namespace DOEgbXML
                     {
                         if (possibleMatches.Count == 0)
                         {
-                            report.MessageList.Add("No area match could be found for standard opening: " + standardOpening.OpeningId + ".");
-                            report.longMsg = "The search routine has ended and could not find a match for opening: " + standardOpening.OpeningId +
-                                ".  Attempt to match the area of the standard file with test file openings failed.";
+                            report.MessageList.Add("No area match could be found for standard opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>.");
+                            report.longMsg = "The search routine has ended and could not find a match for opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>. Attempt to match the area of the standard file with test file openings failed.";
                             return report;
 
                         }
                         else
                         {
                             //you are good to go with some more matches
-                            report.MessageList.Add("Area matching SUCCESS for standard file Opening id: " + standardOpening.OpeningId);
+                            report.MessageList.Add("Area matching SUCCESS for standard file Opening id: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>");
                             report.MessageList.Add("Commencing comparisons of height, width, and insertion point.");
                             break;
                         }
@@ -1865,7 +1873,6 @@ namespace DOEgbXML
                     #endregion
                 }
                 //test the width and height, if applicable
-                report.MessageList.Add("</br>");
                 report.MessageList.Add("Starting Width and Height Match test.........");
                 possibleMatches2.Clear();
                 i = 0;
@@ -1896,30 +1903,30 @@ namespace DOEgbXML
                             {
                                 if (widthDifference == 0)
                                 {
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " reported Width value matches the Width value of the standard Opening: " + standardOpening.OpeningId + " exactly.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> reported Width value matches the Width value of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> exactly.");
                                 }
                                 else
                                 {
-                                    report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " reported Width value matches the Width value of the standard Opening: " + standardOpening.OpeningId + " within the allowable tolerance.");
+                                    report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> reported Width value matches the Width value of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> within the allowable tolerance.");
                                 }
                                 //check the height
                                 if (heightDiffefence <= DOEgbXMLBasics.Tolerances.OpeningHeightTolerance)
                                 {
                                     if (heightDiffefence == 0)
                                     {
-                                        report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " reported Height value matches the Height value of the standard Opening: " + standardOpening.OpeningId + " exactly.");
+                                        report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> reported Height value matches the Height value of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> exactly.");
                                         possibleMatches2.Add(testOpening);
                                     }
                                     else
                                     {
-                                        report.MessageList.Add("The test Opening: " + testOpening.OpeningId + " reported Height value matches the Height value of the standard Opening: " + standardOpening.OpeningId + " within the allowable tolerance.");
+                                        report.MessageList.Add("The test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a> reported Height value matches the Height value of the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> within the allowable tolerance.");
                                         possibleMatches2.Add(testOpening);
                                     }
                                 }
                                 else
                                 {
                                     //fail, did not match height
-                                    report.MessageList.Add("The standard file Opening: " + standardOpening.OpeningId + "The standard file opening cannot find a match for its surface area of Opening: " + standardOpening.OpeningId + " after comparison its Height value with test opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("The standard file Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> The standard file opening cannot find a match for its surface area of Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> after comparison its Height value with test opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     report.passOrFail = false;
                                     continue;
                                 }
@@ -1936,7 +1943,7 @@ namespace DOEgbXML
                         {
                             //let them know the the test opening is not a square or rectangle, but the standard file opening is
                             //go ahead and break out of the while loop because we aren't testing for width and height
-                            report.MessageList.Add("The standard file Opening: " + standardOpening.OpeningId + " is a rectangle or square, but the test file Opening: " + standardOpening.OpeningId + " is not.  Cannot test for a valid width and height.");
+                            report.MessageList.Add("The standard file Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>'s is a rectangle or square, but the test file Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> is not.  Cannot test for a valid width and height.");
                             report.MessageList.Add("Searching for another test Opening.");
                             continue;
                         }
@@ -1945,7 +1952,7 @@ namespace DOEgbXML
                     {
                         //tell them that the widths and Heights will Not be checked
                         //because the standard file opening is not a square or rectangle
-                        report.MessageList.Add("Will not be testing for the Width and Height values for standard Opening: " + standardOpening.OpeningId + ".  The Opening is not shaped like a rectangle or square.");
+                        report.MessageList.Add("Will not be testing for the Width and Height values for standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>.  The Opening is not shaped like a rectangle or square.");
                         report.MessageList.Add("Going on to check insertion point accuracy.");
                         //needed to transfer values over to possibleMatches2, so deep copy
                         possibleMatches2 = new List<OpeningDefinitions>(possibleMatches);
@@ -1957,16 +1964,15 @@ namespace DOEgbXML
                         //means that there is no match for width and height
                         if (possibleMatches2.Count == 0)
                         {
-                            report.MessageList.Add("There is no match found for the width and height for Opening: " + standardOpening.OpeningId);
+                            report.MessageList.Add("There is no match found for the width and height for Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>");
                             report.passOrFail = false;
-                            report.longMsg = "The opening test has ended at the search for width and height values equal to standard Opening: " + standardOpening.OpeningId;
+                            report.longMsg = "The opening test has ended at the search for width and height values equal to standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>";
                             return report;
                         }
                         break;
                     }
 
                 }
-                report.MessageList.Add("</br>");
                 report.MessageList.Add("Starting Insertion Point Coordinate Match test.........");
                 possibleMatches.Clear();
                 //test the insertion point coordinates
@@ -1984,22 +1990,22 @@ namespace DOEgbXML
                         if (diffX == 0)
                         {
                             //perfect X coordinate match
-                            report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point X-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                            report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point X-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                             if (diffY == 0)
                             {
                                 //perfect Y coordinate match
-                                report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point Y-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point Y-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                 if (diffZ == 0)
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point Z-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point Z-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     possibleMatches.Add(testOpening);
 
                                 }
                                 else
                                 {
                                     // Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with Test opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with Test opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     //we continue because we search for other matches if there are any
                                     possibleMatches.Add(testOpening);
 
@@ -2008,18 +2014,18 @@ namespace DOEgbXML
                             else
                             {
                                 //y-coordinate is within tolerance
-                                report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point Y-Coordinate when compared with Test opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point Y-Coordinate when compared with Test opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                 if (diffZ == 0)
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point Z-Coordinate when compared with Test opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point Z-Coordinate when compared with Test opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     possibleMatches.Add(testOpening);
 
                                 }
                                 else
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     //we continue because we search for other matches if there are any
                                     possibleMatches.Add(testOpening);
 
@@ -2030,22 +2036,22 @@ namespace DOEgbXML
                         // X is within tolerance
                         else
                         {
-                            report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point X-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                            report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point X-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                             if (diffY == 0)
                             {
                                 //perfect Y coordinate match
-                                report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point Y-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point Y-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                 if (diffZ == 0)
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point Z-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point Z-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     possibleMatches.Add(testOpening);
 
                                 }
                                 else
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     //we continue because we search for other matches if there are any
                                     possibleMatches.Add(testOpening);
 
@@ -2054,18 +2060,18 @@ namespace DOEgbXML
                             else
                             {
                                 //y-coordinate is within tolerance
-                                report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point Y-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point Y-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                 if (diffZ == 0)
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a perfect match for its insertion point Z-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a perfect match for its insertion point Z-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     possibleMatches.Add(testOpening);
 
                                 }
                                 else
                                 {
                                     //perfect Z coordinate match
-                                    report.MessageList.Add("Standard Opening: " + standardOpening.OpeningId + " has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with test Opening: " + testOpening.OpeningId);
+                                    report.MessageList.Add("Standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> has found a match within allowable tolerances for its insertion point Z-Coordinate when compared with test Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                                     //we continue because we search for other matches if there are any
                                     possibleMatches.Add(testOpening);
 
@@ -2082,7 +2088,7 @@ namespace DOEgbXML
                         {
                             List<string> openingMatch = new List<string>();
                             openingMatch.Add(possibleMatches[0].OpeningId);
-                            report.MessageList.Add("Standard file Opening: " + standardOpening.OpeningId + " is matched to test file Opening: " + testOpening.OpeningId);
+                            report.MessageList.Add("Standard file Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> is matched to test file Opening: <a class='" + testOpening.OpeningId + "'>" + testOpening.OpeningId + "</a>");
                             globalMatchObject.MatchedOpeningIds.Add(standardOpening.OpeningId, openingMatch);
                             report.passOrFail = true;
                             return report;
@@ -2091,16 +2097,16 @@ namespace DOEgbXML
                         {
                             if (possibleMatches.Count == 0)
                             {
-                                report.MessageList.Add("Standard file Opening: " + standardOpening.OpeningId + " found no match for insertion point in the test file of the remaining candidates.");
+                                report.MessageList.Add("Standard file Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> found no match for insertion point in the test file of the remaining candidates.");
                                 report.passOrFail = false;
                                 return report;
                             }
                             else
                             {
-                                report.MessageList.Add("Standard file Opening: " + standardOpening.OpeningId + " is matched to multiple openings:");
+                                report.MessageList.Add("Standard file Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> is matched to multiple openings:");
                                 foreach (OpeningDefinitions opening in possibleMatches)
                                 {
-                                    report.MessageList.Add("Test Opening:" + opening.OpeningId + "matched insertion point");
+                                    report.MessageList.Add("Test Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a> matched insertion point");
                                 }
                                 //resolve by trying to match to the standard opening and test opening parent surfaces.
                                 //for the standard opening
@@ -2116,8 +2122,8 @@ namespace DOEgbXML
                                             {
                                                 //this is the match we want
                                                 //else we would have to continue
-                                                report.MessageList.Add("The test Opening: " + openingRemaining.OpeningId + " has been matched to the standard Opening: " + standardOpening.OpeningId +
-                                                    ".  Their parent surface ids have been matched.  Thus the conflict has been resolved.  (Standard opening parent surface Id, test opening parent surface Id" + standardOpening.ParentSurfaceId + "," + openingRemaining.ParentSurfaceId);
+                                                report.MessageList.Add("The test Opening: <a class='" + openingRemaining.OpeningId + "'>" + openingRemaining.OpeningId + "</a> has been matched to the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>." +
+                                                    " Their parent surface ids have been matched.  Thus the conflict has been resolved.  (Standard opening parent surface Id, test opening parent surface Id <a class='" + standardOpening.ParentSurfaceId + "'>" + standardOpening.ParentSurfaceId + "</a>, <a class='" + openingRemaining.ParentSurfaceId + "'>" + openingRemaining.ParentSurfaceId + "</a>");
                                                 report.passOrFail = true;
                                                 List<string> openingMatch = new List<string>();
                                                 openingMatch.Add(possibleMatches[0].OpeningId);
@@ -2127,8 +2133,8 @@ namespace DOEgbXML
                                             else
                                             {
                                                 //do nothing.  Maybe report that the parent Surface Id does not match the standard Opening
-                                                report.MessageList.Add("Test Opening:" + openingRemaining.OpeningId + " does not match the standard Opening: " + standardOpening.OpeningId +
-                                                    ".  Their parent surface ids do not coincide.  (Standard Opening parent surface id, test Opening parent surface id)" + standardOpening.ParentSurfaceId + "," + openingRemaining.ParentSurfaceId);
+                                                report.MessageList.Add("Test Opening: <a class='" + openingRemaining.OpeningId + "'>" + openingRemaining.OpeningId + "</a> does not match the standard Opening: <a class='" + standardOpening.OpeningId + "'>" + standardOpening.OpeningId + "</a>." +
+                                                    "Their parent surface ids do not coincide.  (Standard Opening parent surface id, test Opening parent surface id) <a class='" + standardOpening.ParentSurfaceId + "'>" + standardOpening.ParentSurfaceId + "</a>, <a class='" + openingRemaining.ParentSurfaceId + "'>" + openingRemaining.ParentSurfaceId + "</a>");
                                             }
                                         }
                                     }
@@ -2347,9 +2353,9 @@ namespace DOEgbXML
                     }
                     else
                     {
-                        report.MessageList.Add("Test file's Surface, id: " + ts.SurfaceId + " has polyLoop coordinates that do not form a planar surface.  This fails the detailed surface tests and will not continue.");
+                        report.MessageList.Add("Test file's Surface, id: <a class='" + ts.SurfaceId + "'>" + ts.SurfaceId + "</a> has polyLoop coordinates that do not form a planar surface.  This fails the detailed surface tests and will not continue.");
                         report.passOrFail = false;
-                        report.longMsg = "Detailed surface test failed during the planar surface checks.  Without planar surfaces, this test cannot be safely executed.";
+                        report.longMsg = "Detailed surface test failed during the planar surface checks.  Surface id <a class='" +ts.SurfaceId + "'> " + ts.SurfaceId + "</a> has polyloop coordinate that do not form a planar surface. Without planar surfaces, this test cannot be safely executed.";
                         return report;
                     }
                 }
@@ -2643,6 +2649,7 @@ namespace DOEgbXML
             Dictionary<string, string> testStoryHeight = new Dictionary<string, string>();
             string key = null;
             string val = null;
+            string id = null;
             string standLevel = "";
 
             for (int i = 0; i < gbXMLDocs.Count; i++)
@@ -2656,29 +2663,27 @@ namespace DOEgbXML
                     int nodecount = nodes.Count;
                     foreach (XmlNode node in nodes)
                     {
+                        id = node.Attributes[0].Value;
                         XmlNodeList childNodes = node.ChildNodes;
                         foreach (XmlNode childNode in childNodes)
                         {
                             if (childNode.Name.ToString() == "Level") { key = childNode.InnerText; }
                             else if (childNode.Name.ToString() == "Name") { val = childNode.InnerText; }
                             else { continue; }
-                            if (i % 2 != 0)
+                        }
+                        if (i % 2 != 0)
+                        {
+                            if (key != null && val != null)
                             {
-                                if (key != null && val != null)
-                                {
-                                    testStoryHeight.Add(key, val);
-                                    key = null;
-                                    val = null;
-                                }
+                                testStoryHeight[key] = val;
+                                report.KeyToIDDict[key] = id;
                             }
-                            else
+                        }
+                        else
+                        {
+                            if (key != null && val != null)
                             {
-                                if (key != null && val != null)
-                                {
-                                    standardStoryHeight.Add(key, val);
-                                    key = null;
-                                    val = null;
-                                }
+                                standardStoryHeight.Add(key, val);
                             }
                         }
                     }
@@ -2756,7 +2761,6 @@ namespace DOEgbXML
                                     report.TestPassedDict.Add(standLevel, false);
                                     report.OutputTypeDict.Add(standLevel, OutPutEnum.Failed);
                                 }
-
                             }
                             return report;
                         }
@@ -3227,7 +3231,16 @@ namespace DOEgbXML
                         string area = spaceNode.InnerText;
                         if (i % 2 != 0)
                         {
-                            spaceId = spaceNode.ParentNode.Attributes[0].Value;
+
+                            XmlAttributeCollection AttrList = spaceNode.ParentNode.Attributes;
+                            foreach(XmlAttribute attr in AttrList)
+                            {
+                                if(attr.Name == "id")
+                                {
+                                    spaceId = attr.Value;
+                                }
+                            }
+
                             if (!testFileAreaDict.ContainsKey(spaceId))
                             {
                                 testFileAreaDict.Add(spaceId, Convert.ToDouble(area));
@@ -3235,7 +3248,15 @@ namespace DOEgbXML
                         }
                         else
                         {
-                            spaceId = spaceNode.ParentNode.Attributes[0].Value;
+                            XmlAttributeCollection AttrList = spaceNode.ParentNode.Attributes;
+                            foreach (XmlAttribute attr in AttrList)
+                            {
+                                if (attr.Name == "id")
+                                {
+                                    spaceId = attr.Value;
+                                }
+                            }
+
                             if (!standardFileAreaDict.ContainsKey(spaceId))
                             {
                                 standardFileAreaDict.Add(spaceId, Convert.ToDouble(area));
@@ -4896,8 +4917,7 @@ namespace DOEgbXML
 
             try
             {
-                report.MessageList.Add("Standard Surface Id: " + surface.SurfaceId);
-                report.MessageList.Add("</br>");
+                report.MessageList.Add("Standard Surface Id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a>");
                 //initialize the return list
                 //alternate between these two to filter out bad matches
                 List<SurfaceDefinitions> possiblesList1 = new List<SurfaceDefinitions>();
@@ -4930,21 +4950,18 @@ namespace DOEgbXML
                         if (adjSpaceIdMatch && testSurface.SurfaceType == surface.SurfaceType)
                         {
                             report.MessageList.Add("AdjancentSpaceId(s) and surfaceType Match.");
-                            report.MessageList.Add("Surface id: " + testSurface.SurfaceId + " is a candidate.");
-                            report.MessageList.Add("</br>");
+                            report.MessageList.Add("Surface id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> is a candidate.");
                             possiblesList1.Add(testSurface);
                         }
                     }
                 }
                 if (possiblesList1.Count == 1)
                 {
-                    report.MessageList.Add("Based on a comparison of the surface Type and Adjacent SpaceIds, there is " + possiblesList1.Count.ToString() + " surface in the test file that is a possible match for " + surface.SurfaceId + " of the Standard File.");
-                    report.MessageList.Add("<br/>");
+                    report.MessageList.Add("Based on a comparison of the surface Type and Adjacent SpaceIds, there is " + possiblesList1.Count.ToString() + " surface in the test file that is a possible match for <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> of the Standard File.");
                 }
                 else if (possiblesList1.Count > 1)
                 {
-                    report.MessageList.Add("Based on a comparison of the surface Type and Adjacent SpaceIds, there are " + possiblesList1.Count.ToString() + " surface in the test file that are possible matches for " + surface.SurfaceId + " of the Standard File.");
-                    report.MessageList.Add("<br/>");
+                    report.MessageList.Add("Based on a comparison of the surface Type and Adjacent SpaceIds, there are " + possiblesList1.Count.ToString() + " surface in the test file that are possible matches for <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> of the Standard File.");
                 }
                 else
                 {
@@ -4968,11 +4985,10 @@ namespace DOEgbXML
                         //if the tilt and azimuth is outside of tolerance
                         if (tiltDifference > DOEgbXMLBasics.Tolerances.SurfaceTiltTolerance || azimuthDifference > DOEgbXMLBasics.Tolerances.SurfaceAzimuthTolerance)
                         {
-                            report.MessageList.Add("Test file's Surface id: " + testSurface.SurfaceId + " azimuth and tilt match FAILED: ");
+                            report.MessageList.Add("Test file's Surface id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> azimuth and tilt match FAILED: ");
                             report.MessageList.Add("Test file surface (Azimuth, Tilt): (" + testSurface.Azimuth.ToString() + "," + testSurface.Tilt.ToString() + ")");
                             report.MessageList.Add("Standard file surface (Azimuth, Tilt): (" + surface.Azimuth.ToString() + "," + surface.Tilt.ToString());
                             report.MessageList.Add(testSurface.SurfaceId + " has been removed as a candidate for matching.");
-                            report.MessageList.Add("</br>");
                             continue;
                         }
                         //if the tilt and azimuth is within tolerance
@@ -4982,19 +4998,17 @@ namespace DOEgbXML
                             possiblesList2.Add(testSurface);
                             if (tiltDifference == 0 && azimuthDifference == 0)
                             {
-                                report.MessageList.Add("Test surface with id: " + testSurface.SurfaceId + " matches the standard surface tilt and azimuth exactly.");
+                                report.MessageList.Add("Test surface with id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> matches the standard surface tilt and azimuth exactly.");
                                 report.MessageList.Add("Test file surface (Azimuth, Tilt): (" + testSurface.Azimuth.ToString() + "," + testSurface.Tilt.ToString() + ")");
                                 report.MessageList.Add("Standard file surface (Azimuth, Tilt): (" + surface.Azimuth.ToString() + "," + surface.Tilt.ToString());
 
-                                report.MessageList.Add("</br>");
                             }
                             else
                             {
-                                report.MessageList.Add("Test surface with id: " + testSurface.SurfaceId + " is within the azimuth and tilt tolerances of " + DOEgbXMLBasics.Tolerances.SurfaceAzimuthTolerance + " and " + DOEgbXMLBasics.Tolerances.SurfaceTiltTolerance + ", respectively.  It matches the standard file surface within the allowable tolerance.");
+                                report.MessageList.Add("Test surface with id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> is within the azimuth and tilt tolerances of " + DOEgbXMLBasics.Tolerances.SurfaceAzimuthTolerance + " and " + DOEgbXMLBasics.Tolerances.SurfaceTiltTolerance + ", respectively.  It matches the standard file surface within the allowable tolerance.");
                                 report.MessageList.Add("Test file surface (Azimuth, Tilt): (" + testSurface.Azimuth.ToString() + "," + testSurface.Tilt.ToString() + ")");
                                 report.MessageList.Add("Standard file surface (Azimuth, Tilt): (" + surface.Azimuth.ToString() + "," + surface.Tilt.ToString());
 
-                                report.MessageList.Add("</br>");
                             }
                         }
                     }
@@ -5014,7 +5028,6 @@ namespace DOEgbXML
                 //list 2 is analyzed
                 //list 1 is free
                 report.MessageList.Add("Starting Surface Area Match tests......");
-                report.MessageList.Add("</br>");
                 if (possiblesList2.Count > 0)
                 {
                     //simple method from this point forward is just to simply start doing a polyloop check
@@ -5024,7 +5037,6 @@ namespace DOEgbXML
                     if (possiblesList2.Count == 1)
                     {
                         report.MessageList.Add("Only one Surface Candidate remaining from the original test pool.");
-                        report.MessageList.Add("<br/>");
                         //meaning there is only one candidate still available
                         //go on to test the polyLoop coordinates and the insertion point
                         possiblesList1.Add(possiblesList2[0]);
@@ -5069,7 +5081,7 @@ namespace DOEgbXML
                                 {
                                     if (!DOEgbXMLBasics.SliversAllowed)
                                     {
-                                        report.MessageList.Add("This test does not allow slivers less than " + DOEgbXMLBasics.Tolerances.SliverDimensionTolerance + " ft.  A sliver has been detected.  Test surface id: " + testsurface.SurfaceId + " is a sliver.");
+                                        report.MessageList.Add("This test does not allow slivers less than " + DOEgbXMLBasics.Tolerances.SliverDimensionTolerance + " ft.  A sliver has been detected.  Test surface id: <a class='" + testsurface.SurfaceId + "'>" + testsurface.SurfaceId + "</a> is a sliver.");
                                         report.passOrFail = false;
                                         report.outputType = OutPutEnum.Failed;
                                         return report;
@@ -5081,7 +5093,7 @@ namespace DOEgbXML
                                 if (widthDiff > DOEgbXMLBasics.Tolerances.SurfaceWidthTolerance ||
                                     heightDiff > DOEgbXMLBasics.Tolerances.SurfaceHeightTolerance)
                                 {
-                                    report.MessageList.Add("Test file's Surface id: " + testsurface.SurfaceId + " width and height do not both match the standard file surface id: " + surface.SurfaceId + ".  This surface has been removed as a candidate.");
+                                    report.MessageList.Add("Test file's Surface id: <a class='" + testsurface.SurfaceId + "'>" + testsurface.SurfaceId + "</a> width and height do not both match the standard file surface id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a>.  This surface has been removed as a candidate.");
                                     continue;
                                 }
                                 else
@@ -5090,12 +5102,12 @@ namespace DOEgbXML
                                     possiblesList1.Add(testsurface);
                                     if (widthDiff == 0 && heightDiff == 0)
                                     {
-                                        report.MessageList.Add("Test file surface with id: " + testsurface.SurfaceId + " matches the width and height exactly of the standard file.");
+                                        report.MessageList.Add("Test file surface with id: <a class='" + testsurface.SurfaceId + "'>" + testsurface.SurfaceId + "</a> matches the width and height exactly of the standard file.");
                                         //go ahead and now check the polyLoop coordinates, and then the insertion point
                                     }
                                     else
                                     {
-                                        report.MessageList.Add("Test file surface with id: " + testsurface.SurfaceId + " is within the width and height tolerances of " + DOEgbXMLBasics.Tolerances.SurfaceWidthTolerance + " ft and " + DOEgbXMLBasics.Tolerances.SurfaceHeightTolerance + "ft, respectively.");
+                                        report.MessageList.Add("Test file surface with id: <a class='" + testsurface.SurfaceId + "'>" + testsurface.SurfaceId + "</a> is within the width and height tolerances of " + DOEgbXMLBasics.Tolerances.SurfaceWidthTolerance + " ft and " + DOEgbXMLBasics.Tolerances.SurfaceHeightTolerance + "ft, respectively.");
                                         //go ahead and now check the polyloop coordinates, and then the insertion point
                                     }
                                 }
@@ -5157,11 +5169,11 @@ namespace DOEgbXML
                                             {
                                                 //then it perfectly matches, go on to check the poly loop coordinates
                                                 //then check the insertion point
-                                                report.MessageList.Add("The test surface: " + testSurface.SurfaceId + " polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " exactly.");
+                                                report.MessageList.Add("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> exactly.");
                                             }
                                             else
                                             {
-                                                report.MessageList.Add("The test surface: " + testSurface.SurfaceId + " polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " within the allowable area percentage tolerance.");
+                                                report.MessageList.Add("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> within the allowable area percentage tolerance.");
                                             }
                                         }
                                         else
@@ -5223,11 +5235,11 @@ namespace DOEgbXML
                                             {
                                                 //then it perfectly matches, go on to check the poly loop coordinates
                                                 //then check the insertion point
-                                                report.MessageList.Add("The test surface: " + testSurface.SurfaceId + " polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " exactly.");
+                                                report.MessageList.Add("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " exactly.");
                                             }
                                             else
                                             {
-                                                report.MessageList.Add("The test surface: " + testSurface.SurfaceId + " polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " within the allowable area percentage tolerance.");
+                                                report.MessageList.Add("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " within the allowable area percentage tolerance.");
                                             }
                                         }
                                         else
@@ -5286,11 +5298,11 @@ namespace DOEgbXML
                                             {
                                                 //then it perfectly matches, go on to check the poly loop coordinates
                                                 //then check the insertion point
-                                                report.MessageList.Add("The test surface: " + testSurface.SurfaceId + " polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " exactly.");
+                                                report.MessageList.Add("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> exactly.");
                                             }
                                             else
                                             {
-                                                report.MessageList.Add("The test surface: " + testSurface.SurfaceId + " polyloop surface area matches the polyLoop surface area of the standard surface: " + surface.SurfaceId + " within the allowable area percentage tolerance.");
+                                                report.MessageList.Add("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> within the allowable area percentage tolerance.");
                                             }
                                         }
                                         else
@@ -5415,16 +5427,12 @@ namespace DOEgbXML
                                         if (difference == 0)
                                         {
                                             report.MessageList.Add
-                                                ("The test surface: " + testSurface.SurfaceId +
-                                                " polyloop surface area matches the polyLoop surface area of the standard surface: "
-                                                + surface.SurfaceId + " exactly.");
+                                                ("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> exactly.");
                                         }
                                         else
                                         {
                                             report.MessageList.Add
-                                                ("The test surface: " + testSurface.SurfaceId +
-                                                " polyloop surface area matches the polyLoop surface area of the standard surface: "
-                                                + surface.SurfaceId + " within the allowable area percentage tolerance.");
+                                                ("The test surface: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> polyloop surface area matches the polyLoop surface area of the standard surface: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> within the allowable area percentage tolerance.");
                                         }
                                     }
                                     else
@@ -5441,9 +5449,7 @@ namespace DOEgbXML
                     //polyLoop absolute coordinates
                     //list 1 is analyzed
                     //list 2 is free
-                    report.MessageList.Add("</br>");
                     report.MessageList.Add("Starting PolyLoop coordinate comparisons.......");
-                    report.MessageList.Add("</br>");
                     if (possiblesList1.Count > 0)
                     {
 
@@ -5471,15 +5477,13 @@ namespace DOEgbXML
                     }
                     else
                     {
-                        report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: " + surface.SurfaceId + " AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, and Surface Area.  Failed when attempting to match the surface area.";
+                        report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, and Surface Area.  Failed when attempting to match the surface area.";
                         report.passOrFail = false;
                         report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                     possiblesList1.Clear();
-                    report.MessageList.Add("</br>");
                     report.MessageList.Add("Starting Insertion Point Coordinate comparisons.......");
-                    report.MessageList.Add("</br>");
                     if (possiblesList2.Count > 0)
                     {
                         //check the insertion point coordinate
@@ -5491,7 +5495,7 @@ namespace DOEgbXML
                             double insPtZDiff = Math.Abs(testSurface.InsertionPoint.Z - surface.InsertionPoint.Z);
                             if (insPtXDiff > DOEgbXMLBasics.Tolerances.SurfaceInsPtXTolerance || insPtYDiff > DOEgbXMLBasics.Tolerances.SurfaceInsPtYTolerance || insPtZDiff > DOEgbXMLBasics.Tolerances.SurfaceInsPtZTolerance)
                             {
-                                report.MessageList.Add("Test file's Surface id: " + testSurface.SurfaceId + " insertion point coordinates do not both match the standard file surface id: " + surface.SurfaceId + ".  It has been removed as a candidate.");
+                                report.MessageList.Add("Test file's Surface id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> insertion point coordinates do not both match the standard file surface id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a>.  It has been removed as a candidate.");
                                 continue;
                             }
                             else
@@ -5501,12 +5505,12 @@ namespace DOEgbXML
                                 if (insPtXDiff == 0 && insPtYDiff == 0 && insPtZDiff == 0)
                                 {
                                     //perfect match
-                                    report.MessageList.Add("Test file's Surface with id: " + testSurface.SurfaceId + " matches the insertion point in the standard file exactly.");
+                                    report.MessageList.Add("Test file's Surface with id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> matches the insertion point in the standard file exactly.");
                                 }
                                 else
                                 {
                                     //perfect match
-                                    report.MessageList.Add(" Test file's Surface with id: " + testSurface.SurfaceId + " has an insertion point that is within the allowable tolerances of X:" + DOEgbXMLBasics.Tolerances.SurfaceInsPtXTolerance + " ft, Y:" + DOEgbXMLBasics.Tolerances.SurfaceInsPtYTolerance + "ft, Z:" + DOEgbXMLBasics.Tolerances.SurfaceInsPtZTolerance + "ft.");
+                                    report.MessageList.Add(" Test file's Surface with id: <a class='" + testSurface.SurfaceId + "'>" + testSurface.SurfaceId + "</a> has an insertion point that is within the allowable tolerances of X:" + DOEgbXMLBasics.Tolerances.SurfaceInsPtXTolerance + " ft, Y:" + DOEgbXMLBasics.Tolerances.SurfaceInsPtYTolerance + "ft, Z:" + DOEgbXMLBasics.Tolerances.SurfaceInsPtZTolerance + "ft.");
                                 }
                             }
 
@@ -5514,14 +5518,14 @@ namespace DOEgbXML
                     }
                     else
                     {
-                        report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: " + surface.SurfaceId + " AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, Surface Area, and PolyLoop Coordinates.  Failed when matching PolyLoop coordinates.";
+                        report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, Surface Area, and PolyLoop Coordinates.  Failed when matching PolyLoop coordinates.";
                         report.passOrFail = false;
                         report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                     if (possiblesList1.Count == 1)
                     {
-                        report.longMsg = "Advanced Surface Test found a match for Standard file surface id: " + surface.SurfaceId + " in the test file.  Only one match was found to be within all the tolerances allowed.  Surface id: " + possiblesList2[0].SurfaceId + ".";
+                        report.longMsg = "Advanced Surface Test found a match for Standard file surface id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> in the test file.  Only one match was found to be within all the tolerances allowed.  Surface id: <a class='" + possiblesList2[0].SurfaceId + "'>" + possiblesList2[0].SurfaceId + "</a>";
                         report.passOrFail = true;
                         List<string> testFileSurfIds = new List<string>();
                         foreach (SurfaceDefinitions surf in possiblesList1) { testFileSurfIds.Add(surf.SurfaceId); }
@@ -5531,14 +5535,14 @@ namespace DOEgbXML
                     }
                     else if (possiblesList1.Count == 0)
                     {
-                        report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: " + surface.SurfaceId + " AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, Surface Area, PolyLoop Coordinates, and Insertion Point.  Failed when attempting to match the insertion point coordinates.";
+                        report.longMsg = "In the test file, no surfaces could be found that match standard file;s Surface Id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> AdjacentSpaceId(s), SurfaceType, Tilt, Azimuth, Surface Area, PolyLoop Coordinates, and Insertion Point.  Failed when attempting to match the insertion point coordinates.";
                         report.passOrFail = false;
                         report.outputType = OutPutEnum.Failed;
                         return report;
                     }
                     else if (possiblesList1.Count > 1)
                     {
-                        report.longMsg = "Advanced Surface Test found more than one match for Standard file surface id: " + surface.SurfaceId + " in the test file.  It was not possible to determine only one unique surface.";
+                        report.longMsg = "Advanced Surface Test found more than one match for Standard file surface id: <a class='" + surface.SurfaceId + "'>" + surface.SurfaceId + "</a> in the test file.  It was not possible to determine only one unique surface.";
                         report.passOrFail = false;
                         report.outputType = OutPutEnum.Failed;
                         //List<string> testFileSurfIds = new List<string>();

@@ -25,6 +25,7 @@ namespace DOEgbXML
         public Dictionary<string, bool> TestPassedDict;
         public Dictionary<string, OutPutEnum> OutputTypeDict;
         public Dictionary<string, string> MessageDict;
+        public Dictionary<string, string> KeyToIDDict;//only record the test case
         public bool passOrFail;
         public List<string> MessageList;
         public string longMsg;
