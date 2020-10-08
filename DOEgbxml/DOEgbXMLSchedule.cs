@@ -61,7 +61,6 @@ namespace DOEgbXML
                 }
             }
 
-
             XmlNodeList nodes = xmldoc.SelectNodes("/gbXMLv5:gbXML/gbXMLv5:Schedule", xmlns);
             if(nodes.Count > 0)
             {
@@ -107,6 +106,7 @@ namespace DOEgbXML
             if (SchedNode.HasChildNodes)
             {
                 XmlNodeList YearSchedList = SchedNode.ChildNodes;
+
                 if(YearSchedList.Count == 0)
                 {
                     ErrorMessage.Add("Error", "Schedule ID: <a class='" + id + "'>" + id + "</a> has no year schedule, invalid gbXML model, process ceased.");
@@ -115,145 +115,147 @@ namespace DOEgbXML
 
                 foreach(XmlNode YearSched in YearSchedList)
                 {
-                    string YearSchedID = SearchAnAttribute(YearSched, "id");
-                    if (YearSchedID == null)
+                    if(YearSched.Name == "YearSchedule")
                     {
-                        ErrorMessage.Add("Error", "One of the year schedules has no ID, invalid gbXML model, process ceased.");
-                        return false;
-                    }
-
-                    if (YearSched.HasChildNodes)
-                    {
-                        XmlNodeList YearSchedChildren = YearSched.ChildNodes;
-                        //this is a fixed format - BeginDate, EndDate and WeekScheduleId, repeat
-                        //We need to check if this year schedule compliant with the ruleset.
-                        if (YearSchedChildren.Count % 3 != 0)
+                        string YearSchedID = SearchAnAttribute(YearSched, "id");
+                        if (YearSchedID == null)
                         {
-                            ErrorMessage.Add("Error", "Schedule ID: <a class='" + YearSchedID + "'>" + YearSchedID + "</a> has incomplete elements. The element list should strictly follow: BeginDate, EndDate, WeekScheduleId. Invalid gbXML model, process ceased.");
+                            ErrorMessage.Add("Error", "One of the year schedules has no ID, invalid gbXML model, process ceased.");
                             return false;
                         }
 
-                        for (int i = 0; i < YearSchedChildren.Count; i += 3)
+                        if (YearSched.HasChildNodes)
                         {
-                            DateTime BeginDate = DateTime.Parse(YearSchedChildren[i + 0].InnerText);//begining date
-                            DateTime EndDate = DateTime.Parse(YearSchedChildren[i + 1].InnerText);
-
-                            //Get week Id,
-                            string WeekId = SearchAnAttribute(YearSchedChildren[i + 2], "weekScheduleIdRef");
-
-                            XmlNode WeekNode = WeekSchedMap[WeekId];
-                            //set up the week day map
-                            Dictionary<string, string> WeekDayMap = null;
-
-                            XmlNodeList DayList = WeekNode.ChildNodes;
-                            //Fill up the WeekDayMap
-                            if (DayList.Count > 0)
+                            XmlNodeList YearSchedChildren = YearSched.ChildNodes;
+                            //this is a fixed format - BeginDate, EndDate and WeekScheduleId, repeat
+                            //We need to check if this year schedule compliant with the ruleset.
+                            if (YearSchedChildren.Count % 3 != 0)
                             {
-                                XmlNode DayNode = DayList[0];
-                                string DefaultDayScheduleID = SearchAnAttribute(DayNode, "dayScheduleIdRef");
-
-                                WeekDayMap = InitializeWeekDayMap(DefaultDayScheduleID);
-                                //Loop over the week element to collect days
-                                foreach (XmlNode day in DayList)
-                                {
-                                    if (day.Name == "Day")
-                                    {
-                                        string DayType = SearchAnAttribute(day, "dayType");
-                                        string dayScheduleIdRef = SearchAnAttribute(day, "dayScheduleIdRef");
-                                        if (DayType == "All")
-                                        {
-                                            WeekDayMap["Monday"] = dayScheduleIdRef;
-                                            WeekDayMap["Tuesday"] = dayScheduleIdRef;
-                                            WeekDayMap["Wednesday"] = dayScheduleIdRef;
-                                            WeekDayMap["Thursday"] = dayScheduleIdRef;
-                                            WeekDayMap["Friday"] = dayScheduleIdRef;
-                                            WeekDayMap["Saturday"] = dayScheduleIdRef;
-                                            WeekDayMap["Sunday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Weekend" || DayType == "WeekendOrHoliday")
-                                        {
-                                            WeekDayMap["Saturday"] = dayScheduleIdRef;
-                                            WeekDayMap["Sunday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Weekday")
-                                        {
-                                            WeekDayMap["Monday"] = dayScheduleIdRef;
-                                            WeekDayMap["Tuesday"] = dayScheduleIdRef;
-                                            WeekDayMap["Wednesday"] = dayScheduleIdRef;
-                                            WeekDayMap["Thursday"] = dayScheduleIdRef;
-                                            WeekDayMap["Friday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Mon")
-                                        {
-                                            WeekDayMap["Monday"] = dayScheduleIdRef;
-
-                                        }
-                                        else if (DayType == "Tue")
-                                        {
-                                            WeekDayMap["Tuesday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Wed")
-                                        {
-                                            WeekDayMap["Wednesday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Thu")
-                                        {
-                                            WeekDayMap["Thursday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Fri")
-                                        {
-                                            WeekDayMap["Friday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Sat")
-                                        {
-                                            WeekDayMap["Saturday"] = dayScheduleIdRef;
-                                        }
-                                        else if (DayType == "Sun")
-                                        {
-                                            WeekDayMap["Sunday"] = dayScheduleIdRef;
-                                        }
-                                    }
-                                }
+                                ErrorMessage.Add("Error", "Schedule ID: <a class='" + YearSchedID + "'>" + YearSchedID + "</a> has incomplete elements. The element list should strictly follow: BeginDate, EndDate, WeekScheduleId. Invalid gbXML model, process ceased.");
+                                return false;
                             }
 
-                            //Step 3: Loop the days in the week from begin date to end date to fill out the data
-                            foreach (DateTime day in EachDay(BeginDate, EndDate))
+                            for (int i = 0; i < YearSchedChildren.Count; i += 3)
                             {
-                                //fill in the data for everyday from begining to end.
-                                string DaySchedule = WeekDayMap[day.DayOfWeek.ToString()];
+                                DateTime BeginDate = DateTime.Parse(YearSchedChildren[i + 0].InnerText);//begining date
+                                DateTime EndDate = DateTime.Parse(YearSchedChildren[i + 1].InnerText);
 
-                                XmlNode DayNode = DaySchedMap[DaySchedule];
-                                string DaySchedId = SearchAnAttribute(DayNode, "id");
-                                if (DayNode.HasChildNodes)
+                                //Get week Id,
+                                string WeekId = SearchAnAttribute(YearSchedChildren[i + 2], "weekScheduleIdRef");
+                                XmlNode WeekNode = WeekSchedMap[WeekId];
+                                //set up the week day map
+                                Dictionary<string, string> WeekDayMap = null;
+
+                                XmlNodeList DayList = WeekNode.ChildNodes;
+                                //Fill up the WeekDayMap
+                                if (DayList.Count > 0)
                                 {
-                                    XmlNodeList SchedValueList = DayNode.ChildNodes;
-                                    int Counter = 0;
-                                    for(int j=0; j<SchedValueList.Count; j++)
-                                    {
-                                        if(SchedValueList[j].Name == "ScheduleValue")
-                                        {
-                                            Counter++;
-                                        }
-                                    }
-                                    //one day has 24 hours. We will skip the rest schedule value
-                                    //if 24%Count > 0;
-                                    int interval = (int)(24 / Counter);
+                                    XmlNode DayNode = DayList[0];
+                                    string DefaultDayScheduleID = SearchAnAttribute(DayNode, "dayScheduleIdRef");
 
-                                    foreach (XmlNode SchedValue in SchedValueList)
+                                    WeekDayMap = InitializeWeekDayMap(DefaultDayScheduleID);
+                                    //Loop over the week element to collect days
+                                    foreach (XmlNode day in DayList)
                                     {
-                                        if(SchedValue.Name == "ScheduleValue")
+                                        if (day.Name == "Day")
                                         {
-                                            for (int j = 0; j < interval; j++)
+                                            string DayType = SearchAnAttribute(day, "dayType");
+                                            string dayScheduleIdRef = SearchAnAttribute(day, "dayScheduleIdRef");
+                                            if (DayType == "All")
                                             {
-                                                SchedValueMap[id].Add(Convert.ToDouble(SchedValue.InnerText));
+                                                WeekDayMap["Monday"] = dayScheduleIdRef;
+                                                WeekDayMap["Tuesday"] = dayScheduleIdRef;
+                                                WeekDayMap["Wednesday"] = dayScheduleIdRef;
+                                                WeekDayMap["Thursday"] = dayScheduleIdRef;
+                                                WeekDayMap["Friday"] = dayScheduleIdRef;
+                                                WeekDayMap["Saturday"] = dayScheduleIdRef;
+                                                WeekDayMap["Sunday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Weekend" || DayType == "WeekendOrHoliday")
+                                            {
+                                                WeekDayMap["Saturday"] = dayScheduleIdRef;
+                                                WeekDayMap["Sunday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Weekday")
+                                            {
+                                                WeekDayMap["Monday"] = dayScheduleIdRef;
+                                                WeekDayMap["Tuesday"] = dayScheduleIdRef;
+                                                WeekDayMap["Wednesday"] = dayScheduleIdRef;
+                                                WeekDayMap["Thursday"] = dayScheduleIdRef;
+                                                WeekDayMap["Friday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Mon")
+                                            {
+                                                WeekDayMap["Monday"] = dayScheduleIdRef;
+
+                                            }
+                                            else if (DayType == "Tue")
+                                            {
+                                                WeekDayMap["Tuesday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Wed")
+                                            {
+                                                WeekDayMap["Wednesday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Thu")
+                                            {
+                                                WeekDayMap["Thursday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Fri")
+                                            {
+                                                WeekDayMap["Friday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Sat")
+                                            {
+                                                WeekDayMap["Saturday"] = dayScheduleIdRef;
+                                            }
+                                            else if (DayType == "Sun")
+                                            {
+                                                WeekDayMap["Sunday"] = dayScheduleIdRef;
                                             }
                                         }
                                     }
                                 }
-                                else
+
+                                //Step 3: Loop the days in the week from begin date to end date to fill out the data
+                                foreach (DateTime day in EachDay(BeginDate, EndDate))
                                 {
-                                    ErrorMessage.Add("Error", "Schedule ID: <a class='" + DaySchedId + "'>" + DaySchedId + "</a> has no schedule value, invalid gbXML model, process ceased.");
-                                    return false;
+                                    //fill in the data for everyday from begining to end.
+                                    string DaySchedule = WeekDayMap[day.DayOfWeek.ToString()];
+
+                                    XmlNode DayNode = DaySchedMap[DaySchedule];
+                                    string DaySchedId = SearchAnAttribute(DayNode, "id");
+                                    if (DayNode.HasChildNodes)
+                                    {
+                                        XmlNodeList SchedValueList = DayNode.ChildNodes;
+                                        int Counter = 0;
+                                        for (int j = 0; j < SchedValueList.Count; j++)
+                                        {
+                                            if (SchedValueList[j].Name == "ScheduleValue")
+                                            {
+                                                Counter++;
+                                            }
+                                        }
+                                        //one day has 24 hours. We will skip the rest schedule value
+                                        //if 24%Count > 0;
+                                        int interval = (int)(24 / Counter);
+
+                                        foreach (XmlNode SchedValue in SchedValueList)
+                                        {
+                                            if (SchedValue.Name == "ScheduleValue")
+                                            {
+                                                for (int j = 0; j < interval; j++)
+                                                {
+                                                    SchedValueMap[id].Add(Convert.ToDouble(SchedValue.InnerText));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        ErrorMessage.Add("Error", "Schedule ID: <a class='" + DaySchedId + "'>" + DaySchedId + "</a> has no schedule value, invalid gbXML model, process ceased.");
+                                        return false;
+                                    }
                                 }
                             }
                         }
@@ -283,13 +285,13 @@ namespace DOEgbXML
             return WeekDayMap;
         }
 
-        private string SearchAnAttribute(XmlNode node, string Name)
+        private string SearchAnAttribute(XmlNode node, string name)
         {
             XmlAttributeCollection attributes = node.Attributes;
 
             foreach (XmlAttribute attr in attributes)
             {
-                if (attr.Name == Name)
+                if (attr.Name == name)
                 {
                     return attr.Value;
                 }

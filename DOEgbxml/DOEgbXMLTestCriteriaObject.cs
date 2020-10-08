@@ -55,7 +55,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Assembly_Test, true);
                 TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
-                TestCriteriaDictionary.Add(TestType.Operation_Sched_Test, true);
+                TestCriteriaDictionary.Add(TestType.HVAC_Test, false);
             }
             else if (testname == "test2")
             {
@@ -252,7 +252,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
                 TestCriteriaDictionary.Add(TestType.Curved_Wall_Test, true);
             }
-            else if (testname == "Test8")
+            else if (testname == "test7")
             {
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
@@ -284,6 +284,16 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Detailed_Opening_Checks, true);
                 //As of Feb 13 2013, this test is for a future release.  Placeholder only
                 TestCriteriaDictionary.Add(TestType.Shell_Geom_RHR, false);
+                //As of July 07 2020, this test is added as requirements for certification L2 test
+                //RP-1810
+                TestCriteriaDictionary.Add(TestType.Exterior_Wall_Area, true);
+                TestCriteriaDictionary.Add(TestType.Roof_Area, true);
+                TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
+                TestCriteriaDictionary.Add(TestType.Shade_Area, false);
+                TestCriteriaDictionary.Add(TestType.Assembly_Test, false);
+                TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
+                TestCriteriaDictionary.Add(TestType.Air_Area, false);
+                TestCriteriaDictionary.Add(TestType.HVAC_Test, true);
             }
             else if (testname == "Test25")
             {

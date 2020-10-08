@@ -43,7 +43,6 @@ namespace DOEgbXML
                     {
                         DesignCoolTemp = Convert.ToDouble(nd.InnerText);
                     }
-
                 }
             }
             else
@@ -74,6 +73,10 @@ namespace DOEgbXML
                                 {
                                     fan = new DOEgbXMLFan(nd);
                                     OperationScheduleId = fan.OperationScheduleId;
+                                    if(OperationScheduleId == null)
+                                    {
+                                        errorMessageList.Add("The operation schedule is missing in the airloop. The process is ceased.");
+                                    }
                                 }else if(equipment == "Coil")
                                 {
                                     DOEgbXMLCoil tempCoil = new DOEgbXMLCoil(nd);
@@ -90,6 +93,10 @@ namespace DOEgbXML
                         }
                     }
                 }
+            }
+            else
+            {
+                errorMessageList.Add("No Air loop is found in the test model");
             }
         }
     }
@@ -123,7 +130,8 @@ namespace DOEgbXML
                     }else if(nd.Name == "Efficiency")
                     {
                         FanEff = Convert.ToDouble(nd.InnerText);
-                    }else if (nd.Name == "OperationSchedule")
+                    }
+                    else if (nd.Name == "OperationSchedule")
                     {
                         XmlAttributeCollection attributes = nd.Attributes;
                         foreach (XmlAttribute attr in attributes)
@@ -196,7 +204,6 @@ namespace DOEgbXML
                                 }
                             }
                         }
-
                     }
                     else if(nd.Name == "Energy")
                     {

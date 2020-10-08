@@ -906,14 +906,14 @@ namespace DOEgbXML
             //test 36 operation schedul test
             report.Clear();
             report.tolerance = DOEgbXMLBasics.Tolerances.SCHEDULEDIFFERENCES;
-            report.testType = TestType.Operation_Sched_Test;
+            report.testType = TestType.HVAC_Test;
             units = DOEgbXMLBasics.MeasurementUnits.dimensionless.ToString();
             if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
             {
                 if (TestCriteria.TestCriteriaDictionary[report.testType])
                 {
-                    report = DOEgbXMLTestFunctions.TestHVACOperationSchedule(report, gbXMLdocs, gbXMLnsm, units);
-                    AddToOutPut("Operation Schedule Test", report, true);
+                    report = DOEgbXMLTestFunctions.TestHVACSystem(report, gbXMLdocs, gbXMLnsm, units);
+                    AddToOutPut("HVAC Test", report, true);
                 }
             }
 
