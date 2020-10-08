@@ -2701,6 +2701,10 @@ namespace DOEgbXML
                             if (key != null && val != null)
                             {
                                 standardStoryHeight.Add(key, val);
+                                if (!report.KeyToIDDict.ContainsKey(key))
+                                {
+                                    report.KeyToIDDict[key] = id;
+                                }
                             }
                         }
                     }
