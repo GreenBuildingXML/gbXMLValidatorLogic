@@ -161,36 +161,35 @@ namespace DOEgbXML
             for(int i=0; i<standardSpaces.Count; i++)
             {
                 gbXMLSpaces stdSpace = standardSpaces[i];
-                Boolean matchFlag = false;
-                //search for match
-                for (int j = 0; j < testSpaces.Count; j++)
+                gbXMLSpaces matchedSpace = null;
+                if (stdSpace.spaceType != "Plenum")
                 {
-                    //We are not checking the plenum 
-                    if (stdSpace.spaceType != "Plenum")
+                    //search for match
+                    for (int j = 0; j < testSpaces.Count; j++)
                     {
-                        if(stdSpace.name == testSpaces[j].name)
+                        //We are not checking the plenum 
+                        if (stdSpace.name == testSpaces[j].name)
                         {
-                            matchFlag = true;
+                            matchedSpace = testSpaces[j];
                         }
                     }
-                }
-
-                if(!matchFlag)
-                {
-                    mismatchCounter++;
-                    string msg = "Cannot find a match space name in Test Model for the space: " + stdSpace.name + ".";
-                    report.MessageList.Add(msg);
-                    report.testResult.Add("NA");
-                    report.standResult.Add(stdSpace.name);
-                    report.idList.Add(i+"");
-                }
-                else
-                {
-                    string msg = "Find a match space name in Test Model for the space: " + stdSpace.name + ".";
-                    report.MessageList.Add(msg);
-                    report.testResult.Add(stdSpace.name);
-                    report.standResult.Add(stdSpace.name);
-                    report.idList.Add(i + "");
+                    if (matchedSpace == null)
+                    {
+                        mismatchCounter++;
+                        string msg = "Cannot find a match space name in Test Model for the space: <a class='" + stdSpace.id + "'>" + stdSpace.name + "</a>.";
+                        report.MessageList.Add(msg);
+                        report.testResult.Add("NA");
+                        report.standResult.Add(stdSpace.name);
+                        report.idList.Add(i + "");
+                    }
+                    else
+                    {
+                        string msg = "Find a match space name in Test Model <a class='" + matchedSpace.id + "'></a>  for the space:" + stdSpace.name + ".";
+                        report.MessageList.Add(msg);
+                        report.testResult.Add(stdSpace.name);
+                        report.standResult.Add(stdSpace.name);
+                        report.idList.Add(i + "");
+                    }
                 }
             }
 
@@ -368,7 +367,7 @@ namespace DOEgbXML
 
             for (int i = 0; i < StandardSurfaces.Count; i++)
             {
-                if (StandardSurfaces[i].SurfaceType == Type)
+                if (StandardSurfaces[i].searchForMatchedType(Type))
                 {
                     standardArea += StandardSurfaces[i].computeArea();
                 }
@@ -376,7 +375,7 @@ namespace DOEgbXML
 
             for (int i = 0; i < TestSurfaces.Count; i++)
             {
-                if (TestSurfaces[i].SurfaceType == Type)
+                if (TestSurfaces[i].searchForMatchedType(Type))
                 {
                     testArea += TestSurfaces[i].computeArea();
                 }
@@ -753,18 +752,23 @@ namespace DOEgbXML
 
         public static DOEgbXMLReportingObj TestHVACSystem(DOEgbXMLReportingObj report, List<XmlDocument> gbXMLDocs, List<XmlNamespaceManager> gbXMLnsm, string Units)
         {
+            //initialize the report
+            report.passOrFail = true;
+            report.outputType = OutPutEnum.Matched;
+            report.longMsg = "The Test Model's HVAC matches Standard Model's HVAC exactly.";
 
             //Step 1. get HVAC system
             DOEgbXMLPTAC testPTAC = new DOEgbXMLPTAC(gbXMLDocs[0], gbXMLnsm[0]);
             DOEgbXMLPTAC standardPTAC = new DOEgbXMLPTAC(gbXMLDocs[1], gbXMLnsm[1]);
             List<string> errorMessageList = testPTAC.errorMessageList;
+
             if(errorMessageList.Count > 0)
             {
                 foreach(string s in errorMessageList)
                 {
                     report.MessageList.Add(s);
                 }
-                report.longMsg = "The Test File's HVAC are incomplete, the process is halted, Check detail message for the errors.";
+                report.longMsg = "The Test Model's HVAC are incomplete, the process is halted, Check detail message for the errors.";
                 report.passOrFail = false;
                 report.outputType = OutPutEnum.Failed;
                 return report;
@@ -776,6 +780,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("CoolingTemperature", "Design cooling temperature does not equal to 74F");
                 report.TestPassedDict.Add("CoolingTemperature", false);
                 report.OutputTypeDict.Add("CoolingTemperature", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -789,6 +796,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("HeatingTemperature", "Design cooling temperature does not equal to 70F");
                 report.TestPassedDict.Add("HeatingTemperature", false);
                 report.OutputTypeDict.Add("HeatingTemperature", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -801,6 +811,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("DesignOAFlowPerPerson", "Design outdoor air flow per person does not equal to 5.3 CFM/person");
                 report.TestPassedDict.Add("DesignOAFlowPerPerson", false);
                 report.OutputTypeDict.Add("DesignOAFlowPerPerson", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -813,6 +826,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("DesignOAFlowPerArea", "Design outdoor air flow per area does not equal to 0.059 CFM/sq.ft.");
                 report.TestPassedDict.Add("DesignOAFlowPerArea", false);
                 report.OutputTypeDict.Add("DesignOAFlowPerArea", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -827,6 +843,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("FanControl", "Fan control should be 'Cycling', but the test model has control of: " + testPTAC.fan.FanControl);
                 report.TestPassedDict.Add("FanControl", false);
                 report.OutputTypeDict.Add("FanControl", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -840,6 +859,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("MotorInAirStream", "Fan Motor in Air Stream shall equal to 1, the test model is: " + testPTAC.fan.MotorInStream);
                 report.TestPassedDict.Add("MotorInAirStream", false);
                 report.OutputTypeDict.Add("MotorInAirStream", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -853,6 +875,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("AirStreamFraction", "Fan air stream fraction shall equal to 0.9, the test model is: " + testPTAC.fan.AirStreamFraction);
                 report.TestPassedDict.Add("AirStreamFraction", false);
                 report.OutputTypeDict.Add("AirStreamFraction", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -866,6 +891,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("DeltaP", "Fan delta P shall equal to 75 Pa, the test model is: " + testPTAC.fan.AirStreamFraction + " Pa");
                 report.TestPassedDict.Add("DeltaP", false);
                 report.OutputTypeDict.Add("DeltaP", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -878,6 +906,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("FanEfficiency", "Fan efficiency shall equal to 0.7, the test model is: " + testPTAC.fan.FanEff + " Pa");
                 report.TestPassedDict.Add("FanEfficiency", false);
                 report.OutputTypeDict.Add("FanEfficiency", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -892,6 +923,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("CoolingCoilEfficiency", "Cooling coil efficiency shall equal to COP 3.0, the test model is: " + testPTAC.CoolCoil.CoilEff);
                 report.TestPassedDict.Add("CoolingCoilEfficiency", false);
                 report.OutputTypeDict.Add("CoolingCoilEfficiency", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -904,6 +938,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("CoolingCoilCapacity", "Cooling coil capacity shall equal to 85 kBtu/hr, the test model is: " + testPTAC.CoolCoil.Capacity + " kBtu/hr");
                 report.TestPassedDict.Add("CoolingCoilCapacity", false);
                 report.OutputTypeDict.Add("CoolingCoilCapacity", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -918,6 +955,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("HeatingCoilEfficiency", "Heating coil efficiency shall equal to 0.8, the test model is: " + testPTAC.HeatCoil.CoilEff);
                 report.TestPassedDict.Add("HeatingCoilEfficiency", false);
                 report.OutputTypeDict.Add("HeatingCoilEfficiency", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -930,6 +970,9 @@ namespace DOEgbXML
                 report.MessageDict.Add("HeatingCoilCapacity", "Heating coil capacity shall equal to 102 kBtu/hr, the test model is: " + testPTAC.HeatCoil.Capacity + " kBtu/hr");
                 report.TestPassedDict.Add("HeatingCoilCapacity", false);
                 report.OutputTypeDict.Add("HeatingCoilCapacity", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -937,11 +980,14 @@ namespace DOEgbXML
                 report.TestPassedDict.Add("HeatingCoilCapacity", true);
                 report.OutputTypeDict.Add("HeatingCoilCapacity", OutPutEnum.Matched);
             }
-            if (testPTAC.HeatCoil.ResourceType != "NatureGas")
+            if (testPTAC.HeatCoil.ResourceType != "NaturalGas")
             {
                 report.MessageDict.Add("HeatingCoilResource", "Heating coil resource shall be NaturalGas, the test model is: " + testPTAC.HeatCoil.ResourceType);
                 report.TestPassedDict.Add("HeatingCoilResource", false);
                 report.OutputTypeDict.Add("HeatingCoilResource", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "One of the HVAC variable does not match between test model and standard model";
             }
             else
             {
@@ -990,6 +1036,9 @@ namespace DOEgbXML
                     "; Number of Datapoints in the standard operation schedule: " + standardAnnualOperationSchedule.Count);
                 report.TestPassedDict.Add("testOperationSchedule", false);
                 report.OutputTypeDict.Add("testOperationSchedule", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "The number of hours in Test Model Operation Schedule is: " + testAnnualOperationSchedule.Count + " it does not match the Standard Model: " + standardAnnualOperationSchedule.Count;
             }
             else
             {
@@ -1017,8 +1066,12 @@ namespace DOEgbXML
                     report.MessageDict.Add("schedule", "The Test operation schedule: <a class='" + testOperationSchedule + "'>" + testOperationSchedule + "</a> does not match the standard schedule, The RMSE is: " + rmse + ", higher than the tolerance: " + report.tolerance);
                     report.TestPassedDict.Add("schedule", false);
                     report.OutputTypeDict.Add("schedule", OutPutEnum.Failed);
+                    report.longMsg = "The Test Model's Operation Schedules does not match the Operation Schedule in the Standard Model.";
+                    report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
                 }
             }
+
             return report;
         }
     }

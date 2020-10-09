@@ -14,6 +14,7 @@ namespace DOEgbXML
         public string SurfaceId;
         public string ConstructionId;
         public List<string> AdjSpaceId;
+        public List<string> AdjSpaceSurfaceType;
         public double Azimuth;
         public string orientation;
         public double area = 0.0; //initialize to 0.0
@@ -40,6 +41,26 @@ namespace DOEgbXML
 
             return orientation;
 
+        }
+
+        public Boolean searchForMatchedType(string type)
+        {
+            if(type == SurfaceType)
+            {
+                return true;
+            }
+
+            if(AdjSpaceSurfaceType.Count > 0)
+            {
+                foreach(string t in AdjSpaceSurfaceType)
+                {
+                    if(type == t)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public double computeArea()

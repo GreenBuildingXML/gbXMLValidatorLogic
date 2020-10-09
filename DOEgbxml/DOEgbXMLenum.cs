@@ -52,7 +52,11 @@ namespace DOEgbXML
         Surface_Tilt_Az_Check,
         Surface_CC_Test,
         Check_Surface_Enclosure,
+        //RP-1810
         Exterior_Wall_Area,
+        Interior_Wall_Area,
+        Interior_Floor_Area,
+        Ceiling_Area,
         Exterior_Wall_Area_By_Orientation,
         Roof_Area,
         SlabOnGrade_Area,

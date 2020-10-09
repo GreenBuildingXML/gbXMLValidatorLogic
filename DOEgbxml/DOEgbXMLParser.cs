@@ -917,6 +917,46 @@ namespace DOEgbXML
                 }
             }
 
+            //test 37 Interior wall surface area test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Interior_Wall_Area;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "InteriorWall");
+                    AddToOutPut("Interior Wall Surface Area Test", report, true);
+                }
+            }
+
+            //test 38 Interior Floor surface area test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Interior_Floor_Area;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "InteriorFloor");
+                    AddToOutPut("Interior Floor Surface Area Test", report, true);
+                }
+            }
+
+            //test 39 Ceiling area test
+            report.Clear();
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.testType = TestType.Ceiling_Area;
+            units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            {
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
+                {
+                    report = DOEgbXMLTestFunctions.TestSurfaceAreaByType(testSurfaces, standardSurfaces, report, units, "Ceiling");
+                    AddToOutPut("Ceiling Surface Area Test", report, true);
+                }
+            }
+
             #region opening detailed test
             //openings detailed tests
             List<OpeningDefinitions> TestOpenings = new List<OpeningDefinitions>();
@@ -1088,6 +1128,7 @@ namespace DOEgbXML
             {
                 output += "<h4 class='text-error'>" + report.longMsg + "</h4>";
                 overallPassTest = false;
+                Console.WriteLine(report.testType);
                 failCounter++;
             }
 
@@ -4497,6 +4538,7 @@ namespace DOEgbXML
                     //initialize a new instance of the class
                     SurfaceDefinitions surfDef = new SurfaceDefinitions();
                     surfDef.AdjSpaceId = new List<string>();
+                    surfDef.AdjSpaceSurfaceType = new List<string>();
                     surfDef.PlCoords = new List<Vector.MemorySafe_CartCoord>();
                     surfDef.InsertionPoint = new Vector.CartCoord();
 
@@ -4531,6 +4573,9 @@ namespace DOEgbXML
                                     if (at.Name == "spaceIdRef")
                                     {
                                         surfDef.AdjSpaceId.Add(at.Value);
+                                    }else if(at.Name == "SurfaceType")
+                                    {
+                                        surfDef.AdjSpaceSurfaceType.Add(at.Value);
                                     }
                                 }
                             }
