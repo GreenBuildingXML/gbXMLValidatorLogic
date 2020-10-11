@@ -436,7 +436,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Area, true);
                 TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
                 TestCriteriaDictionary.Add(TestType.Shade_Area, false);
-                TestCriteriaDictionary.Add(TestType.Window_Area_Test, true);
+                TestCriteriaDictionary.Add(TestType.Window_Area_Test, false);
                 TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, true);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Area, false);
                 TestCriteriaDictionary.Add(TestType.Ceiling_Area, false);
@@ -452,9 +452,9 @@ namespace DOEgbXML
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Count, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
@@ -514,7 +514,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
@@ -548,9 +548,9 @@ namespace DOEgbXML
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Count, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
@@ -597,8 +597,8 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
@@ -610,7 +610,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
@@ -645,8 +645,8 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
@@ -658,7 +658,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
@@ -693,8 +693,8 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
@@ -754,7 +754,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
@@ -789,8 +789,8 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
@@ -802,7 +802,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);
@@ -899,7 +899,7 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Air_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, true);
+                TestCriteriaDictionary.Add(TestType.Surface_Planar_Test, false);
                 TestCriteriaDictionary.Add(TestType.Detailed_Surface_Checks, false);
                 TestCriteriaDictionary.Add(TestType.Fixed_Windows_Count, false);
                 TestCriteriaDictionary.Add(TestType.Operable_Windows_Count, false);

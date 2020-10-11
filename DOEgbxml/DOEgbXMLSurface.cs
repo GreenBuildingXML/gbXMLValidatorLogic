@@ -74,7 +74,7 @@ namespace DOEgbXML
             if(area == -1)
             {
                 //send warning: PlCoords has less than 3 coordinates
-                return 0;
+                return 0.0;
             }
             else
             {

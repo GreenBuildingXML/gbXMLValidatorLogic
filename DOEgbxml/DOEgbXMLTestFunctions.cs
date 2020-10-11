@@ -209,6 +209,66 @@ namespace DOEgbXML
             }
         }
 
+        public static DOEgbXMLReportingObj TestSpaceVolumeMatch(List<gbXMLSpaces> testSpaces, List<gbXMLSpaces> standardSpaces, DOEgbXMLReportingObj report, String Units)
+        {
+            report.passOrFail = true;
+            report.unit = Units;
+            //assuming that this will be plenty large for now
+            Dictionary<string, double> standardFileVolumeDict = new Dictionary<string, double>();
+            Dictionary<string, double> testFileVolumeDict = new Dictionary<string, double>();
+
+            for(int i=0; i<testSpaces.Count; i++)
+            {
+                gbXMLSpaces testSpace = testSpaces[i];
+
+                gbXMLSpaces standardSpace = null;
+                for(int j=0; j<standardSpaces.Count; j++)
+                {
+                    if(standardSpaces[j].name == testSpaces[i].name)
+                    {
+                        standardSpace = standardSpaces[j];
+                    }
+                }
+
+                if (standardSpace == null)
+                {
+                    report.longMsg = "Cannot find a matching space in standard space for space: <a class='" + testSpace.id+"'> "+ testSpace.name + "</a>.";
+                    report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
+                    return report;
+                }
+
+                report.standResult.Add(Convert.ToString(standardSpace.volume));
+                report.testResult.Add(Convert.ToString(testSpace.volume));
+                report.idList.Add(testSpace.id);
+
+                double difference = Math.Abs(testSpace.volume - standardSpace.volume);
+                if (difference == 0)
+                {
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + ">" + testSpace.name + "</a>. Success finding matching space volume.  The Standard and Test Files both have identical volumes: " + testSpace.volume + " " + Units);
+                    report.TestPassedDict.Add(testSpace.id, true);
+                    report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Matched);
+                }
+                else if (difference < report.tolerance)
+                {
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + ">" + testSpace.name + "</a>. Success finding matching space volume.  The Standard Files space volume of " + standardSpace.volume + " " + Units + "and the Test File space volume: " + testSpace.volume + " are within the allowed tolerance of" + report.tolerance.ToString() + " " + Units + ".");
+                    report.TestPassedDict.Add(testSpace.id, true);
+                    report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Warning);
+                }
+                else
+                {
+                    //at the point of failure, the test will return with details about which volume failed.
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + ">" + testSpace.name + "</a>. Failure to find a volume match.  The Volume in the Test File equal to: " + testSpace.volume + " " + Units + " was not within the allowed tolerance.  SpaceId: <a class'" + standardSpace.id + "'>" + standardSpace.name + "</a> in the Standard file has a volume: " + standardSpace.volume + " .");
+                    report.TestPassedDict.Add(testSpace.id, false);
+                    report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Failed);
+                    report.passOrFail = false;
+                    report.outputType = OutPutEnum.Failed;
+                    return report;
+                }
+            }
+            return report;
+        }
+
         public static DOEgbXMLReportingObj TestSurfaceCountByType(List<SurfaceDefinitions> TestSurfaces, List<SurfaceDefinitions> StandardSurfaces,
             DOEgbXMLReportingObj report, string Units, String Type)
         {
@@ -612,6 +672,10 @@ namespace DOEgbXML
         //this test only works for Curved wall test - other test case should not touch this test case.
         public static DOEgbXMLReportingObj TestCurvedWallSurfaceArea(List<SurfaceDefinitions> TestSurfaces, DOEgbXMLReportingObj report, string Units)
         {
+            report.passOrFail = true;
+            report.outputType = OutPutEnum.Matched;
+            report.longMsg = "The Test Wall has passed the Curved Wall test.";
+
             //1. first determine the surface areas
             double n = 0.0; //0-22.5
             double ne = 0.0; //22.5 - 67.5
@@ -649,7 +713,7 @@ namespace DOEgbXML
             }
 
             //test if matches
-            double nsdifference = Math.Abs(n - s);
+            double nsdifference = Math.Abs((n - s)/n);
 
             if (nsdifference == 0)
             {
@@ -665,14 +729,17 @@ namespace DOEgbXML
             }
             else
             {
-                report.MessageDict.Add("n-s", "The north wall surface area does not match the south wall surface area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + nsdifference
-                        + ".  " + n + " north walls urface area and " + s + " sourth wall surface area.");
+                report.MessageDict.Add("n-s", "The north wall surface area does not match the south wall surface area, the difference was not within tolerance = " + report.tolerance * 100 + "%" + ".  Difference of: " + nsdifference
+                        + ".  " + n + " north walls surface area and " + s + " south wall surface area.");
                 report.TestPassedDict.Add("n-s", false);
                 report.OutputTypeDict.Add("n-s", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "The north wall surface area does not match the south wall surface area.";
             }
 
             //test if matches
-            double NESEdifference = Math.Abs(ne - se);
+            double NESEdifference = Math.Abs((ne - se) / ne);
 
             if (NESEdifference == 0)
             {
@@ -688,10 +755,13 @@ namespace DOEgbXML
             }
             else
             {
-                report.MessageDict.Add("ne-se", "The north-east wall surface area does not match the south-east wall surface area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + NESEdifference
-                        + ".  " + ne + " north-east walls urface area and " + se + " sourth-east wall surface area.");
+                report.MessageDict.Add("ne-se", "The north-east wall surface area does not match the south-east wall surface area, the difference was not within tolerance = " + report.tolerance * 100 + "%" + ".  Difference of: " + NESEdifference
+                        + ".  " + ne + " north-east walls surface area and " + se + " south-east wall surface area.");
                 report.TestPassedDict.Add("ne-se", false);
                 report.OutputTypeDict.Add("ne-se", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "The north-east wall surface area does not match the south-east wall surface area.";
             }
 
             //now check roof perimeter and the suppose area vs. actual area
@@ -727,7 +797,7 @@ namespace DOEgbXML
             }
             calculatedArea = linearLength * 10;//10 is the height;
             //test if matches
-            double areaMatch = Math.Abs(actualArea - calculatedArea);
+            double areaMatch = Math.Abs((actualArea - calculatedArea) / actualArea);
             if (areaMatch == 0)
             {
                 report.MessageDict.Add("area", "The calculated area matches the actual area, the difference is zero. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
@@ -746,7 +816,11 @@ namespace DOEgbXML
                         + ".  " + calculatedArea + ", calculated area and " + actualArea + ", calculated area.");
                 report.TestPassedDict.Add("area", false);
                 report.OutputTypeDict.Add("area", OutPutEnum.Failed);
+                report.passOrFail = false;
+                report.outputType = OutPutEnum.Failed;
+                report.longMsg = "The calculated area does not match the actual area.";
             }
+
             return report;
         }
 

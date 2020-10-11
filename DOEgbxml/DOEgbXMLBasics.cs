@@ -85,6 +85,7 @@ namespace DOEgbXML
             public const double RVALUE = 0.05; //ft2-F-hr/Btu
             public const double SPECIFICHEAT = 25;//BTUPerLbF
             public const double SCHEDULEDIFFERENCES = 0.1;//10% schedule differences
+            public const double AreaPercentTolerance = 0.15; //10% tolerance
         }
 
         static public double FindTilt(Vector.MemorySafe_CartVect normalVector)
@@ -1946,8 +1947,6 @@ namespace DOEgbXML
                 sum.Y = sum.Y + crossPoint.Y;
                 sum.Z = sum.Z + crossPoint.Z;
             }
-
-            //Console.WriteLine(sum.X + "; " + sum.Y + "; " + sum.Z);
 
             Vector.CartVect normal = getNorm(PlCoords);
             normalize(normal);

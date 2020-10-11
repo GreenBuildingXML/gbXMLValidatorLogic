@@ -390,7 +390,7 @@ namespace DOEgbXML
             {
                 if (TestCriteria.TestCriteriaDictionary[report.testType])
                 {
-                    report = TestSpaceVolumes(gbXMLdocs, gbXMLnsm, report, units);
+                    report = DOEgbXMLTestFunctions.TestSpaceVolumeMatch(testSpaces, standardSpaces, report, units);
                     AddToOutPut("Space Volumes Test", report, true);
                 }
             }
@@ -891,7 +891,7 @@ namespace DOEgbXML
 
             //test 35 curved wall test
             report.Clear();
-            report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
+            report.tolerance = DOEgbXMLBasics.Tolerances.AreaPercentTolerance;
             report.testType = TestType.Curved_Wall_Test;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
             if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
@@ -1087,6 +1087,12 @@ namespace DOEgbXML
             output += "<div id='testresult'>";
             output += "<h3>" + title + "</h3>";
             log += title + System.Environment.NewLine;
+
+            Console.Write(report.testType + ": ");
+            for(int i=0; i<report.testResult.Count; i++)
+            {
+                Console.WriteLine(report.testResult[i] + "/" + report.standResult[i]);
+            }
 
             //message
             var passTest = report.TestPassedDict.Values;
@@ -3391,7 +3397,7 @@ namespace DOEgbXML
         public static DOEgbXMLReportingObj TestSpaceVolumes(List<XmlDocument> gbXMLDocs, List<XmlNamespaceManager> gbXMLnsm, DOEgbXMLReportingObj report, string Units)
         {
             report.passOrFail = true;
-            string spaceId = "";
+            string spaceName = "";
             report.unit = Units;
             //assuming that this will be plenty large for now
             Dictionary<string, double> standardFileVolumeDict = new Dictionary<string, double>();
@@ -3411,23 +3417,24 @@ namespace DOEgbXML
                         string volume = spaceNode.InnerText;
                         if (i % 2 != 0)
                         {
-                            spaceId = spaceNode.ParentNode.Attributes[0].Value;
-                            if (testFileVolumeDict.ContainsKey(spaceId))
+                            spaceName = spaceNode.ParentNode.SelectSingleNode("Name").InnerText;
+                            if (testFileVolumeDict.ContainsKey(spaceName))
                             {
-                                testFileVolumeDict.Add(spaceId, Convert.ToDouble(volume));
+                                testFileVolumeDict.Add(spaceName, Convert.ToDouble(volume));
                             }
                         }
                         else
                         {
-                            spaceId = spaceNode.ParentNode.Attributes[0].Value;
-                            if (standardFileVolumeDict.ContainsKey(spaceId))
+                            spaceName = spaceNode.ParentNode.SelectSingleNode("Name").InnerText;
+                            if (standardFileVolumeDict.ContainsKey(spaceName))
                             {
-                                standardFileVolumeDict.Add(spaceId, Convert.ToDouble(volume));
+                                standardFileVolumeDict.Add(spaceName, Convert.ToDouble(volume));
                             }
                         }
                     }
                 }
                 var standardKeys = standardFileVolumeDict.Keys;
+
                 foreach (string key in standardKeys)
                 {
                     if (testFileVolumeDict.ContainsKey(key))
