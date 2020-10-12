@@ -1088,11 +1088,11 @@ namespace DOEgbXML
             output += "<h3>" + title + "</h3>";
             log += title + System.Environment.NewLine;
 
-            Console.Write(report.testType + ": ");
-            for(int i=0; i<report.testResult.Count; i++)
-            {
-                Console.WriteLine(report.testResult[i] + "/" + report.standResult[i]);
-            }
+            //Console.Write(report.testType + ": ");
+            //for(int i=0; i<report.testResult.Count; i++)
+            //{
+            //    Console.WriteLine(report.testResult[i] + "/" + report.standResult[i]);
+            //}
 
             //message
             var passTest = report.TestPassedDict.Values;
