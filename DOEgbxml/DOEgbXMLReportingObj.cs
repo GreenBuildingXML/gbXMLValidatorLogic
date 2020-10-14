@@ -31,6 +31,7 @@ namespace DOEgbXML
         public string longMsg;
         public Exception e;
         public OutPutEnum outputType;
+        public ReportParamType Type;
      //   public Dictionary<string, List<string>> MatchedSurfaceIds;
      //   public Dictionary<string, List<string>> MatchedOpening;
 

@@ -387,6 +387,7 @@ namespace DOEgbxml
                     else
                     {
                         Console.WriteLine("Test 17 completed all 10 test critera");
+                        Console.WriteLine(parser.output);
                     }
 
                     if (!parser.overallPassTest)

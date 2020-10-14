@@ -21,6 +21,7 @@ namespace DOEgbXML
         {
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             double testArea = 0.0;
             double standardArea = 0.0;
@@ -91,13 +92,13 @@ namespace DOEgbXML
                 report.outputType = OutPutEnum.Failed;
                 return report;
             }
-
         }
 
         public static DOEgbXMLReportingObj TestPlenumSpaceVolume(List<gbXMLSpaces> testSpaces, List<gbXMLSpaces> standardSpaces, DOEgbXMLReportingObj report, String Units)
         {
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Space;
 
             double testVolume = 0.0;
             double standardVolume = 0.0;
@@ -155,6 +156,7 @@ namespace DOEgbXML
         {
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Space;
 
             int mismatchCounter = 0;
 
@@ -213,6 +215,7 @@ namespace DOEgbXML
         {
             report.passOrFail = true;
             report.unit = Units;
+            report.Type = ReportParamType.Space;
             //assuming that this will be plenty large for now
             Dictionary<string, double> standardFileVolumeDict = new Dictionary<string, double>();
             Dictionary<string, double> testFileVolumeDict = new Dictionary<string, double>();
@@ -274,6 +277,7 @@ namespace DOEgbXML
         {
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             int testSurfaceCount = 0;
             int standardSurfaecCount = 0;
@@ -351,6 +355,7 @@ namespace DOEgbXML
         {
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             Dictionary<String, Double> standardSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(StandardSurfaces);
             Dictionary<String, Double> testSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(TestSurfaces);
@@ -421,6 +426,7 @@ namespace DOEgbXML
             //added 07/07/2020
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             double testArea = 0.0;
             double standardArea = 0.0;
@@ -480,6 +486,7 @@ namespace DOEgbXML
 
             report.testSummary = "";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             double testArea = 0.0;
             double standardArea = 0.0;
@@ -592,6 +599,7 @@ namespace DOEgbXML
             //ExteriorWall (by orientation), Roof and Floor - future test can expand this list.
             Dictionary<String, DOEgbXMLConstruction> StandardSurfaceToConstructionMap = new Dictionary<String, DOEgbXMLConstruction>();
             Dictionary<String, DOEgbXMLConstruction> TestSurfaceToConstructionMap = new Dictionary<String, DOEgbXMLConstruction>();
+            report.Type = ReportParamType.Space;
 
             //make standard surface map
             foreach(SurfaceDefinitions sd in StandardSurfaces){
@@ -675,6 +683,7 @@ namespace DOEgbXML
             report.passOrFail = true;
             report.outputType = OutPutEnum.Matched;
             report.longMsg = "The Test Wall has passed the Curved Wall test.";
+            report.Type = ReportParamType.MultiSurfaces;
 
             //1. first determine the surface areas
             double n = 0.0; //0-22.5
@@ -683,6 +692,24 @@ namespace DOEgbXML
             double se = 0.0;//110.5 - 157.5
             double s = 0.0; // 157.5 - 180
             double w = 0.0; // 270
+
+            Dictionary<string, string> orientationToSurfaceMap = new Dictionary<string, string>();
+            foreach(SurfaceDefinitions sf in TestSurfaces)
+            {
+                if(sf.SurfaceType == "ExteriorWall")
+                {
+                    string orientation = sf.surfaceOrientation();
+                    if (!orientationToSurfaceMap.ContainsKey(orientation))
+                    {
+                        orientationToSurfaceMap.Add(orientation, sf.SurfaceId);
+                    }
+                    else
+                    {
+                        string newId = orientationToSurfaceMap[orientation] + "," + sf.SurfaceId;
+                        orientationToSurfaceMap[orientation] = newId;
+                    }
+                }
+            }
 
             Dictionary<String, Double> testSurfaceAreaMapOrientation = getSurfaceAreaMapOrientation(TestSurfaces);
 
@@ -714,25 +741,26 @@ namespace DOEgbXML
 
             //test if matches
             double nsdifference = Math.Abs((n - s)/n);
+            string reportKeyId = orientationToSurfaceMap["N"] + "," + orientationToSurfaceMap["S"];
 
             if (nsdifference == 0)
             {
-                report.MessageDict.Add("n-s", "The north wall surface area matches the south wall surface area, the difference is zero. (North: " + n + ") South: " + s + ")" );
-                report.TestPassedDict.Add("n-s", true);
-                report.OutputTypeDict.Add("n-s", OutPutEnum.Matched);
+                report.MessageDict.Add(reportKeyId, "The north wall surface area matches the south wall surface area, the difference is zero. (North: " + n + ") South: " + s + ")" );
+                report.TestPassedDict.Add(reportKeyId, true);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Matched);
             }
             else if (nsdifference <= report.tolerance)
             {
-                report.MessageDict.Add("n-s", "The north wall surface area matches the south wall surface area, the difference is within the allowable tolerance. (North: " + n + ") South: " + s + ")");
-                report.TestPassedDict.Add("n-s", true);
-                report.OutputTypeDict.Add("n-s", OutPutEnum.Warning);
+                report.MessageDict.Add(reportKeyId, "The north wall surface area matches the south wall surface area, the difference is within the allowable tolerance. (North: " + n + ") South: " + s + ")");
+                report.TestPassedDict.Add(reportKeyId, true);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Warning);
             }
             else
             {
-                report.MessageDict.Add("n-s", "The north wall surface area does not match the south wall surface area, the difference was not within tolerance = " + report.tolerance * 100 + "%" + ".  Difference of: " + nsdifference
+                report.MessageDict.Add(reportKeyId, "The north wall surface area does not match the south wall surface area, the difference was not within tolerance = " + report.tolerance * 100 + "%" + ".  Difference of: " + nsdifference
                         + ".  " + n + " north walls surface area and " + s + " south wall surface area.");
-                report.TestPassedDict.Add("n-s", false);
-                report.OutputTypeDict.Add("n-s", OutPutEnum.Failed);
+                report.TestPassedDict.Add(reportKeyId, false);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Failed);
                 report.passOrFail = false;
                 report.outputType = OutPutEnum.Failed;
                 report.longMsg = "The north wall surface area does not match the south wall surface area.";
@@ -740,25 +768,26 @@ namespace DOEgbXML
 
             //test if matches
             double NESEdifference = Math.Abs((ne - se) / ne);
+            reportKeyId = orientationToSurfaceMap["NE"] + "," + orientationToSurfaceMap["SE"];
 
             if (NESEdifference == 0)
             {
-                report.MessageDict.Add("ne-se", "The north-east wall surface area matches the south-east wall surface area, the difference is zero. (North East: " + ne + ") South East: " + se + ")");
-                report.TestPassedDict.Add("ne-se", true);
-                report.OutputTypeDict.Add("ne-se", OutPutEnum.Matched);
+                report.MessageDict.Add(reportKeyId, "The north-east wall surface area matches the south-east wall surface area, the difference is zero. (North East: " + ne + ") South East: " + se + ")");
+                report.TestPassedDict.Add(reportKeyId, true);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Matched);
             }
             else if (NESEdifference <= report.tolerance)
             {
-                report.MessageDict.Add("ne-se", "The north-east wall surface area matches the south-east wall surface area, the difference is within the allowable tolerance. (North East: " + ne + ") South East: " + se + ")");
-                report.TestPassedDict.Add("ne-se", true);
-                report.OutputTypeDict.Add("ne-se", OutPutEnum.Warning);
+                report.MessageDict.Add(reportKeyId, "The north-east wall surface area matches the south-east wall surface area, the difference is within the allowable tolerance. (North East: " + ne + ") South East: " + se + ")");
+                report.TestPassedDict.Add(reportKeyId, true);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Warning);
             }
             else
             {
-                report.MessageDict.Add("ne-se", "The north-east wall surface area does not match the south-east wall surface area, the difference was not within tolerance = " + report.tolerance * 100 + "%" + ".  Difference of: " + NESEdifference
+                report.MessageDict.Add(reportKeyId, "The north-east wall surface area does not match the south-east wall surface area, the difference was not within tolerance = " + report.tolerance * 100 + "%" + ".  Difference of: " + NESEdifference
                         + ".  " + ne + " north-east walls surface area and " + se + " south-east wall surface area.");
-                report.TestPassedDict.Add("ne-se", false);
-                report.OutputTypeDict.Add("ne-se", OutPutEnum.Failed);
+                report.TestPassedDict.Add(reportKeyId, false);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Failed);
                 report.passOrFail = false;
                 report.outputType = OutPutEnum.Failed;
                 report.longMsg = "The north-east wall surface area does not match the south-east wall surface area.";
@@ -830,6 +859,7 @@ namespace DOEgbXML
             report.passOrFail = true;
             report.outputType = OutPutEnum.Matched;
             report.longMsg = "The Test Model's HVAC matches Standard Model's HVAC exactly.";
+            report.Type = ReportParamType.HVAC;
 
             //Step 1. get HVAC system
             DOEgbXMLPTAC testPTAC = new DOEgbXMLPTAC(gbXMLDocs[0], gbXMLnsm[0]);

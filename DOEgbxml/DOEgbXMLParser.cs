@@ -1146,13 +1146,18 @@ namespace DOEgbXML
                 var keys = report.MessageDict.Keys;
                 foreach(string key in keys)
                 {
+                    string keyTitle = key;
+                    if (report.Type == ReportParamType.MultiSurfaces)
+                    {
+                        keyTitle = "Surfaces";
+                    }
                     if (report.KeyToIDDict.ContainsKey(key))
                     {
-                        output += "<p class='text-info' key='" + key + "'><a class='" + report.KeyToIDDict[key] + "'>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+                        output += "<p class='text-info' key='" + key + " source='"+report.Type.ToString() + "'><a class='" + report.KeyToIDDict[key] + "'>" + keyTitle + ":</a> " + report.MessageDict[key] + "</p>";
                     }
                     else
                     {
-                        output += "<p class='text-info' key='" + key + "'><a class='" + key + "'>" + key + ":</a> " + report.MessageDict[key] + "</p>";
+                        output += "<p class='text-info' key='" + key + " source='" + report.Type.ToString() + "'><a class='" + key + "'>" + keyTitle + ":</a> " + report.MessageDict[key] + "</p>";
 
                     }
 
@@ -1331,6 +1336,7 @@ namespace DOEgbXML
             report.testSummary += "The tolerance is zero for this test.  In other words, the surface counts are the same, or the test fails.";
             //this summary is text that describes to a lay user what this test does, and how it works functionally.  The user should have some familiarity with the basic knowledge of gbXML 
             //added Feb 13 2013
+            report.Type = ReportParamType.Surface;
 
 
             report.unit = Units;
@@ -1424,6 +1430,7 @@ namespace DOEgbXML
             report.testSummary += "  Otherwise, the test will fail.";
             report.testSummary += "  The summary at the bottom of the page will show the logic of how the test arrived at its conclusion.";
 
+            report.Type = ReportParamType.Surface;
 
             bool matchedParentAz = false;
             bool matchedParentTilt = false;
@@ -2383,6 +2390,7 @@ namespace DOEgbXML
         private DOEgbXMLReportingObj TestSurfacePlanarTest(List<SurfaceDefinitions> TestSurfaces, DOEgbXMLReportingObj report)
         {
             //ensure that each set of RHR tests result in parallel or anti-parallel resultant vectors, or else fail the test
+            report.Type = ReportParamType.Surface;
 
             foreach (SurfaceDefinitions ts in TestSurfaces)
             {
@@ -2433,6 +2441,7 @@ namespace DOEgbXML
         private DOEgbXMLReportingObj TestOpeningPlanarTest(List<OpeningDefinitions> TestOpenings, DOEgbXMLReportingObj report)
         {
             //ensure that each set of RHR tests result in parallel or anti-parallel resultant vectors, or else fail the test
+            report.Type = ReportParamType.Surface;
 
             foreach (OpeningDefinitions to in TestOpenings)
             {
@@ -2489,6 +2498,7 @@ namespace DOEgbXML
             report.testSummary += " test will pass.  Using the previous example, if the allowable tolerance is 1% (1% of 500 is 5 sf), then the test file may have a building area ranging from 495 to 505 square feet, and will still be declared to pass this test.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Space;
 
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
@@ -2560,6 +2570,8 @@ namespace DOEgbXML
             report.testSummary = " not been constructed as per the instructions provided by the gbXML Test Case Manual.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Space;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             for (int i = 0; i < gbXMLDocs.Count; i++)
@@ -2633,6 +2645,7 @@ namespace DOEgbXML
             report.testSummary += " summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Level;
 
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
@@ -2705,6 +2718,7 @@ namespace DOEgbXML
             report.testSummary += " summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Level;
 
             //small dictionaries I make to keep track of the story level names and heights
             //standard file
@@ -2866,6 +2880,7 @@ namespace DOEgbXML
             report.testSummary += "meaning the resulting unit vector will point in the positive Z direction with no margin for error.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Level;
 
             //stores the level's z heights
             List<string> LevelZs = new List<string>();
@@ -3157,6 +3172,7 @@ namespace DOEgbXML
             //this summary is text that describes to a lay user what this test does, and how it works functionally.  The user should have some familiarity with the basic knowledge of gbXML 
             //added Feb 13 2013
             report.testSummary = "This test reviews the test file's Space id values, and ensures that they are all unique.  If there are any duplicate Space id values, then this test will fail.  If there are duplicates, the remainder of the tests in the testbed are not executed and the test will end here until the test file is properly updated.  Each Space id must be unique for the test bed to successfully execute.  If you have failed this test, please review the documents for this test and resubmit the test.";
+            report.Type = ReportParamType.Space;
 
             report.MessageList = new List<string>();
             report.TestPassedDict = new Dictionary<string, bool>();
@@ -3281,6 +3297,8 @@ namespace DOEgbXML
             report.unit = Units;
             report.passOrFail = true;
             string spaceId = "";
+            report.Type = ReportParamType.Space;
+
             //assuming that this will be plenty large for now
             Dictionary<string, double> standardFileAreaDict = new Dictionary<string, double>();
             Dictionary<string, double> testFileAreaDict = new Dictionary<string, double>();
@@ -3399,6 +3417,8 @@ namespace DOEgbXML
             report.passOrFail = true;
             string spaceName = "";
             report.unit = Units;
+            report.Type = ReportParamType.Space;
+
             //assuming that this will be plenty large for now
             Dictionary<string, double> standardFileVolumeDict = new Dictionary<string, double>();
             Dictionary<string, double> testFileVolumeDict = new Dictionary<string, double>();
@@ -3501,6 +3521,8 @@ namespace DOEgbXML
             string result = "";
             string floorarea = "";
             report.unit = Units;
+            report.Type = ReportParamType.Space;
+
             List<Vector.CartVect> VectList = new List<Vector.CartVect>();
 
             //keeps a dictionary of the shell geometry points for each space of the test file  key = spaceId, value = List of Coordinates
@@ -3737,6 +3759,8 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             for (int i = 0; i < gbXMLDocs.Count; i++)
@@ -3809,6 +3833,8 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -3908,6 +3934,7 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
@@ -4009,6 +4036,8 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -4109,6 +4138,7 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
@@ -4210,6 +4240,7 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
@@ -4312,6 +4343,7 @@ namespace DOEgbXML
             report.testSummary += "  Refer to the pass/fail summary sheet for more information.";
 
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
 
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
@@ -4987,6 +5019,7 @@ namespace DOEgbXML
             report.testSummary += " the standard surface being searched against.  If there is no match, the mini-report tells you.";
             report.testSummary += "  By making the tests this way, it is hoped that you can see exactly why your test file is failing against";
             report.testSummary += " the standard file's surface definitions.";
+            report.Type = ReportParamType.Surface;
 
             try
             {
@@ -5637,6 +5670,8 @@ namespace DOEgbXML
 
         private static DOEgbXMLReportingObj GetPolyLoopCoordMatch(Vector.MemorySafe_CartCoord standardPolyLoopCoord, SurfaceDefinitions testSurface, DOEgbXMLReportingObj report, string standardSurfaceId)
         {
+            report.Type = ReportParamType.Surface;
+
             List<Vector.MemorySafe_CartCoord> possibleMatch = new List<Vector.MemorySafe_CartCoord>();
             List<Vector.MemorySafe_CartCoord> exactMatch = new List<Vector.MemorySafe_CartCoord>();
             report.MessageList.Add("Testing Polyloop coordinates for Standard surface " + standardSurfaceId);
@@ -5837,6 +5872,8 @@ namespace DOEgbXML
 
         private static DOEgbXMLReportingObj GetOpeningPolyLoopCoordMatch(Vector.MemorySafe_CartCoord standardPolyLoopCoord, OpeningDefinitions testOpening, DOEgbXMLReportingObj report, string standardOpeningId)
         {
+            report.Type = ReportParamType.Surface;
+
             List<Vector.MemorySafe_CartCoord> possibleMatch = new List<Vector.MemorySafe_CartCoord>();
             List<Vector.MemorySafe_CartCoord> exactMatch = new List<Vector.MemorySafe_CartCoord>();
             report.MessageList.Add("Testing Polyloop coordinates for Standard opening " + standardOpeningId);
@@ -6201,6 +6238,7 @@ namespace DOEgbXML
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type FixedWindow counts are the same, or the test fails.";
             //this summary is text that describes to a lay user what this test does, and how it works functionally.  The user should have some familiarity with the basic knowledge of gbXML 
             //added Feb 13 2013
+            report.Type = ReportParamType.Surface;
 
             report.unit = Units;
             //assuming that this will be plenty large for now
@@ -6284,6 +6322,8 @@ namespace DOEgbXML
             report.testSummary += "  If the quantities are the same, this test passes, if different, it will fail.  ";
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type FixedWindow counts are the same, or the test fails.";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -6365,6 +6405,8 @@ namespace DOEgbXML
             report.testSummary += "  If the quantities are the same, this test passes, if different, it will fail.  ";
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type FixedSkylight counts are the same, or the test fails.";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -6446,6 +6488,8 @@ namespace DOEgbXML
             report.testSummary += "  If the quantities are the same, this test passes, if different, it will fail.  ";
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type OperableSkylights counts are the same, or the test fails.";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -6527,6 +6571,8 @@ namespace DOEgbXML
             report.testSummary += "  If the quantities are the same, this test passes, if different, it will fail.  ";
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type SlidingDoor counts are the same, or the test fails.";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -6608,6 +6654,8 @@ namespace DOEgbXML
             report.testSummary += "  If the quantities are the same, this test passes, if different, it will fail.  ";
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type NonSlidingDoor counts are the same, or the test fails.";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;
@@ -6689,6 +6737,8 @@ namespace DOEgbXML
             report.testSummary += "  If the quantities are the same, this test passes, if different, it will fail.  ";
             report.testSummary += "The tolerance is zero for this test.  In other words, the Opening of type Air counts are the same, or the test fails.";
             report.unit = Units;
+            report.Type = ReportParamType.Surface;
+
             //assuming that this will be plenty large for now
             string[] resultsArray = new string[50];
             int nodecount = 0;

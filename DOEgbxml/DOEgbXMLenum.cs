@@ -78,6 +78,15 @@ namespace DOEgbXML
         Failed
     }
 
+    public enum ReportParamType
+    {
+        Surface,
+        MultiSurfaces,
+        Level,
+        Space,
+        HVAC
+    }
+
     public class DOEgbXMLenum
     {
     }
