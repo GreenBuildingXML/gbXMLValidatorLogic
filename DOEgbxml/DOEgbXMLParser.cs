@@ -3303,6 +3303,10 @@ namespace DOEgbXML
             Dictionary<string, double> standardFileAreaDict = new Dictionary<string, double>();
             Dictionary<string, double> testFileAreaDict = new Dictionary<string, double>();
 
+            //We need to map ID to name because we are not forcing the ID to be the same, but name has to be identical
+            Dictionary<string, string> standardFileNameToID = new Dictionary<string, string>();
+            Dictionary<string, string> testFileNameToID = new Dictionary<string, string>();
+
             try
             {
                 for (int i = 0; i < gbXMLDocs.Count; i++)
@@ -3318,7 +3322,9 @@ namespace DOEgbXML
                         if (i % 2 != 0)
                         {
 
+                            XmlNodeList spaceParentNodes = spaceNode.ParentNode.ChildNodes;
                             XmlAttributeCollection AttrList = spaceNode.ParentNode.Attributes;
+                            
                             foreach(XmlAttribute attr in AttrList)
                             {
                                 if(attr.Name == "id")
@@ -3327,6 +3333,19 @@ namespace DOEgbXML
                                 }
                             }
 
+                            //add name
+                            foreach(XmlNode node in spaceParentNodes)
+                            {
+                                if (node.Name == "Name")
+                                {
+                                    if (!testFileNameToID.ContainsKey(node.InnerText))
+                                    {
+                                        testFileNameToID.Add(node.InnerText, spaceId);
+                                    }
+                                }
+                            }
+
+                            //add space id and area
                             if (!testFileAreaDict.ContainsKey(spaceId))
                             {
                                 testFileAreaDict.Add(spaceId, Convert.ToDouble(area));
@@ -3334,12 +3353,25 @@ namespace DOEgbXML
                         }
                         else
                         {
+                            XmlNodeList spaceParentNodes = spaceNode.ParentNode.ChildNodes;
                             XmlAttributeCollection AttrList = spaceNode.ParentNode.Attributes;
                             foreach (XmlAttribute attr in AttrList)
                             {
                                 if (attr.Name == "id")
                                 {
                                     spaceId = attr.Value;
+                                }
+                            }
+
+                            //add name
+                            foreach (XmlNode node in spaceParentNodes)
+                            {
+                                if (node.Name == "Name")
+                                {
+                                    if (!standardFileNameToID.ContainsKey(node.InnerText))
+                                    {
+                                        standardFileNameToID.Add(node.InnerText, spaceId);
+                                    }
                                 }
                             }
 
@@ -3350,47 +3382,48 @@ namespace DOEgbXML
                         }
                     }
                 }
-                var standardKeys = standardFileAreaDict.Keys;
+                var standardNames = standardFileNameToID.Keys;
 
-                foreach (string key in standardKeys)
+                foreach (string name in standardNames)
                 {
-                    if (testFileAreaDict.ContainsKey(key))
+                    string stdKey = standardFileNameToID[name];
+                    if (testFileNameToID.ContainsKey(name))
                     {
-                        double testFileSpaceArea = testFileAreaDict[key];
-                        double standardFileSpaceArea = standardFileAreaDict[key];
-
+                        string testKey = testFileNameToID[name];
+                        double testFileSpaceArea = testFileAreaDict[testKey];
+                        double standardFileSpaceArea = standardFileAreaDict[stdKey];
 
                         report.standResult.Add(Convert.ToString(standardFileSpaceArea));
                         report.testResult.Add(Convert.ToString(testFileSpaceArea));
-                        report.idList.Add(key);
+                        report.idList.Add(name);
 
                         double difference = Math.Abs(testFileSpaceArea - standardFileSpaceArea);
                         if (difference == 0)
                         {
-                            report.MessageDict.Add(key, "For Space Id: " + key + ".  Success finding matching space area.  The Standard File and the Test File both have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
-                            report.TestPassedDict.Add(key, true);
-                            report.OutputTypeDict.Add(key, OutPutEnum.Matched);
+                            report.MessageDict.Add(testKey, "For Space Id: " + testKey + " (name: "+name + ").  Success finding matching space area.  The Standard File and the Test File both have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
+                            report.TestPassedDict.Add(testKey, true);
+                            report.OutputTypeDict.Add(testKey, OutPutEnum.Matched);
                         }
                         else if (difference < report.tolerance)
                         {
-                            report.MessageDict.Add(key, "For Space Id: " + key + ".  Success finding matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
-                            report.TestPassedDict.Add(key, true);
-                            report.OutputTypeDict.Add(key, OutPutEnum.Warning);
+                            report.MessageDict.Add(testKey, "For Space Id: " + testKey + " (name: " + name + ").  Success finding matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
+                            report.TestPassedDict.Add(testKey, true);
+                            report.OutputTypeDict.Add(testKey, OutPutEnum.Warning);
                         }
                         else
                         {
-                            report.MessageDict.Add(key, "For space Id: " + key + ".  Failure to find an space area match.  THe area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
-                            report.TestPassedDict.Add(key, false);
-                            report.OutputTypeDict.Add(key, OutPutEnum.Failed);
+                            report.MessageDict.Add(testKey, "For space Id: " + testKey + " (name: " + name + ").  Failure to find an space area match.  THe area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
+                            report.TestPassedDict.Add(testKey, false);
+                            report.OutputTypeDict.Add(testKey, OutPutEnum.Failed);
                         }
                     }
                     else
                     {
                         report.standResult.Add("---");
                         report.testResult.Add("Could not be matched");
-                        report.idList.Add(key);
+                        report.idList.Add(name);
                         //failure to match spaceIds
-                        report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + key + " could not be found in the test file.");
+                        report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + stdKey + " (name: " + name + "). could not be found in the test file.");
                         report.passOrFail = false;
                         report.outputType = OutPutEnum.Failed;
                         return report;
@@ -3422,6 +3455,10 @@ namespace DOEgbXML
             //assuming that this will be plenty large for now
             Dictionary<string, double> standardFileVolumeDict = new Dictionary<string, double>();
             Dictionary<string, double> testFileVolumeDict = new Dictionary<string, double>();
+
+            //We need to map ID to name because we are not forcing the ID to be the same, but name has to be identical
+            Dictionary<string, string> standardFileNameToID = new Dictionary<string, string>();
+            Dictionary<string, string> testFileNameToID = new Dictionary<string, string>();
 
             try
             {
