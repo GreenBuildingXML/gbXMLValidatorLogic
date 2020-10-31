@@ -248,20 +248,20 @@ namespace DOEgbXML
                 double difference = Math.Abs(testSpace.volume - standardSpace.volume);
                 if (difference == 0)
                 {
-                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + ">" + testSpace.name + "</a>. Success finding matching space volume.  The Standard and Test Files both have identical volumes: " + testSpace.volume + " " + Units);
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Success finding matching space volume.  The Standard and Test Files both have identical volumes: " + testSpace.volume + " " + Units);
                     report.TestPassedDict.Add(testSpace.id, true);
                     report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Matched);
                 }
                 else if (difference < report.tolerance)
                 {
-                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + ">" + testSpace.name + "</a>. Success finding matching space volume.  The Standard Files space volume of " + standardSpace.volume + " " + Units + "and the Test File space volume: " + testSpace.volume + " are within the allowed tolerance of" + report.tolerance.ToString() + " " + Units + ".");
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Success finding matching space volume.  The Standard Files space volume of " + standardSpace.volume + " " + Units + "and the Test File space volume: " + testSpace.volume + " are within the allowed tolerance of" + report.tolerance.ToString() + " " + Units + ".");
                     report.TestPassedDict.Add(testSpace.id, true);
                     report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Warning);
                 }
                 else
                 {
                     //at the point of failure, the test will return with details about which volume failed.
-                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + ">" + testSpace.name + "</a>. Failure to find a volume match.  The Volume in the Test File equal to: " + testSpace.volume + " " + Units + " was not within the allowed tolerance.  SpaceId: <a class'" + standardSpace.id + "'>" + standardSpace.name + "</a> in the Standard file has a volume: " + standardSpace.volume + " .");
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Failure to find a volume match.  The Volume in the Test File equal to: " + testSpace.volume + " " + Units + " was not within the allowed tolerance.  SpaceId: <a class'" + standardSpace.id + "'>" + standardSpace.name + "</a> in the Standard file has a volume: " + standardSpace.volume + " .");
                     report.TestPassedDict.Add(testSpace.id, false);
                     report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Failed);
                     report.passOrFail = false;

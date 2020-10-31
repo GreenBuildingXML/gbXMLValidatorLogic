@@ -1153,11 +1153,11 @@ namespace DOEgbXML
                     }
                     if (report.KeyToIDDict.ContainsKey(key))
                     {
-                        output += "<p class='text-info' key='" + key + " source='"+report.Type.ToString() + "'><a class='" + report.KeyToIDDict[key] + "'>" + keyTitle + ":</a> " + report.MessageDict[key] + "</p>";
+                        output += "<p class='text-info' key='" + key + "' source='"+report.Type.ToString() + "'><a class='" + report.KeyToIDDict[key] + "'>" + keyTitle + ":</a> " + report.MessageDict[key] + "</p>";
                     }
                     else
                     {
-                        output += "<p class='text-info' key='" + key + " source='" + report.Type.ToString() + "'><a class='" + key + "'>" + keyTitle + ":</a> " + report.MessageDict[key] + "</p>";
+                        output += "<p class='text-info' key='" + key + "' source='" + report.Type.ToString() + "'><a class='" + key + "'>" + keyTitle + ":</a> " + report.MessageDict[key] + "</p>";
 
                     }
 
