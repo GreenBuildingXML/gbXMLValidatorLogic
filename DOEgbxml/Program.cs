@@ -8,7 +8,7 @@ namespace DOEgbxml
     internal class Program
     {
 
-        static void Main1()
+        static void Main()
         {
             string LocalTestPath = "/Users/weilixu/Desktop/data/test/";
             List<string> testList = new List<string>()
@@ -443,7 +443,7 @@ namespace DOEgbxml
                 }
             }
         }
-        static void Main()
+        static void Main1()
         {
             string LocalTestPath = "/Users/weilixu/Desktop/data/test/";
             string path = LocalTestPath + "test1.gbxml";

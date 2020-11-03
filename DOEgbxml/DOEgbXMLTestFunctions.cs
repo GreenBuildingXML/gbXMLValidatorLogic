@@ -186,8 +186,8 @@ namespace DOEgbXML
                     {
 
                         report.MessageDict.Add(matchedSpace.id, "Find a match space name in Test Model : <a class'" + matchedSpace.id + "'>" + matchedSpace.name + "</a>.");
-                        report.TestPassedDict.Add(matchedSpace.id, false);
-                        report.OutputTypeDict.Add(matchedSpace.id, OutPutEnum.Failed);
+                        report.TestPassedDict.Add(matchedSpace.id, true);
+                        report.OutputTypeDict.Add(matchedSpace.id, OutPutEnum.Matched);
                     }
                 }
             }
