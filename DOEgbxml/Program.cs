@@ -8,7 +8,7 @@ namespace DOEgbxml
     internal class Program
     {
 
-        static void Main()
+        static void Main1()
         {
             string LocalTestPath = "/Users/weilixu/Desktop/data/test/";
             List<string> testList = new List<string>()
@@ -44,7 +44,7 @@ namespace DOEgbxml
 
                 if (s == "test1")
                 {
-                    if (parser.successCounter != 18)
+                    if (parser.successCounter != 12)
                     {
                         Console.WriteLine("Test 1 does not complete the test - success criteria is less than 18");
                     }
@@ -65,7 +65,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test2")
                 {
-                    if (parser.successCounter != 23)
+                    if (parser.successCounter != 12)
                     {
                         Console.WriteLine("Test 2 does not complete the test - success criteria is less than 23");
                     }
@@ -86,7 +86,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test3")
                 {
-                    if (parser.successCounter != 19)
+                    if (parser.successCounter != 12)
                     {
                         Console.WriteLine("Test 3 does not complete the test - success criteria is less than 19");
                     }
@@ -107,7 +107,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test4")
                 {
-                    if (parser.successCounter != 30)
+                    if (parser.successCounter != 13)
                     {
                         Console.WriteLine("Test 4 does not complete the test - success criteria is less than 30");
                     }
@@ -128,7 +128,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test5")
                 {
-                    if (parser.successCounter != 35)
+                    if (parser.successCounter != 13)
                     {
                         Console.WriteLine("Test 5 does not complete the test - success criteria is less than 35");
                     }
@@ -149,7 +149,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test6")
                 {
-                    if (parser.successCounter != 18)
+                    if (parser.successCounter != 12)
                     {
                         Console.WriteLine("Test 6 does not complete the test - success criteria is less than 18");
                     }
@@ -170,7 +170,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test7")
                 {
-                    if (parser.successCounter != 16)
+                    if (parser.successCounter != 10)
                     {
                         Console.WriteLine("Test 7 does not complete the test - success criteria is less than 16");
                     }
@@ -191,7 +191,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test8")
                 {
-                    if (parser.successCounter != 25)
+                    if (parser.successCounter != 13)
                     {
                         Console.WriteLine("Test 8 does not complete the test - success criteria is less than 25");
                     }
@@ -212,7 +212,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test9")
                 {
-                    if (parser.successCounter != 19)
+                    if (parser.successCounter != 14)
                     {
                         Console.WriteLine("Test 9 does not complete the test - success criteria is less than 19");
                     }
@@ -233,7 +233,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test10")
                 {
-                    if (parser.successCounter != 28)
+                    if (parser.successCounter != 12)
                     {
                         Console.WriteLine("Test 10 does not complete the test - success criteria is less than 28");
                     }
@@ -275,7 +275,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test12")
                 {
-                    if (parser.successCounter != 18)
+                    if (parser.successCounter != 8)
                     {
                         Console.WriteLine("Test 12 does not complete the test - success criteria is less than 18");
                     }
@@ -338,7 +338,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test15")
                 {
-                    if (parser.successCounter != 17)
+                    if (parser.successCounter != 12)
                     {
                         Console.WriteLine("Test 15 does not complete the test - success criteria is less than 17");
                     }
@@ -387,7 +387,6 @@ namespace DOEgbxml
                     else
                     {
                         Console.WriteLine("Test 17 completed all 10 test critera");
-                        Console.WriteLine(parser.output);
                     }
 
                     if (!parser.overallPassTest)
@@ -402,7 +401,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test18")
                 {
-                    if (parser.successCounter != 15)
+                    if (parser.successCounter != 14)
                     {
                         Console.WriteLine("Test 18 does not complete the test - success criteria is less than 15");
                     }
@@ -443,6 +442,15 @@ namespace DOEgbxml
                     }
                 }
             }
+        }
+        static void Main()
+        {
+            string LocalTestPath = "/Users/weilixu/Desktop/data/test/";
+            string path = LocalTestPath + "test1.gbxml";
+            XmlReader reader = XmlReader.Create(path);
+            XMLParser parser = new XMLParser();
+            parser.StartTest(reader, "test1", "dummy tester");
+            Console.WriteLine(parser.output);
         }
     }
 }

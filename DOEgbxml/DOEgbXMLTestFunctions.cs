@@ -178,19 +178,16 @@ namespace DOEgbXML
                     if (matchedSpace == null)
                     {
                         mismatchCounter++;
-                        string msg = "Cannot find a match space name in Test Model for the space: <a class='" + stdSpace.id + "'>" + stdSpace.name + "</a>.";
-                        report.MessageList.Add(msg);
-                        report.testResult.Add("NA");
-                        report.standResult.Add(stdSpace.name);
-                        report.idList.Add(i + "");
+                        report.MessageDict.Add(stdSpace.id, "Cannot find a match space name in Test Model for the space: <a class'" + stdSpace.id + "'>" + stdSpace.name + "</a>.");
+                        report.TestPassedDict.Add(stdSpace.id, false);
+                        report.OutputTypeDict.Add(stdSpace.id, OutPutEnum.Failed);
                     }
                     else
                     {
-                        string msg = "Find a match space name in Test Model <a class='" + matchedSpace.id + "'></a>  for the space:" + stdSpace.name + ".";
-                        report.MessageList.Add(msg);
-                        report.testResult.Add(stdSpace.name);
-                        report.standResult.Add(stdSpace.name);
-                        report.idList.Add(i + "");
+
+                        report.MessageDict.Add(matchedSpace.id, "Find a match space name in Test Model : <a class'" + matchedSpace.id + "'>" + matchedSpace.name + "</a>.");
+                        report.TestPassedDict.Add(matchedSpace.id, false);
+                        report.OutputTypeDict.Add(matchedSpace.id, OutPutEnum.Failed);
                     }
                 }
             }
@@ -825,26 +822,28 @@ namespace DOEgbXML
                 }
             }
             calculatedArea = linearLength * 10;//10 is the height;
+            reportKeyId = orientationToSurfaceMap["N"] + "," + orientationToSurfaceMap["NE"] + "," + orientationToSurfaceMap["E"] + "," + orientationToSurfaceMap["SE"] +
+                "," + orientationToSurfaceMap["E"] + "," + orientationToSurfaceMap["W"];
             //test if matches
             double areaMatch = Math.Abs((actualArea - calculatedArea) / actualArea);
             if (areaMatch == 0)
             {
-                report.MessageDict.Add("area", "The calculated area matches the actual area, the difference is zero. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
-                report.TestPassedDict.Add("area", true);
-                report.OutputTypeDict.Add("area", OutPutEnum.Matched);
+                report.MessageDict.Add(reportKeyId, "The calculated area matches the actual area, the difference is zero. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
+                report.TestPassedDict.Add(reportKeyId, true);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Matched);
             }
             else if (areaMatch <= report.tolerance)
             {
-                report.MessageDict.Add("area", "The calculated area matches the actual area, the difference is within the allowable tolerance. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
-                report.TestPassedDict.Add("area", true);
-                report.OutputTypeDict.Add("area", OutPutEnum.Warning);
+                report.MessageDict.Add(reportKeyId, "The calculated area matches the actual area, the difference is within the allowable tolerance. (Calculated area: " + calculatedArea + "), Actual area: " + actualArea + ")");
+                report.TestPassedDict.Add(reportKeyId, true);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Warning);
             }
             else
             {
-                report.MessageDict.Add("area", "The calculated area does not match the actual area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + calculatedArea
+                report.MessageDict.Add(reportKeyId, "The calculated area does not match the actual area, the difference was not within tolerance = " + report.tolerance.ToString() + " " + Units + ".  Difference of: " + calculatedArea
                         + ".  " + calculatedArea + ", calculated area and " + actualArea + ", calculated area.");
-                report.TestPassedDict.Add("area", false);
-                report.OutputTypeDict.Add("area", OutPutEnum.Failed);
+                report.TestPassedDict.Add(reportKeyId, false);
+                report.OutputTypeDict.Add(reportKeyId, OutPutEnum.Failed);
                 report.passOrFail = false;
                 report.outputType = OutPutEnum.Failed;
                 report.longMsg = "The calculated area does not match the actual area.";
