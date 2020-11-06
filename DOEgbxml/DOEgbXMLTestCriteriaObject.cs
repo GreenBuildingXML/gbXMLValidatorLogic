@@ -309,7 +309,8 @@ namespace DOEgbXML
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Count, true);
+                //Test case focus on HVAC, so we can ignore the story
+                TestCriteriaDictionary.Add(TestType.Building_Story_Count, false);
                 TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
                 TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
