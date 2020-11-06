@@ -149,7 +149,9 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
                 TestCriteriaDictionary.Add(TestType.Shade_Area, false);
                 TestCriteriaDictionary.Add(TestType.Window_Area_Test, false);
-                TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, true);
+                //it doesnt matter if the interior half wall there or not -
+                //more importantly, the space and volume should be correct.
+                TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, false);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Area, false);
                 TestCriteriaDictionary.Add(TestType.Ceiling_Area, false);
                 TestCriteriaDictionary.Add(TestType.Assembly_Test, false);
