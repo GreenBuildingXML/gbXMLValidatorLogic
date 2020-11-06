@@ -170,7 +170,7 @@ namespace DOEgbXML
                     for (int j = 0; j < testSpaces.Count; j++)
                     {
                         //We are not checking the plenum 
-                        if (stdSpace.name == testSpaces[j].name)
+                        if (stdSpace.name.Equals(testSpaces[j].name, StringComparison.InvariantCultureIgnoreCase))
                         {
                             matchedSpace = testSpaces[j];
                         }
