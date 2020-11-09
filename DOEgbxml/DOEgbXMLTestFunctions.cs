@@ -738,7 +738,9 @@ namespace DOEgbXML
 
             //test if matches
             double nsdifference = Math.Abs((n - s)/n);
-            string reportKeyId = orientationToSurfaceMap["N"] + "," + orientationToSurfaceMap["S"];
+            string reportKeyId = "";
+            if (orientationToSurfaceMap.ContainsKey("N")) { reportKeyId = orientationToSurfaceMap["N"]; };
+            if (orientationToSurfaceMap.ContainsKey("S")) { reportKeyId = "," + orientationToSurfaceMap["S"]; };
 
             if (nsdifference == 0)
             {
@@ -765,8 +767,10 @@ namespace DOEgbXML
 
             //test if matches
             double NESEdifference = Math.Abs((ne - se) / ne);
-            reportKeyId = orientationToSurfaceMap["NE"] + "," + orientationToSurfaceMap["SE"];
-
+            reportKeyId = "";
+            if (orientationToSurfaceMap.ContainsKey("NE")) { reportKeyId = orientationToSurfaceMap["NE"]; };
+            if (orientationToSurfaceMap.ContainsKey("SE")) { reportKeyId = "," + orientationToSurfaceMap["SE"]; };
+            
             if (NESEdifference == 0)
             {
                 report.MessageDict.Add(reportKeyId, "The north-east wall surface area matches the south-east wall surface area, the difference is zero. (North East: " + ne + ") South East: " + se + ")");
@@ -822,8 +826,14 @@ namespace DOEgbXML
                 }
             }
             calculatedArea = linearLength * 10;//10 is the height;
-            reportKeyId = orientationToSurfaceMap["N"] + "," + orientationToSurfaceMap["NE"] + "," + orientationToSurfaceMap["E"] + "," + orientationToSurfaceMap["SE"] +
-                "," + orientationToSurfaceMap["E"] + "," + orientationToSurfaceMap["W"];
+            reportKeyId = "";
+            if (orientationToSurfaceMap.ContainsKey("N")) { reportKeyId = orientationToSurfaceMap["N"]; };
+            if (orientationToSurfaceMap.ContainsKey("NE")) { reportKeyId = "," + orientationToSurfaceMap["NE"]; };
+            if (orientationToSurfaceMap.ContainsKey("E")) { reportKeyId = "," + orientationToSurfaceMap["E"]; };
+            if (orientationToSurfaceMap.ContainsKey("SE")) { reportKeyId = "," + orientationToSurfaceMap["SE"]; };
+            if (orientationToSurfaceMap.ContainsKey("S")) { reportKeyId = "," + orientationToSurfaceMap["S"]; };
+            if (orientationToSurfaceMap.ContainsKey("W")) { reportKeyId = "," + orientationToSurfaceMap["W"]; };
+
             //test if matches
             double areaMatch = Math.Abs((actualArea - calculatedArea) / actualArea);
             if (areaMatch == 0)
