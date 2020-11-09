@@ -169,7 +169,7 @@ namespace DOEgbXML
                     //search for match
                     for (int j = 0; j < testSpaces.Count; j++)
                     {
-                        //We are not checking the plenum 
+                        //We are not checking the plenum
                         if (stdSpace.name.Equals(testSpaces[j].name, StringComparison.InvariantCultureIgnoreCase))
                         {
                             matchedSpace = testSpaces[j];
@@ -224,7 +224,7 @@ namespace DOEgbXML
                 gbXMLSpaces standardSpace = null;
                 for(int j=0; j<standardSpaces.Count; j++)
                 {
-                    if(standardSpaces[j].name == testSpaces[i].name)
+                    if (standardSpaces[j].name.Equals(testSpaces[i].name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         standardSpace = standardSpaces[j];
                     }

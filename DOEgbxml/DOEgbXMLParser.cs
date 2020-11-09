@@ -3338,9 +3338,10 @@ namespace DOEgbXML
                             {
                                 if (node.Name == "Name")
                                 {
-                                    if (!testFileNameToID.ContainsKey(node.InnerText))
+                                    string lowername = node.InnerText.ToLower();
+                                    if (!testFileNameToID.ContainsKey(lowername))
                                     {
-                                        testFileNameToID.Add(node.InnerText, spaceId);
+                                        testFileNameToID.Add(lowername, spaceId);
                                     }
                                 }
                             }
@@ -3368,9 +3369,10 @@ namespace DOEgbXML
                             {
                                 if (node.Name == "Name")
                                 {
-                                    if (!standardFileNameToID.ContainsKey(node.InnerText))
+                                    string lowername = node.InnerText.ToLower();
+                                    if (!standardFileNameToID.ContainsKey(lowername))
                                     {
-                                        standardFileNameToID.Add(node.InnerText, spaceId);
+                                        standardFileNameToID.Add(lowername, spaceId);
                                     }
                                 }
                             }
