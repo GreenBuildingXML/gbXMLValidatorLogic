@@ -170,7 +170,7 @@ namespace DOEgbxml
                 }
                 else if (s == "test7")
                 {
-                    if (parser.successCounter != 10)
+                    if (parser.successCounter != 13)
                     {
                         Console.WriteLine("Test 7 does not complete the test - success criteria is less than 16");
                     }
@@ -446,10 +446,10 @@ namespace DOEgbxml
         static void Main1()
         {
             string LocalTestPath = "/Users/weilixu/Desktop/data/test/";
-            string path = LocalTestPath + "test1.gbxml";
+            string path = LocalTestPath + "test15.gbxml";
             XmlReader reader = XmlReader.Create(path);
             XMLParser parser = new XMLParser();
-            parser.StartTest(reader, "test1", "dummy tester");
+            parser.StartTest(reader, "test15", "dummy tester");
             Console.WriteLine(parser.output);
         }
     }

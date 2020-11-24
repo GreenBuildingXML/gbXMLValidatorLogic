@@ -881,7 +881,7 @@ namespace DOEgbXML
                 {
                     report.MessageList.Add(s);
                 }
-                report.longMsg = "The Test Model's HVAC are incomplete, the process is halted, Check detail message for the errors.";
+                report.longMsg = "The Test Model's HVAC is incomplete, the process is halted, Check detail message for the errors.";
                 report.passOrFail = false;
                 report.outputType = OutPutEnum.Failed;
                 return report;

@@ -309,17 +309,16 @@ namespace DOEgbXML
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
-                //Test case focus on HVAC, so we can ignore the story
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, false);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Exterior_Wall_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Underground_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Interior_Wall_Surface_Count, false);
+                TestCriteriaDictionary.Add(TestType.Interior_Wall_Surface_Count, true);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
@@ -343,15 +342,15 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Area, true);
                 TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
                 TestCriteriaDictionary.Add(TestType.Shade_Area, false);
-                TestCriteriaDictionary.Add(TestType.Window_Area_Test, false);
-                TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, false);
+                TestCriteriaDictionary.Add(TestType.Window_Area_Test, true);
+                TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, true);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Area, false);
                 TestCriteriaDictionary.Add(TestType.Ceiling_Area, false);
                 TestCriteriaDictionary.Add(TestType.Assembly_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
                 TestCriteriaDictionary.Add(TestType.Plenum_Volume_Test, false);
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
-                TestCriteriaDictionary.Add(TestType.HVAC_Test, true);
+                TestCriteriaDictionary.Add(TestType.HVAC_Test, false);
             }
             else if (testname == "test8")
             {
@@ -888,16 +887,17 @@ namespace DOEgbXML
                 DOEgbXMLBasics.SliversAllowed = true;
                 TestCriteriaDictionary.Add(TestType.Building_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Count, true);
+                //Test case focus on HVAC, so we can ignore the story
                 TestCriteriaDictionary.Add(TestType.Building_Story_Count, false);
-                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, true);
-                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, true);
+                TestCriteriaDictionary.Add(TestType.Building_Story_Z_Height, false);
+                TestCriteriaDictionary.Add(TestType.Building_Story_PolyLoop_RHR, false);
                 TestCriteriaDictionary.Add(TestType.SpaceId_Match_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Area, true);
                 TestCriteriaDictionary.Add(TestType.Space_Volume, true);
                 TestCriteriaDictionary.Add(TestType.Total_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Exterior_Wall_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Underground_Surface_Count, false);
-                TestCriteriaDictionary.Add(TestType.Interior_Wall_Surface_Count, true);
+                TestCriteriaDictionary.Add(TestType.Interior_Wall_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Roof_Surface_Count, false);
                 TestCriteriaDictionary.Add(TestType.Shading_Surface_Count, false);
@@ -921,15 +921,15 @@ namespace DOEgbXML
                 TestCriteriaDictionary.Add(TestType.Roof_Area, true);
                 TestCriteriaDictionary.Add(TestType.SlabOnGrade_Area, true);
                 TestCriteriaDictionary.Add(TestType.Shade_Area, false);
-                TestCriteriaDictionary.Add(TestType.Window_Area_Test, true);
-                TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, true);
+                TestCriteriaDictionary.Add(TestType.Window_Area_Test, false);
+                TestCriteriaDictionary.Add(TestType.Interior_Wall_Area, false);
                 TestCriteriaDictionary.Add(TestType.Interior_Floor_Area, false);
                 TestCriteriaDictionary.Add(TestType.Ceiling_Area, false);
                 TestCriteriaDictionary.Add(TestType.Assembly_Test, false);
                 TestCriteriaDictionary.Add(TestType.Space_Name_Test, true);
                 TestCriteriaDictionary.Add(TestType.Plenum_Volume_Test, false);
                 TestCriteriaDictionary.Add(TestType.Air_Area, false);
-                TestCriteriaDictionary.Add(TestType.HVAC_Test, false);
+                TestCriteriaDictionary.Add(TestType.HVAC_Test, true);
             }
         }
     }
