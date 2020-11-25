@@ -936,6 +936,7 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Interior_Floor_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
             {
                 if (TestCriteria.TestCriteriaDictionary[report.testType])
                 {
@@ -949,6 +950,7 @@ namespace DOEgbXML
             report.tolerance = DOEgbXMLBasics.Tolerances.AreaTolerance;
             report.testType = TestType.Ceiling_Area;
             units = DOEgbXMLBasics.MeasurementUnits.sqft.ToString();
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
             {
                 if (TestCriteria.TestCriteriaDictionary[report.testType])
                 {
@@ -958,121 +960,127 @@ namespace DOEgbXML
             }
 
             #region opening detailed test
-            //openings detailed tests
-            List<OpeningDefinitions> TestOpenings = new List<OpeningDefinitions>();
-            XmlDocument testFile = gbXMLdocs[0];
-            XmlNamespaceManager testNSM = gbXMLnsm[0];
-            List<OpeningDefinitions> StandardOpenings = new List<OpeningDefinitions>();
-            XmlDocument standardFile = gbXMLdocs[1];
-            XmlNamespaceManager standardNSM = gbXMLnsm[1];
-            TestOpenings = GetFileOpeningDefs(testFile, testNSM);
-            StandardOpenings = GetFileOpeningDefs(standardFile, standardNSM);
 
+            //openings detailed tests
             string TestOpeningTable = "";
             report.Clear();
             report.testType = TestType.Opening_Planar_Test;
-            report = TestOpeningPlanarTest(TestOpenings, report);
 
-            if (!report.passOrFail)
+            if (TestCriteria.TestCriteriaDictionary.ContainsKey(report.testType))
             {
-                AddToOutPut("Test File Planar Opening Check", report, true);
-                report.Clear();
-            }
-            //only run detailed opening checks if the opening are planar
-            else
-            {
-                TestOpeningTable = "<div class='container'><table class='table table-bordered'>";
-                TestOpeningTable += "<tr class='info'>" +
-                                       "<td>" + "Test Section Name" + "</td>" +
-                                        "<td>" + "Standard Opening Id" + "</td>" +
-                                        "<td>" + "Test Opening Id" + "</td>" +
-                                        "<td>" + "Standard Parent Surface Id" + "</td>" +
-                                        "<td>" + "Test Parent Surface Id" + "</td>" +
-                                        "<td>" + "Standard Parent Azimuth" + "</td>" +
-                                        "<td>" + "Test Parent Azimuth" + "</td>" +
-                                        "<td>" + "Standard Parent Tilt" + "</td>" +
-                                        "<td>" + "Test Parent Tilt" + "</td>" +
-                                        "<td>" + "Standard Surface Area" + "</td>" +
-                                        "<td>" + "Test Surface Area" + "</td>" +
-                                        "<td>" + "Pass/Fail" + "</td>" +
-                                       "</tr>";
-
-                globalMatchObject.MatchedOpeningIds = new Dictionary<string, List<string>>();
-                int i = 1;
-                //if no openings remove the table.
-                if (StandardOpenings.Count < 1)
-                    TestOpeningTable = "";
-                //compare the openings
-                foreach (OpeningDefinitions opening in StandardOpenings)
+                if (TestCriteria.TestCriteriaDictionary[report.testType])
                 {
-                    report.Clear();
+                    List<OpeningDefinitions> TestOpenings = new List<OpeningDefinitions>();
+                    XmlDocument testFile = gbXMLdocs[0];
+                    XmlNamespaceManager testNSM = gbXMLnsm[0];
+                    List<OpeningDefinitions> StandardOpenings = new List<OpeningDefinitions>();
+                    XmlDocument standardFile = gbXMLdocs[1];
+                    XmlNamespaceManager standardNSM = gbXMLnsm[1];
+                    TestOpenings = GetFileOpeningDefs(testFile, testNSM);
+                    StandardOpenings = GetFileOpeningDefs(standardFile, standardNSM);
+                    report = TestOpeningPlanarTest(TestOpenings, report);
 
-                    report.testType = TestType.Detailed_Opening_Checks;
-                    report.subTestIndex = i;
-
-                    report = GetPossibleOpeningMatches(opening, TestOpenings, report);
-
-                    AddToOutPut("Test 17 for Opening number " + i, report, false);
-
-                    foreach (OpeningDefinitions to in TestOpenings)
+                    if (!report.passOrFail)
                     {
-                        if (globalMatchObject.MatchedOpeningIds.ContainsKey(opening.OpeningId))
-                        {
-                            foreach (string id in globalMatchObject.MatchedOpeningIds[opening.OpeningId])
-                            {
-                                if (to.OpeningId == id)
-                                {
-                                    if (report.passOrFail)
-                                        TestOpeningTable += "<tr class='success'>" +
-                                            "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
-                                            "Detailed Opening Checks " + report.subTestIndex + "</a>" + "</td>" +
-                                           "<td>" + opening.OpeningId + "</td>" +
-                                            "<td>" + to.OpeningId + "</td>" +
-                                            "<td>" + opening.ParentSurfaceId + "</td>" +
-                                            "<td>" + to.ParentSurfaceId + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", opening.ParentAzimuth) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", to.ParentAzimuth) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", opening.ParentTilt) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", to.ParentTilt) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", opening.surfaceArea) + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", to.surfaceArea) + "</td>" +
-                                            "<td>" + "Pass" + "</td>" +
-                                            "</tr>";
-                                }
+                        AddToOutPut("Test File Planar Opening Check", report, true);
+                        report.Clear();
+                    }
+                    //only run detailed opening checks if the opening are planar
+                    else
+                    {
+                        TestOpeningTable = "<div class='container'><table class='table table-bordered'>";
+                        TestOpeningTable += "<tr class='info'>" +
+                                               "<td>" + "Test Section Name" + "</td>" +
+                                                "<td>" + "Standard Opening Id" + "</td>" +
+                                                "<td>" + "Test Opening Id" + "</td>" +
+                                                "<td>" + "Standard Parent Surface Id" + "</td>" +
+                                                "<td>" + "Test Parent Surface Id" + "</td>" +
+                                                "<td>" + "Standard Parent Azimuth" + "</td>" +
+                                                "<td>" + "Test Parent Azimuth" + "</td>" +
+                                                "<td>" + "Standard Parent Tilt" + "</td>" +
+                                                "<td>" + "Test Parent Tilt" + "</td>" +
+                                                "<td>" + "Standard Surface Area" + "</td>" +
+                                                "<td>" + "Test Surface Area" + "</td>" +
+                                                "<td>" + "Pass/Fail" + "</td>" +
+                                               "</tr>";
 
+                        globalMatchObject.MatchedOpeningIds = new Dictionary<string, List<string>>();
+                        int i = 1;
+                        //if no openings remove the table.
+                        if (StandardOpenings.Count < 1)
+                            TestOpeningTable = "";
+                        //compare the openings
+                        foreach (OpeningDefinitions opening in StandardOpenings)
+                        {
+                            report.Clear();
+
+                            report.testType = TestType.Detailed_Opening_Checks;
+                            report.subTestIndex = i;
+
+                            report = GetPossibleOpeningMatches(opening, TestOpenings, report);
+
+                            AddToOutPut("Test for Opening number " + i, report, false);
+
+                            foreach (OpeningDefinitions to in TestOpenings)
+                            {
+                                if (globalMatchObject.MatchedOpeningIds.ContainsKey(opening.OpeningId))
+                                {
+                                    foreach (string id in globalMatchObject.MatchedOpeningIds[opening.OpeningId])
+                                    {
+                                        if (to.OpeningId == id)
+                                        {
+                                            if (report.passOrFail)
+                                                TestOpeningTable += "<tr class='success'>" +
+                                                    "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
+                                                    "Detailed Opening Checks " + report.subTestIndex + "</a>" + "</td>" +
+                                                   "<td>" + opening.OpeningId + "</td>" +
+                                                    "<td>" + to.OpeningId + "</td>" +
+                                                    "<td>" + opening.ParentSurfaceId + "</td>" +
+                                                    "<td>" + to.ParentSurfaceId + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", opening.ParentAzimuth) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", to.ParentAzimuth) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", opening.ParentTilt) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", to.ParentTilt) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", opening.surfaceArea) + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", to.surfaceArea) + "</td>" +
+                                                    "<td>" + "Pass" + "</td>" +
+                                                    "</tr>";
+                                        }
+
+                                    }
+
+                                }
                             }
+                            //if didn't find match means it failed the test
+                            if (!report.passOrFail)
+                                TestOpeningTable += "<tr class='error'>" +
+                                                  "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
+                                                  "Detailed Opening Checks " + report.subTestIndex + "</a>" + "</td>" +
+                                                  "<td>" + opening.OpeningId + "</td>" +
+                                                  "<td>" + "---" + "</td>" +
+                                                    "<td>" + opening.ParentSurfaceId + "</td>" +
+                                                    "<td>" + "---" + "</td>" +
+                                                    "<td>" + String.Format("{0:#,0.00}", opening.ParentAzimuth) + "</td>" +
+                                                    "<td>" + "---" + "</td>" +
+                                                     "<td>" + String.Format("{0:#,0.00}", opening.ParentTilt) + "</td>" +
+                                                    "<td>" + "---" + "</td>" +
+                                                     "<td>" + String.Format("{0:#,0.00}", opening.surfaceArea) + "</td>" +
+                                                    "<td>" + "---" + "</td>" +
+                                                  "<td>" + "Fail" + "</td>" +
+                                                  "</tr>";
+                            i += 1;
 
                         }
                     }
-                    //if didn't find match means it failed the test
-                    if (!report.passOrFail)
-                        TestOpeningTable += "<tr class='error'>" +
-                                          "<td>" + "<a href='TestDetailPage.aspx?type=" + (int)report.testType + "&subtype=" + report.subTestIndex + "' target='_blank'>" +
-                                          "Detailed Opening Checks " + report.subTestIndex + "</a>" + "</td>" +
-                                          "<td>" + opening.OpeningId + "</td>" +
-                                          "<td>" + "---" + "</td>" +
-                                            "<td>" + opening.ParentSurfaceId + "</td>" +
-                                            "<td>" + "---" + "</td>" +
-                                            "<td>" + String.Format("{0:#,0.00}", opening.ParentAzimuth) + "</td>" +
-                                            "<td>" + "---" + "</td>" +
-                                             "<td>" + String.Format("{0:#,0.00}", opening.ParentTilt) + "</td>" +
-                                            "<td>" + "---" + "</td>" +
-                                             "<td>" + String.Format("{0:#,0.00}", opening.surfaceArea) + "</td>" +
-                                            "<td>" + "---" + "</td>" +
-                                          "<td>" + "Fail" + "</td>" +
-                                          "</tr>";
-                    i += 1;
+                    TestOpeningTable += "</table></div><br/>";
+                    #endregion
 
+                    //close table
+                    table += "</table></div><br/>";
+                    //add TestSurfaceTable
+                    table += TestSurfaceTable + TestOpeningTable;
                 }
             }
-            TestOpeningTable += "</table></div><br/>";
-            #endregion
-
-            //close table
-            table += "</table></div><br/>";
-            //add TestSurfaceTable
-            table += TestSurfaceTable + TestOpeningTable;
-
             CreateSummaryTable();
 
         }
@@ -1134,7 +1142,6 @@ namespace DOEgbXML
             {
                 output += "<h4 class='text-error'>" + report.longMsg + "</h4>";
                 overallPassTest = false;
-                Console.WriteLine(report.testType);
                 failCounter++;
             }
 
