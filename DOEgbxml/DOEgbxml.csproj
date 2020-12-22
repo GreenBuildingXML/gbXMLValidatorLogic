@@ -59,6 +59,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="DOEgbXMLTestFunctions.cs" />
     <Compile Include="DOEgbXMLMaterial.cs" />
+    <Compile Include="DOEgbXMLPTAC.cs" />
+    <Compile Include="DOEgbXMLSchedule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GreenBuildingXML_Ver5.10.xsd">
