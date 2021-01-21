@@ -628,7 +628,11 @@ namespace DOEgbXML
                         {
                             type += sd.surfaceOrientation();
                         }
-                        TestSurfaceToConstructionMap.Add(type, constrct);
+
+                        if (!TestSurfaceToConstructionMap.ContainsKey(type))
+                        {
+                            TestSurfaceToConstructionMap.Add(type, constrct);
+                        }//else skip the add operation
                     }
                 }
             }
