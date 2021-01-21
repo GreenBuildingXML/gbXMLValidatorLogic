@@ -245,13 +245,13 @@ namespace DOEgbXML
                 double difference = Math.Abs(testSpace.volume - standardSpace.volume);
                 if (difference == 0)
                 {
-                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Success finding matching space volume.  The Standard and Test Files both have identical volumes: " + testSpace.volume + " " + Units);
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Success finding the matching space volume.  The Standard and Test Files both have identical volumes: " + testSpace.volume + " " + Units);
                     report.TestPassedDict.Add(testSpace.id, true);
                     report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Matched);
                 }
                 else if (difference < report.tolerance)
                 {
-                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Success finding matching space volume.  The Standard Files space volume of " + standardSpace.volume + " " + Units + "and the Test File space volume: " + testSpace.volume + " are within the allowed tolerance of" + report.tolerance.ToString() + " " + Units + ".");
+                    report.MessageDict.Add(testSpace.id, "For Space <a class'" + testSpace.id + "'>" + testSpace.name + "</a>. Success finding the matching space volume.  The Standard Files space volume of " + standardSpace.volume + " " + Units + "and the Test File space volume: " + testSpace.volume + " are within the allowed tolerance of" + report.tolerance.ToString() + " " + Units + ".");
                     report.TestPassedDict.Add(testSpace.id, true);
                     report.OutputTypeDict.Add(testSpace.id, OutPutEnum.Warning);
                 }

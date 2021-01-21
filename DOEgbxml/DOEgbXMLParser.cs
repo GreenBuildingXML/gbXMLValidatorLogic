@@ -3409,19 +3409,19 @@ namespace DOEgbXML
                         double difference = Math.Abs(testFileSpaceArea - standardFileSpaceArea);
                         if (difference == 0)
                         {
-                            report.MessageDict.Add(testKey, "For Space Id: " + testKey + " (name: "+name + ").  Success finding matching space area.  The Standard File and the Test File both have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
+                            report.MessageDict.Add(testKey, "For Space Id: " + testKey + " (name: "+name + ").  Success finding the matching space area.  The Standard File and the Test File have a space with an area = " + testFileSpaceArea.ToString() + " " + Units + ". ");
                             report.TestPassedDict.Add(testKey, true);
                             report.OutputTypeDict.Add(testKey, OutPutEnum.Matched);
                         }
                         else if (difference < report.tolerance)
                         {
-                            report.MessageDict.Add(testKey, "For Space Id: " + testKey + " (name: " + name + ").  Success finding matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
+                            report.MessageDict.Add(testKey, "For Space Id: " + testKey + " (name: " + name + ").  Success finding the matching space area.  The Standard File space area of " + standardFileSpaceArea.ToString() + " and the Test File space area of " + testFileSpaceArea.ToString() + " " + Units + " is within the allowable tolerance of " + report.tolerance.ToString() + " " + Units);
                             report.TestPassedDict.Add(testKey, true);
                             report.OutputTypeDict.Add(testKey, OutPutEnum.Warning);
                         }
                         else
                         {
-                            report.MessageDict.Add(testKey, "For space Id: " + testKey + " (name: " + name + ").  Failure to find an space area match.  THe area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
+                            report.MessageDict.Add(testKey, "For space Id: " + testKey + " (name: " + name + ").  Failure to find a space area match.  The area equal to  = " + standardFileSpaceArea.ToString() + " " + Units + " in the Standard File could not be found in the Test File. ");
                             report.TestPassedDict.Add(testKey, false);
                             report.OutputTypeDict.Add(testKey, OutPutEnum.Failed);
                         }
@@ -3432,7 +3432,7 @@ namespace DOEgbXML
                         report.testResult.Add("Could not be matched");
                         report.idList.Add(name);
                         //failure to match spaceIds
-                        report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + stdKey + " (name: " + name + "). could not be found in the test file.");
+                        report.MessageList.Add("Test File and Standard File space names could not be matched.  SpaceId: " + stdKey + " (name: " + name + ") can not be found in the test file.");
                         report.passOrFail = false;
                         report.outputType = OutPutEnum.Failed;
                         return report;
